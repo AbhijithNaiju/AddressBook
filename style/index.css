@@ -1,0 +1,159 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+body
+{
+    font-family: Arial, sans-serif;
+}
+.main
+{
+    background-color: #D8E5F1;
+}
+.header
+{
+    height: 8vh;
+    background-color: #337AB7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+}
+.logo img
+{
+    height: 80%;
+}
+.logo
+{
+    display: flex;
+    align-items: center;
+    height: 80%;
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+}
+.logo span
+{
+    margin-left: 10px;
+}
+.header_buttons
+{
+    display: flex;
+    height: 80%;
+}
+.header_buttons button
+{
+    display: flex;
+    background: none;
+    border: none;
+    align-items: center;
+    color: #fff;
+    margin: 0 10px;
+    height: 100%;
+}
+.header_buttons img
+{
+    height: 50%;
+}
+.main_body
+{
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.signup_padding
+{
+    padding: 5% 0;
+}
+.form_container
+{
+    border-radius: 15px;
+    background-color: #fff;
+    width: 48%;
+    display: flex;
+}
+.form_left
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35%;
+    background-color: #337AB7;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+.form_left img
+{
+    width: 40%;
+}
+.form_right
+{
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    width: 65%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    margin: 15px 0;
+}
+.form_heading
+{
+    text-align: center;
+    margin: 10px 0;
+    color:#337AB7;
+    font-size: 30px;
+}
+.input_fields
+{
+    width: 80%;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgb(170, 169, 169);
+    margin: 20px 0;
+    padding: 10px 20px;
+}
+.input_fields:focus
+{
+    outline: none;
+}
+.submit_btn
+{
+    border:1px solid #2d6aa0;
+    color: #2d6aa0;
+    background: none;
+    border-radius: 20px;
+    font-weight: bold;
+    width: 60%;
+    padding: 10px;
+    margin: 10px 0;
+}
+.sign_options
+{
+    text-align: center;
+    margin: 20px 0;
+}
+.sign_options span
+{
+    color: #797777;
+    font-size: 14px;
+}
+.sign_options img
+{
+    width: 50px;
+    margin: 20px 0px;
+}
+.register_link
+{
+    font-size: 14px;
+    color: #585858;
+}
+.register_link a
+{
+    color: #337AB7;
+    text-decoration: none;
+}
