@@ -1,0 +1,279 @@
+body
+{
+    /* overflow: scroll; */
+    height: 100vh;
+    position: relative;
+}
+.home_body
+{
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.position_absolute
+{
+    position: absolute;
+}
+.home_header
+{
+    height: 9vh;
+    background-color: #fff;
+    width: 83%;
+    margin-top: 1.5%;
+    border-radius: 5px;
+    display: flex;
+}
+.home_elements
+{
+    width: 83%;
+    margin-top: 1.5%;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+.print_options
+{
+    margin: 0 5% 0 auto;
+    display: flex;
+    align-items: center;
+    width: 12%;
+    justify-content: space-between;
+}
+.print_options button
+{
+    background: none;
+    border: none;
+    height: 50%;
+}
+.print_options button img
+{
+    height: 100%;
+}
+.profile_box
+{
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    width: 15.5%;
+    height: 33vh;
+    border-radius: 3px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+.profile_box img
+{
+    width: 40%;
+    height: 30%;
+    border-radius: 50%;
+}
+.profile_name
+{
+    color: #337AB7;
+    font-weight: bold;
+    font-size: 18px;
+}
+.profile_box button
+
+{
+    border: none;
+    background-color: #337AB7;
+    color: #fff;
+    border-radius: 20px;
+    padding: 7px 10px;
+}
+.contact_list
+{
+    background-color: #fff;
+    width: 83%;
+    box-sizing: border-box;
+    border-radius: 3px;
+    padding: 5px 5px 30px 5px;
+    box-shadow: 0px 0px 6px 0px rgb(0 0 0 / 0.1);
+}
+.contact_list_heading
+{
+    display: flex;
+    color: #337AB7;
+    font-weight: bold;
+    font-size: 15px;
+    padding: 20px 0;
+    border-bottom: 1px solid #ececec;
+}
+.contact_list_item
+{
+    display: flex;
+    padding: 20px 10px;
+    border-bottom: 1px solid #ececec;
+    color: #505050;
+    font-size: 14px;
+    align-items: center;
+}
+.contact_list_item>div
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.list_profile,.list_name
+{
+    width: 8.5%;
+}
+.list_profile img
+{
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+}
+.list_email
+{
+    width: 17.5%;
+}
+.list_phone
+{
+    width: 17%;
+}
+.list_button
+{
+    width: 44%;
+    display: flex;
+    justify-content: space-between;
+}
+.list_button button
+{
+    border: 1px solid #337AB7;
+    background: none;
+    color: #337AB7;
+    font-size: 12px;
+    padding: 7px;
+    border-radius: 20px;
+    min-width: 22%;
+}
+.edit_modal
+{
+    position: absolute;
+    height: 92vh;
+    width: 100%;
+    background-color: #d8e5f196;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 8vh;
+    overflow: scroll;
+}
+.edit_form
+{
+    background-color: #D8EDF7;
+    width: 50%;
+    min-height: 50%;
+    border: 4px solid #e4e4e4;
+    display: flex;
+    padding: 0 15px;
+    box-sizing: border-box;
+    margin-top: 20vh;
+}
+.display_none
+{
+    display: none;
+}
+.edit_form_body
+{
+    background-color: #fff;
+    width: 72%;
+    padding: 50px;
+    box-sizing: border-box;
+}
+.edit_form_image
+{
+    padding: 30px;
+    box-sizing: border-box
+}
+.modal_buttons
+{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+.modal_buttons button
+{
+    width: 30%;
+    background: #337AB7;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+}
+.modal_heading
+{
+    background-color: #D8EDF7;
+    text-align: center;
+    padding: 10px 0;
+    color: #1b578b;
+    font-weight: bold;
+    font-size: 20px;
+}
+.modal_sub_headng
+{
+    color: #337AB7;
+    font-weight: bold;
+    font-size: 18px;
+    border-bottom: 2px solid #000;
+    margin-top: 30px;
+}
+.edit_modal_element
+{
+    display: flex;
+    margin: 15px 0;
+    justify-content: space-between;
+    color: #666;
+}
+.edit_modal_element>div
+{
+    display: flex;
+    flex-direction: column;
+}
+.form_element
+{
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #ddd;
+    border-left: none;
+    border-right: none;
+    padding: 10px 0;
+}
+.form_element:focus
+{
+    outline: none;
+}
+.form_element::placeholder
+{
+    color: #aaa;
+    font-size: 13px;
+}
+.edit_modal_element>div label
+{
+    color: #337AB7;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+.width_30
+{
+    width: 30%;
+}
+.width_20
+{
+    width: 20%;
+}
+.width_45
+{
+    width: 45%;
+}
+.edit_form_image img
+{
+    padding-top: 100%;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+}

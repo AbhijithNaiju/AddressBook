@@ -10,6 +10,7 @@ body
 .main
 {
     background-color: #D8E5F1;
+    width: 100%;
 }
 .header
 {
@@ -37,12 +38,12 @@ body
 {
     margin-left: 10px;
 }
-.header_buttons
+.header_buttons,.logout_button
 {
     display: flex;
     height: 80%;
 }
-.header_buttons button
+.header_buttons a,.logout_button button
 {
     display: flex;
     background: none;
@@ -51,8 +52,10 @@ body
     color: #fff;
     margin: 0 10px;
     height: 100%;
+    text-decoration: none;
+    font-size: 13px;
 }
-.header_buttons img
+.header_buttons img ,.logout_button img
 {
     height: 50%;
 }

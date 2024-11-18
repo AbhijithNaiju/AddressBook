@@ -1,4 +1,4 @@
-<cfcomponent>
+<!--- <cfcomponent> 
     <cfset this.datasource = "cmsDataSource">
     <cfset this.sessionManagement = true>
     <cfset application.myObject = new createObject("component", "components.addressBook")>
@@ -21,4 +21,4 @@
         </cfif>
 
     </cffunction>
-</cfcomponent>
+ </cfcomponent> --->
