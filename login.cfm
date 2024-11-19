@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style/index.css">
+    <link rel="stylesheet" href="./style/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     <title>Login</title>
 </head>
 <body>
@@ -15,11 +16,11 @@
                 <span>ADDRESS BOOK</span>
             </a>
             <div class="header_buttons">
-                <a href="./signup.html">
+                <a href="./signup.cfm">
                     <img src="./Assets/images/user_icon.png" alt="Image not found">
                     Sign Up
                 </a>
-                <a href="./login.html">
+                <a href="./login.cfm">
                     <img src="./Assets/images/login-2.png" alt="Image not found">
                     Login
                 </a>
@@ -34,13 +35,15 @@
                     <div class="form_heading">
                         LOGIN
                     </div>
-                    <input type="text" placeholder="Username" class="input_fields">
-                    <input type="text" placeholder="Password" class="input_fields">
-                    <input type="submit" class="submit_btn" value="LOGIN">
+                    <input type="text" placeholder="Username" name = "userName" class="input_fields" id="userName">
+                    <div id="userNameError" class="error_message"></div>
 
-                    <cfif>
-                        
-                    </cfif>
+                    <input type="text" placeholder="Password" name="password" class="input_fields" id="password">                    
+                    <div id="passwordError" class="error_message"></div>
+
+                    <input type="submit" onclick="loginValidate(event)" class="submit_btn" name="loginButton" value="LOGIN">
+
+
                     <div class="sign_options">
                         <span >
                             Or Sign in Using
@@ -51,8 +54,17 @@
                         </div>
                     </div>
                     <div class="register_link">
-                        Don't have an account? <a href="signup.html">Register here</a> 
+                        Don't have an account? <a href="signup.cfm">Register here</a> 
                     </div>
+                    <cfif structKeyExists(form, "loginButton")>
+                        <cfset local.myObject = createObject("component","components.addressBook")>
+                        <cfset local.result = local.myObject.userLogin(form.userName,form.password)>
+                         <cfif structKeyExists(local.result,"error")> 
+                            <cfoutput>
+                                <div class = "text-center text-danger" >#local.result["error"]#</div>
+                            </cfoutput>
+                         </cfif>
+                    </cfif>
                 </form>
             </div>
         </div>
