@@ -15,14 +15,14 @@
                 <span>ADDRESS BOOK</span>
             </a>
             <div class="header_buttons">
-                <button>
+                <a href="./signup.html">
                     <img src="./Assets/images/user_icon.png" alt="Image not found">
                     Sign Up
-                </button>
-                <button>
-                    <img src="./Assets/images/login_icon.png" alt="Image not found">
+                </a>
+                <a href="./login.html">
+                    <img src="./Assets/images/login-2.png" alt="Image not found">
                     Login
-                </button>
+                </a>
             </div>
         </div>
         <div class="main_body">
