@@ -1,8 +1,7 @@
-<!--- <cfcomponent> 
-    <cfset this.datasource = "cmsDataSource">
+ <cfcomponent> 
+    <cfset this.datasource = "addressBook">
     <cfset this.sessionManagement = true>
-    <cfset application.myObject = new createObject("component", "components.addressBook")>
-    <cffunction name="onRequest" >
+<!---     <cffunction name="onRequest" > 
 
         <cfargument  name="requestedpage">
 
@@ -20,5 +19,5 @@
 
         </cfif>
 
-    </cffunction>
- </cfcomponent> --->
+    </cffunction> --->
+ </cfcomponent>

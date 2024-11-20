@@ -160,3 +160,13 @@ body
     color: #337AB7;
     text-decoration: none;
 }
+.error_message
+{
+    color: #fd0202;
+    font-size: 12px;
+    text-align: center;
+}
+.imageInput
+{
+    margin: 10px 0;
+}
