@@ -172,3 +172,17 @@ function formValidate(event)
             event.preventDefault();
         }
 }
+
+function logout()
+{
+	if(confirm("You will log out of this page and need to authenticate again to login"))
+	{
+		$.ajax({
+			type:"POST",
+			url:"./Components/addressBook.cfc?method=logOut",
+			success: function() {
+				location.reload();
+			}
+		});
+	}
+}

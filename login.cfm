@@ -38,7 +38,7 @@
                     <input type="text" placeholder="Username" name = "userName" class="input_fields" id="userName">
                     <div id="userNameError" class="error_message"></div>
 
-                    <input type="text" placeholder="Password" name="password" class="input_fields" id="password">                    
+                    <input type="password" placeholder="Password" name="password" class="input_fields" id="password">                    
                     <div id="passwordError" class="error_message"></div>
 
                     <input type="submit" onclick="loginValidate(event)" class="submit_btn" name="loginButton" value="LOGIN">
