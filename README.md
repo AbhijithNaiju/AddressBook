@@ -2,9 +2,9 @@
 
 * signup complete
 * login complete
--- redirecting signup -> login remaining
--- add session check in application.cfc
 
+* Add contact and edit contact should update contents in home without refreshing
+* default image option
 
 
 
