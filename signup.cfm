@@ -87,7 +87,7 @@
                                                                         local.profileImageSrc)>
                         <cfif structKeyExists(local.result,"error")> 
                             <cfoutput>
-                                <div class = "text-center text-danger" >Error</div>
+                                <div class = "text-center text-danger" >#local.result["error"]#</div>
                             </cfoutput>
                         </cfif>
                     </cfif>

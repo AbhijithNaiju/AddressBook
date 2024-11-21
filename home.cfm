@@ -9,6 +9,9 @@
     <title>Home</title>
 </head>
 <body>
+    <cfset local.myObject = createObject("component", "components.addressBook")>
+    <cfset local.userdetails = local.myObject.userDetails()>
+    <cfset local.allContactList = local.myObject.getAllContacts()>
     <main class="main position_absolute">
         <div class="header">
             <a href="" class="logo">
@@ -33,10 +36,10 @@
             <div class="home_elements">
                 <div class="profile_box">
                 <cfoutput>
-                    <img src="#session.profileImage#" alt="image not found">
-                    <div class="profile_name">#session.fullName#</div>
+                    <img src="#local.userdetails.profileImage#" alt="image not found">
+                    <div class="profile_name">#local.userdetails.fullName#</div>
                 </cfoutput>
-                    <button onclick="openEditModal()">CREATE CONTACT</button>
+                    <button onclick="openEditModal(this)" value="">CREATE CONTACT</button>
                 </div>
                 <div class="contact_list">
                     <div class="contact_list_heading">
@@ -56,34 +59,73 @@
                             
                         </div>
                     </div>
-                    <div class="contact_list_item">
-                        <div class="list_profile">
-                            <img src="Assets\images\acrobat.png" alt="Image not found">
-                        </div>
-                        <div class="list_name">
-                            Anjana S
-                        </div>
-                        <div class="list_email">
-                            anjana@gmail.com
-                        </div>
-                        <div class="list_phone">
-                            9072237076
-                        </div>
-                        <div class="list_button">
-                            <button onclick="openEditModal()">EDIT</button>
-                            <button>DELETE</button>
-                            <button onclick="openViewModal()">VIEW</button>
-                        </div>
-                    </div>
+                    <cfloop query="local.allContactList">
+                        <cfoutput>
+                            <div class="contact_list_item" id="#local.allContactList.contactId#">
+                                <div class="list_profile">
+                                    <img src="#local.allContactList.profileImage#" alt="Image not found">
+                                </div>
+                                <div class="list_name">
+                                    #local.allContactList.firstName# #local.allContactList.lastName#
+                                </div>
+                                <div class="list_email">
+                                    #local.allContactList.emailId#
+                                </div>
+                                <div class="list_phone">
+                                    #local.allContactList.phoneNumber#
+                                </div>
+                                <div class="list_button">
+                                    <button type="button" value="#local.allContactList.contactId#" onclick="openEditModal(this)">EDIT</button>
+                                    <button type="button" value="#local.allContactList.contactId#" onclick="deleteContact(this)">DELETE</button>
+                                    <button type="button" value="#local.allContactList.contactId#" onclick="openViewModal(this)">VIEW</button>
+                                </div>
+                            </div>
+                        </cfoutput>
+                    </cfloop>
                 </div>
             </div>
+            <cfset local.uploadDirectory = "./Assets/contactPictues/">
+            <cfif structKeyExists(form, "addContact")>
+
+                <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
+
+                    <cffile action="upload"
+                            filefield="form.profileImage"
+                            destination="#expandPath(local.uploadDirectory)#"
+                            nameconflict="makeunique"
+                            result="fileDetails">
+                    <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
+                <cfelse>
+                    <cfset local.imageSrc = "./Assets/contactPictues/l60Hf.png">
+                </cfif>
+
+                <cfset local.addContactResult = local.myObject.addContact(form,local.imageSrc)> 
+            </cfif>
+
+            <cfif structKeyExists(form, "editContact")>
+
+                <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
+
+                <cffile action="upload"
+                        filefield="form.profileImage"
+                        destination="#expandPath(local.uploadDirectory)#"
+                        nameconflict="makeunique"
+                        result="fileDetails">
+                <cfset local.editImageSrc = local.uploadDirectory & fileDetails.serverfile>
+
+                <cfelse>
+                    <cfset local.editImageSrc = form.profileDefault>
+                </cfif>
+
+                <cfset local.editContactResult = local.myObject.editContact(form,local.editImageSrc)> 
+            </cfif>
         </div>
     </main>
-    <div class="edit_modal display_none" id="myModal">
+    <div class="edit_modal display_none" id="editModal">
         <div class="edit_form">
-            <form method="post" class="edit_form_body" enctype="multipart/form-data">
-                <div class="modal_heading">
-                    CREATE CONTACT
+            <form method="post" class="edit_form_body" id="createForm" enctype="multipart/form-data">
+                <div class="modal_heading" id="modalHeading">
+                    
                 </div>
                 <div class="modal_sub_headng">
                     Personal contact
@@ -114,8 +156,8 @@
                         <label for="">Gender *</label>
                         <select class="form_element" id="gender" name="gender">
                             <option value=""></option>
-                            <option value="Mr ">Male</option>
-                            <option value="Mrs ">Female</option>
+                            <option value="Male ">Male</option>
+                            <option value="Female ">Female</option>
                         </select>
                         <div class="error_message" id="genderError"></div>
                     </div>
@@ -129,6 +171,7 @@
                     <div class="">
                         <label for="">Upload Photo *</label>
                         <input type="file" class="form_element" id="profileImage" name="profileImage">
+                        <input type="hidden" name="profileDefault" id="profileDefault">
                         <div class="error_message" id="profileImageError"></div>
                     </div>
                 </div>
@@ -186,34 +229,29 @@
                 </div>
                 <div class="modal_buttons">
                     <button onclick="closeEditModal()" type="button">Cancel</button>
-                    <button type="submit" onclick="formValidate(event)">Submit</button>
+                    <button type="submit" onclick="formValidate(event)" id="modalFormSubmitButton">Submit</button>
                 </div>
             </form>
             <div class="edit_form_image">
-                <img src="Assets\images\acrobat.png" alt="Image not found">
+                <img src="Assets\contactPictues\l60Hf.png" id="profileImageEdit" alt="Image not found">
             </div>
         </div>
     </div>
     <div class="view_modal display_none" id="viewModal">
         <div class="edit_form">
-            <form method="post" class="edit_form_body" enctype="multipart/form-data">
+            <div class="edit_form_body"  enctype="multipart/form-data">
                 <div class="modal_heading">
                     CONTACT DETAILS
                 </div>
-                <div class="contact_details">
-                    <div class="contact_item_name"><span>Name</span><span>:</span></div>
-                    <div class="contact_item_value">Miss. Anjana S</div>
-                </div>
-                <div class="contact_details">
-                    <div class="contact_item_name"><span>Gender</span><span>:</span></div>
-                    <div class="contact_item_value">Female</div>
+                <div id="viewModalBody">
+
                 </div>
                 <div class="modal_buttons">
                     <button onclick="closeViewModal()" type="button">Close</button>
                 </div>
-            </form>
+            </div>
             <div class="view_form_image">
-                <img src="Assets\images\acrobat.png" alt="Image not found">
+                <img src="Assets\contactPictues\l60Hf.png" alt="Image not found" id = "viewProfileImage">
             </div>
         </div>
     </div>

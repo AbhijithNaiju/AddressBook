@@ -2,21 +2,111 @@ function printOutput(printLocation,printValue)
 {
 	document.getElementById(printLocation).innerHTML = printValue;
 }
-function openEditModal()
+function openEditModal(editId)
 {
-    $("#myModal").removeClass("display_none");
+    if(editId.value == "")
+    {
+        document.getElementById("modalFormSubmitButton").name="addContact";
+        document.getElementById("modalHeading").innerHTML="CREATE CONTACT";
+        document.getElementById("createForm").reset();
+        document.getElementById("profileImageEdit").src = "./Assets/contactPictues/l60Hf.png";
+        document.getElementById("editModal").classList.remove("display_none");
+    }
+    else
+    {
+        document.getElementById("modalFormSubmitButton").name="editContact";
+        document.getElementById("modalHeading").innerHTML="EDIT CONTACT";
+        document.getElementById("editModal").classList.remove("display_none");
+        
+        $.ajax({
+        type:"POST",
+        url:"./Components/addressBook.cfc?method=getEditData",
+        data:{editId:editId.value},
+        success: function(result) {
+            if(result)
+                {
+                    resultJson=JSON.parse(result);
+                    $("#title").val(resultJson.title);
+                    $("#firstName").val(resultJson.firstName);
+                    $("#lastName").val(resultJson.lastName);
+                    $("#gender").val(resultJson.gender);
+                    $("#dateOfBirth").val(resultJson.dateOfBirth);
+                    $("#profileDefault").val(resultJson.profileImage);
+                    $("#address").val(resultJson.address);
+                    $("#streetName").val(resultJson.streetName);
+                    $("#pincode").val(resultJson.pincode);
+                    $("#district").val(resultJson.district);
+                    $("#state").val(resultJson.state);
+                    $("#country").val(resultJson.country);
+                    $("#phoneNumber").val(resultJson.phoneNumber);
+                    $("#email").val(resultJson.email);
+                    document.getElementById("profileImageEdit").src = resultJson.profileImage;
+                    
+                    $("#modalFormSubmitButton").val(editId.value);
+                }
+            },
+            error:function()
+            {
+                alert("An error occured")
+            }
+        });
+    }
 }
 function closeEditModal()
 {
-    $("#myModal").addClass("display_none");
+        document.getElementById("editModal").classList.add("display_none");
+        $('.error_message').text('');
 }
-function openViewModal()
+function openViewModal(viewId)
 {
-    $("#viewModal").removeClass("display_none");
+    viewModalBody=document.getElementById("viewModalBody")
+    viewModalBody.innerHTML="";
+    document.getElementById("viewModal").classList.remove("display_none");
+    $.ajax({
+        type:"POST",
+        url:"./Components/addressBook.cfc?method=getContactData",
+        data:{viewId:viewId.value},
+        success: function(result) {
+            if(result)
+            {                
+                resultJson=JSON.parse(result);
+
+                const jsonKeys=Object.keys(resultJson);
+                for(i=0;i<jsonKeys.length;i++)
+                {
+                    a=jsonKeys[i];
+                    if(a == "profileImage")
+                    {
+                        document.getElementById("viewProfileImage").src = resultJson[a];
+                    }
+                    else
+                    {
+                        var parentDiv = document.createElement("DIV");
+                        parentDiv.classList.add("contact_details");
+                        var contactItemName = document.createElement("DIV");
+                        contactItemName.classList.add("contact_item_name");
+                        contactItemName.innerHTML=a;
+                        var contactItemValue = document.createElement("DIV");
+                        contactItemValue.classList.add("contact_item_value");
+                        contactItemValue.innerHTML=resultJson[a];
+                        parentDiv.appendChild(contactItemName);
+                        parentDiv.appendChild(contactItemValue);
+        
+                        viewModalBody.appendChild(parentDiv);
+                    }
+                }
+            }
+        },
+        error:function()
+        {
+            alert("An error occured")
+        }
+    });
 }
 function closeViewModal()
 {
-    $("#viewModal").addClass("display_none");
+    document.getElementById("viewModal").classList.add("display_none");
+
 }
 
 function formValidate(event)
@@ -26,7 +116,6 @@ function formValidate(event)
     let lastName =  document.getElementById("lastName").value;
     let gender =  document.getElementById("gender").value;
     let dateOfBirth =  document.getElementById("dateOfBirth").value;
-    let profileImage =  document.getElementById("profileImage").value;
     let address =  document.getElementById("address").value;
     let streetName =  document.getElementById("streetName").value;
     let pincode =  document.getElementById("pincode").value;
@@ -43,7 +132,6 @@ function formValidate(event)
     let lastNameError = "";
     let genderError = "";
     let dateOfBirthError = "";
-    let profileImageError = "";
     let addressError = "";
     let streetNameError = "";
     let pincodeError = "";
@@ -83,12 +171,6 @@ function formValidate(event)
         dateOfBirthError = "Please enter the DOB";
     }
     printOutput("dateOfBirthError",dateOfBirthError);
-
-    if(profileImage.trim().length==0)
-    {
-        profileImageError = "Please enter the profile image";
-    }
-    printOutput("profileImageError",profileImageError);
 
     if(address.trim().length==0)
     {
@@ -155,20 +237,55 @@ function formValidate(event)
     }
     printOutput("emailError",emailError);
 
-    if(titleError  == "" ||
-       firstNameError  == "" ||
-       lastNameError  == "" ||
-       genderError  == "" ||
-       dateOfBirthError  == "" ||
-       profileImageError  == "" ||
-       addressError  == "" ||
-       streetNameError == "" ||
-       pincodeError == "" ||
-       districtError == "" ||
-       stateError == "" ||
-       countryError == "" ||
-       phoneNumberError == "" ||
+    if(titleError  != "" ||
+       firstNameError  != "" ||
+       lastNameError  != "" ||
+       genderError  != "" ||
+       dateOfBirthError  != "" ||
+       addressError  != "" ||
+       streetNameError != "" ||
+       pincodeError != "" ||
+       districtError != "" ||
+       stateError != "" ||
+       countryError != "" ||
+       phoneNumberError != "" ||
        emailError){
             event.preventDefault();
+        }
+}
+
+function logout()
+{
+	if(confirm("You will log out of this page and need to authenticate again to login"))
+	{
+		$.ajax({
+			type:"POST",
+			url:"./Components/addressBook.cfc?method=logOut",
+			success: function() {
+				location.reload();
+			}
+		});
+	}
+}
+
+function deleteContact(deleteId)
+{
+    if(confirm("Confirm delete"))
+        {
+            $.ajax({
+                type:"POST",
+                url:"./Components/addressBook.cfc?method=deleteContact",
+                data:{deleteId:deleteId.value},
+                success: function(result) {
+                    if(result)
+                    {
+                        document.getElementById(deleteId.value).style.display="none";
+                    }
+                },
+                error:function()
+                {
+                    alert("An error occured")
+                }
+            });
         }
 }

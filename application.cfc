@@ -1,11 +1,12 @@
  <cfcomponent> 
     <cfset this.datasource = "addressBook">
     <cfset this.sessionManagement = true>
-<!---     <cffunction name="onRequest" > 
+    
+    <cffunction name="onRequest" > 
 
         <cfargument  name="requestedpage">
 
-        <cfset local.excludedPages=["/addressBook/login.html","/addressBook/signUp.html"]>
+        <cfset local.excludedPages=["/AddressBook/login.cfm","/AddressBook/signup.cfm"]>
 
         <cfif arrayFind(local.excludedPages,arguments.requestedpage)>
             <cfinclude  template="#arguments.requestedpage#">
@@ -19,5 +20,5 @@
 
         </cfif>
 
-    </cffunction> --->
+    </cffunction> 
  </cfcomponent>
