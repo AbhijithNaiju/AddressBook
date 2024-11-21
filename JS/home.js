@@ -279,7 +279,6 @@ function deleteContact(deleteId)
                 success: function(result) {
                     if(result)
                     {
-                        console.log(result)
                         document.getElementById(deleteId.value).style.display="none";
                     }
                 },
