@@ -69,9 +69,11 @@
                     <div class="register_link">
                         Already have an account? <a href="login.cfm">Login</a> 
                     </div>
+                    <cfset local.uploadDirectory = "./Assets/uploads/">
                     <cfif structKeyExists(form, "submitButton")>
-
-                        <cfset local.uploadDirectory = "./Assets/uploads/">
+                        <cfif NOT directoryExists(expandPath(local.uploadDirectory))>
+                            <cfset directoryCreate(expandPath(local.uploadDirectory))>
+                        </cfif>
                         <cffile action="upload"
                                 filefield="form.profileImage"
                                 destination="#expandPath(local.uploadDirectory)#"
