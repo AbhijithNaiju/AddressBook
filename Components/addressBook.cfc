@@ -1,4 +1,6 @@
 <cfcomponent>
+
+<!---     Check  email exist or not using Ajax --->
     <cffunction  name="emailExists" returntype="any" access="remote">
         <cfargument  name="email" type="string"> 
 
@@ -13,6 +15,8 @@
             <cfreturn true>
          </cfif> 
     </cffunction>
+
+<!---     Check  username exist or not using Ajax --->
     <cffunction  name="userNameExists" returntype="any" access="remote">
         <cfargument  name="userName" type="string"> 
 
@@ -28,7 +32,9 @@
         </cfif> 
     </cffunction>
 
+<!---     User signup --->
     <cffunction  name="userSignup" returntype="struct">
+
         <cfargument  name="fullName" type="string">
         <cfargument  name="emailId" type="string">
         <cfargument  name="userName" type="string">
@@ -73,12 +79,13 @@
                 </cfquery>
 
             <cfcatch type="exception">
-                <cfset local.structResult["Error"] = "Error">
+                <cfset local.structResult["error"] = "Error">
             </cfcatch>
 
             </cftry>
         </cfif> 
 
+<!---         redirecting to login if signup success --->
         <cfif NOT structKeyExists(local.structResult, "error")>
             <cfset userLogin(arguments.userName,arguments.password)>
         </cfif>
@@ -86,6 +93,7 @@
         <cfreturn local.structResult>
     </cffunction>
 
+<!---     User login --->
     <cffunction  name="userLogin" returntype="struct">
 
         <cfargument  name="userName" type="string">
@@ -102,24 +110,23 @@
         </cfquery>
         
         <cfif selectUser.recordcount>
-
             <cfset session.userId = selectUser.userId>
             <cfset local.structResult["success"] = "success">
-
             <cflocation  url="./home.cfm">
-
         <cfelse>
             <cfset local.structResult["error"] = "Please enter a valid username and password">
         </cfif>
 
         <cfreturn local.structResult>
     </cffunction>
-    
+
+<!---     Remote login --->
     <cffunction  name="logOut"  access="remote">
         <cfset structClear(session)>
         <cfreturn true>
     </cffunction>
 
+<!---     User details for homepage --->
     <cffunction  name="userDetails">
         <cfquery name = "getUserDetails" >
             SELECT fullName,profileImage
@@ -129,6 +136,7 @@
         <cfreturn getUserDetails>
     </cffunction>
 
+<!---     Creating contact --->
     <cffunction  name="addContact" returntype="struct">
 
         <cfargument  name="structForm" type="struct">
@@ -177,17 +185,25 @@
                         <cfqueryparam value='#local.createDate#' cfsqltype="cf_sql_date">)
             </cfquery>
         <cfcatch type="exception">
-
+            <cfset local.structResult["error"] = "Error while creating">
         </cfcatch>
         </cftry>
 
         <cfreturn local.structResult>
     </cffunction>
 
+<!---     Edit contact details --->
     <cffunction  name="editContact" returntype="struct">
 
         <cfargument  name="structForm" type="struct">
         <cfargument  name="imageLink" type="string">
+
+        <!--- getting imagelink to delete --->
+        <cfquery name = "getDeleteImage">
+            SELECT profileImage
+            FROM contactDetails
+            WHERE contactId = <cfqueryparam value='#arguments.structForm["editContact"]#' cfsqltype="cf_sql_varchar">;
+        </cfquery>
 
         <cfset local.structResult = structNew()>
         <cfset local.updateDate = dateformat(now(),"yyyy-mm-dd")>
@@ -213,37 +229,65 @@
                     _updatedOn = <cfqueryparam value='#local.updateDate#' cfsqltype="cf_sql_date">
                 WHERE contactId = <cfqueryparam value='#arguments.structForm["editContact"]#' cfsqltype="cf_sql_varchar">;
             </cfquery>
-        <cfcatch type="exception">
 
+            <!--- Deleting old image if new one is added --->
+            <cfif getDeleteImage.profileImage NEQ arguments.imageLink>
+                <cfset local.absolutePath = expandPath("../#getDeleteImage.profileImage#")>
+                <cfif FileExists(local.absolutePath)>
+                    <cffile  action = "delete" file = "#local.absolutePath#">
+                </cfif>
+            </cfif>
+
+        <cfcatch type="exception">
+                <cfset local.structResult["Error"] = "Error occured">
         </cfcatch>
         </cftry>
 
         <cfreturn local.structResult>
     </cffunction>
 
+<!---     Contact list for home page --->
     <cffunction  name = "getAllContacts" returntype = "query">
+
         <cfquery name = "allContacts">
             SELECT contactId,firstName,lastName,profileImage,emailId,phoneNumber
             FROM contactDetails
             WHERE _createdBy = <cfqueryparam value='#session.userId#' cfsqltype="cf_sql_varchar">;
         </cfquery>
+
         <cfreturn allContacts>
     </cffunction>
 
+<!---     Delete contact from table --->
     <cffunction  name="deleteContact" access="remote">
-        <cfargument  name="deleteId">
+        <cfargument  name="deleteId" type="string">
+
+        <!--- getting imagelink to delete --->
+        <cfquery name = "getDeleteImage">
+            SELECT profileImage
+            FROM contactDetails
+            WHERE contactId = <cfqueryparam value='#arguments.deleteId#' cfsqltype="cf_sql_varchar">;
+        </cfquery>
+
 
         <cfquery>
             DELETE FROM contactDetails
-            WHERE contactId = <cfqueryparam value='#arguments.deleteId#' cfsqltype="cf_sql_varchar">
+            WHERE contactId = <cfqueryparam value='#arguments.deleteId#' cfsqltype="cf_sql_varchar">;
         </cfquery>
         
+        <!---   Deleting image --->
+        <cfset local.absolutePath = expandPath("../#getDeleteImage.profileImage#")>
+        <cfif FileExists(local.absolutePath)>
+            <cffile  action = "delete" file = "#local.absolutePath#">
+        </cfif>
+
         <cfreturn true>
 
     </cffunction>
 
+<!---     single contact detail to ajax call for view modal--->
     <cffunction  name="getContactData" access="remote" returnformat="JSON">
-        <cfargument  name="viewId">
+        <cfargument  name="viewId" type="string">
 
         <cfset local.structResult = structNew("ordered")>
 
@@ -279,9 +323,10 @@
 
     </cffunction>
 
+<!---     single contact detail to ajax for edit modal --->
     <cffunction  name="getEditData" access="remote" returnformat="JSON">
+        <cfargument  name="editId" type="string">
 
-        <cfargument  name="editId">
         <cfset local.structResult = structNew("ordered")>
 
         <cfquery name = "editData">
@@ -320,5 +365,56 @@
 
         <cfreturn local.structResult>
 
+    </cffunction>
+
+    <cffunction  name="printPage">
+        <cfhtmltopdf encryption="AES_128"
+                     source = "C:\ColdFusion2021\cfusion\wwwroot\AddressBook\printDocument.cfm"
+                     permissions="AllowPrinting" 
+                     destination="usage_example.pdf" 
+                     overwrite="yes">
+        </cfhtmltopdf>
+    </cffunction>
+
+    <cffunction  name="createSpreadsheet" access="remote" returnformat="json">
+        <cfargument  name="inputFileName" type="string">
+        <cfset local.structResult = structNew()>
+
+        <cfquery name = "xlsData">
+            SELECT  firstName,
+                    lastName,
+                    gender,
+                    DOB,
+                    address,
+                    streetName,
+                    district,
+                    state,
+                    country,
+                    pincode,
+                    emailId,
+                    phoneNumber
+            FROM contactDetails
+            WHERE _createdBy = <cfqueryparam value='#session.userId#' cfsqltype="cf_sql_varchar">;
+        </cfquery>
+
+
+        <cfset local.folderName = "c:\Users\Abhijith\Downloads\">
+        <cfset local.sheet = spreadsheetNew("name")>
+
+        <cfset spreadsheetAddRow(local.sheet, 'First Name,Last Name,Gender,DOB,Address,Street Name,Pincode,District,State,Country,Email ID,Phone Number')>
+        <cfset spreadsheetFormatRow(local.sheet, {bold=true}, 1)>
+        <cfset spreadsheetAddRows(local.sheet, xlsData)>
+
+        <cfset local.fileName = local.folderName & arguments.inputFileName & ".xls">
+
+        <cfif  FileExists(local.fileName)>
+            <cfset local.structResult["error"] = "File already exists">
+        <cfelse>
+            <cfspreadsheet  action="write"  
+                            filename="#local.fileName#" 
+                            name="local.sheet"
+                            overwrite=true>
+            <cfreturn true>
+        </cfif>
     </cffunction>
 </cfcomponent>
