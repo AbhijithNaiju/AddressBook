@@ -1,4 +1,4 @@
- <a href="./Components/addressBook.cfc?method=checkEmailAndNumberExist">Print</a> 
+ <a href="/Components/addressBook.cfc?method=checkEmailAndNumberExist&emailId=5FAB160C-B0C7-489B-95B4-1C3EB94F94FB&contactId=5FAB160C-B0C7-489B-95B4-1C3EB94F94FB&phoneNumber=9072237076">Print</a> 
 
 <!---
 <cfoutput>

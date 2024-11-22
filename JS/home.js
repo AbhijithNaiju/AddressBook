@@ -8,7 +8,6 @@ function openEditModal(editId)
     {
         document.getElementById("modalFormSubmitButton").name="addContact";
         document.getElementById("modalHeading").innerHTML="CREATE CONTACT";
-        document.getElementById("createForm").reset();
         document.getElementById("profileImageEdit").src = "./Assets/contactPictues/l60Hf.png";
         document.getElementById("editModal").classList.remove("display_none");
     }
@@ -62,6 +61,7 @@ function openEditModal(editId)
 function closeEditModal()
 {
         document.getElementById("editModal").classList.add("display_none");
+        document.getElementById("createForm").reset();
         $('.error_message').text('');
 }
 function openViewModal(viewId)
@@ -275,7 +275,8 @@ function formValidate(event)
                 }
                 else {
                     document.getElementById("modalFormSubmitButton").type="button";
-                    
+                    event.preventDefault();
+                    alert("Email and phone number can't repeat")
                     if(resultJson.emailError)
                         printOutput("emailError",resultJson.emailError);
                     if(resultJson.phoneError)
@@ -379,23 +380,18 @@ function createSpreadsheet()
 }
 function printPdf()
 {
-    $.ajax({
-        type:"POST",
-        url:"./Components/addressBook.cfc?method=createSpreadsheet",
-        data:{inputFileName:fileName},
-        success: function(result) {
-            if(result == 'true')
-            {
-                alert("Spreadsheet downloaded")
-            }
-            else
-            {
-                alert("Filename already exists")
-            }
-        },
-        error:function()
-        {
-            alert("An error occured")
-        }
-    });
+    if(!confirm("Dowload as pdf"))
+    {
+        event.preventDefault();
+    }
+}
+function printPage()
+{
+    var bodyDiv=document.body.innerHTML;
+    var printDiv=document.getElementById("contactList").innerHTML;
+    document.body.innerHTML=printDiv;
+    $(".contactButtons").css({"display":"none"});
+    window.print();
+    document.body.innerHTML=bodyDiv;
+    $(".contactButtons").show;
 }

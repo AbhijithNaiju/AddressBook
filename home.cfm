@@ -12,6 +12,7 @@
         <cfset local.myObject = createObject("component", "components.addressBook")>
         <cfset local.userdetails = local.myObject.userDetails()>
         <cfset local.allContactList = local.myObject.getAllContacts()>
+        <cfset local.pdfPrintData = local.myObject.getPdfData()>
         <cfset local.uploadDirectory = "./Assets/contactPictues/">
 
         <cfif NOT directoryExists(expandPath(local.uploadDirectory))>
@@ -33,11 +34,11 @@
             </div>
             <div class="home_body">
                 <div class="home_header">
-                    <div class="print_options">
-                        <button onclick="printPdf()"><img src="./Assets/images/acrobat.png" alt="Image not found"></button>
-                        <button onclick="createSpreadsheet()"><img src="./Assets/images/excel.png" alt="Image not found"></button>
-                        <button><img src="./Assets/images/print.png" alt="Image not found"></button>
-                    </div>
+                    <form method="post" class="print_options">
+                        <button  name="printPdfBtn" onclick="printPdf()"><img src="./Assets/images/acrobat.png" alt="Image not found"></button>
+                        <button type="button" onclick="createSpreadsheet()"><img src="./Assets/images/excel.png" alt="Image not found"></button>
+                        <button onclick="printPage()" type="button"><img src="./Assets/images/print.png" alt="Image not found"></button>
+                    </form>
                 </div>
                 <div class="home_elements">
                     <div class="profile_box">
@@ -53,7 +54,7 @@
                         <button onclick="openEditModal(this)" value="">CREATE CONTACT</button>
                     </div>
 
-                    <div class="contact_list">
+                    <div class="contact_list" id="contactList">
                         <div class="contact_list_heading">
                             <div class="list_profile">
 
@@ -93,9 +94,9 @@
                                         #local.allContactList.phoneNumber#
                                     </div>
                                     <div class="list_button">
-                                        <button type="button" value="#local.allContactList.contactId#" onclick="openEditModal(this)">EDIT</button>
-                                        <button type="button" value="#local.allContactList.contactId#" onclick="deleteContact(this)">DELETE</button>
-                                        <button type="button" value="#local.allContactList.contactId#" onclick="openViewModal(this)">VIEW</button>
+                                        <button type="button" value="#local.allContactList.contactId#" onclick="openEditModal(this)" class = "contactButtons">EDIT</button>
+                                        <button type="button" value="#local.allContactList.contactId#" onclick="deleteContact(this)" class = "contactButtons">DELETE</button>
+                                        <button type="button" value="#local.allContactList.contactId#" onclick="openViewModal(this)" class = "contactButtons">VIEW</button>
                                     </div>
                                 </div>
                             </cfoutput>
@@ -119,6 +120,8 @@
                     </cfif>
 
                     <cfset local.addContactResult = local.myObject.addContact(form,local.imageSrc)> 
+
+
                 </cfif>
 
                 <cfif structKeyExists(form, "editContact")>
@@ -282,6 +285,57 @@
                 </div>
             </div>
         </div>
+        <cfif structKeyExists(form, "printPdfBtn")>
+            <cfdocument  format="PDF" filename="./assets/pdfFiles/contacts.pdf" overwrite="true">
+                <table border="2" >
+                    <tr>
+                        <th>Image</th>
+                        <th> NAME </th>
+                        <th>DOB</th>
+                        <th>ADDRESS</th>
+                        <th>PINCODE</th>
+                        <th>PHONE NUMBER</th>
+                        <th>EMAIL ID</th>
+                    </tr>
+                    <cfoutput>
+                        <cfloop query="local.pdfPrintData">
+                            <cfif local.pdfPrintData.profileImage EQ "">
+                                <cfset local.contactProfileImage = "./Assets/contactPictues/l60Hf.png">
+                            <cfelse>
+                                <cfset local.contactProfileImage = local.pdfPrintData.profileImage>
+                            </cfif>
+                            <tr>
+                                <td>
+                                    <img src="#local.contactProfileImage#" alt="Image not found" width="100" height="100">
+                                </td>
+                                <td>
+                                    #local.pdfPrintData.firstName# #local.pdfPrintData.lastName#
+                                </td>
+                                <td>
+                                    #local.pdfPrintData.DOB#
+                                </td>
+                                <td>
+                                    #local.pdfPrintData.address#,
+                                    #local.pdfPrintData.streetName#,
+                                    #local.pdfPrintData.district#,
+                                    #local.pdfPrintData.STATE#,
+                                    #local.pdfPrintData.country#
+                                </td>
+                                <td>
+                                    #local.pdfPrintData.pincode#
+                                </td>
+                                <td>
+                                    #local.pdfPrintData.phoneNumber#
+                                </td>
+                                <td>
+                                    #local.pdfPrintData.emailId#
+                                </td>
+                            </tr>
+                        </cfloop>
+                    </cfoutput>
+                </table>
+            </cfdocument>
+        </cfif>
         <script src="./JS/Jquery/jquery-3.7.1.js"></script>
         <script src="./JS/home.js"></script>
     </body>

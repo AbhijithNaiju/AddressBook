@@ -41,33 +41,6 @@ function signUpValidate(event)
 
     printOutput("emailError",emailError);
 
-    if(emailError == "" || userNameError == "") {
-        $.ajax({
-            type:"POST",
-            url:"./components/addressBook.cfc?method=emailAndUNameCheck",
-            data: {email:email,userName:userName},
-            success: function(result) {
-                resultJson=JSON.parse(result);
-                if(resultJson.phoneSuccess && resultJson.emailSuccess) {
-                    document.getElementById("submitButton").type="submit";
-                }
-                else {
-                    if(resultJson.emailError){
-                        printOutput("emailError",resultJson.emailError);
-                    }if(resultJson.userNameError){
-                        printOutput("userNameError",resultJson.userNameError);
-                    }
-                    document.getElementById("submitButton").type="button";
-                }
-            },
-            error:function() {
-                printOutput("emailError","Error occured");
-                printOutput("userNameError","Error occured");
-                document.getElementById("submitButton").type="button";
-            }
-        });
-    }
-
 	if(userName.trim().length==0){
 		userNameError= "Please enter your user name";
 	}
@@ -128,6 +101,36 @@ function signUpValidate(event)
     printOutput("profileImageError",profileImageError);
     if(firstNameError != "" || emailError != ""|| userNameError != ""|| passwordError != ""|| confirmPasswordError != ""|| profileImageError != ""){
         event.preventDefault();
+    }
+
+    if(emailError == "" || userNameError == "") {
+        $.ajax({
+            type:"POST",
+            url:"./components/addressBook.cfc?method=emailAndUNameCheck",
+            data: {email:email,userName:userName},
+            success: function(result) {
+                resultJson=JSON.parse(result);
+                if(resultJson.phoneSuccess && resultJson.emailSuccess) {
+                    // document.getElementById("submitButton").type="submit";
+                    alert(submit)
+                }
+                else {
+                    document.getElementById("submitButton").type="button";
+                    event.preventDefault();
+                    alert("test");
+                    if(resultJson.emailError){
+                        printOutput("emailError",resultJson.emailError);
+                    }if(resultJson.userNameError){
+                        printOutput("userNameError",resultJson.userNameError);
+                    }
+                }
+            },
+            error:function() {
+                printOutput("emailError","Error occured");
+                printOutput("userNameError","Error occured");
+                document.getElementById("submitButton").type="button";
+            }
+        });
     }
 
 }
