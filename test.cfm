@@ -1,4 +1,4 @@
- <a href="./Components/addressBook.cfc?method=createSpreadsheet&inputFileName=hi">Print</a> 
+ <a href="./Components/addressBook.cfc?method=checkEmailAndNumberExist">Print</a> 
 
 <!---
 <cfoutput>

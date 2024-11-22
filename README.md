@@ -8,6 +8,7 @@
 * Delete changed or deleted images from server ✔
 * Directory existence checking ✔
 
+* - image validation in contact add ✔
 
 1 - print options
 
@@ -15,8 +16,4 @@
 
 2 - form resubmission ?
 
-3 - image validation in contact add
-
-4 - directory exists in expand paths
-
-*** change query checking in qn 28 to queryname.recordcount
+3 - directory exists in expand paths ?

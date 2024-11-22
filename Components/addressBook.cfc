@@ -1,35 +1,44 @@
 <cfcomponent>
 
-<!---     Check  email exist or not using Ajax --->
-    <cffunction  name="emailExists" returntype="any" access="remote">
+<!---     Checker email or username already exists during signup --->
+    <cffunction  name="emailAndUNameCheck" returnformat="JSON" access="remote">
         <cfargument  name="email" type="string"> 
-
-        <cfquery name="emailCheck" >
-            SELECT count('email') 
-            AS userCount 
-            FROM userTable 
-            WHERE email=<cfqueryparam value='#arguments.email#' cfsqltype="cf_sql_varchar">;
-        </cfquery>
-
-        <cfif emailCheck.userCount>
-            <cfreturn true>
-         </cfif> 
-    </cffunction>
-
-<!---     Check  username exist or not using Ajax --->
-    <cffunction  name="userNameExists" returntype="any" access="remote">
         <cfargument  name="userName" type="string"> 
 
-        <cfquery name="userNameCheck" >
-            SELECT count('userName') 
-            AS userCount 
-            FROM userTable 
-            WHERE username=<cfqueryparam value='#arguments.userName#' cfsqltype="cf_sql_varchar">;
-        </cfquery>
+        <cfset local.structResult = structNew()>
 
-        <cfif userNameCheck.userCount>
-            <cfreturn true>
-        </cfif> 
+        <cfif arguments.email NEQ "">
+            <cfquery name="qryEmailExist" >
+                SELECT count('email') 
+                AS emailCount 
+                FROM userTable 
+                WHERE email=<cfqueryparam value='#arguments.email#' cfsqltype="cf_sql_varchar">;
+            </cfquery>
+            <cfif qryEmailExist.emailCount>
+                <cfset local.structResult["emailError"] = "Email already exists">
+            <cfelse>
+                <cfset local.structResult["emailSuccess"] = "true">
+            </cfif>
+
+        </cfif>
+
+        <cfif arguments.userName NEQ "">
+        
+            <cfquery name="qryUserNameExist" >
+                SELECT count('userName') 
+                AS userNameCount 
+                FROM userTable 
+                WHERE username=<cfqueryparam value='#arguments.userName#' cfsqltype="cf_sql_varchar">;
+            </cfquery>
+
+            <cfif qryUserNameExist.userNameCount>
+                <cfset local.structResult["userNameError"] = "UserName already exists">
+            <cfelse>
+                <cfset local.structResult["userNameSuccess"] = "true">
+            </cfif>
+        </cfif>
+
+    <cfreturn local.structResult>
     </cffunction>
 
 <!---     User signup --->
@@ -291,7 +300,7 @@
 
         <cfset local.structResult = structNew("ordered")>
 
-        <cfquery name = "contactDetails">
+        <cfquery name = "qryViewContactDetails">
             SELECT  title,
                     firstName,
                     lastName,
@@ -310,26 +319,26 @@
             WHERE contactId = <cfqueryparam value='#arguments.viewId#' cfsqltype="cf_sql_varchar">;
         </cfquery>
 
-        <cfset local.structResult["Name"] = contactDetails.title & " " & contactDetails.firstName & " " & contactDetails.lastName> 
+        <cfset local.structResult["Name"] = qryViewContactDetails.title & " " & qryViewContactDetails.firstName & " " & qryViewContactDetails.lastName> 
         <cfset local.structResult["Gender"] = contactDetails.gender>
-        <cfset local.structResult["Date Of Birth"] = dateFormat(contactDetails.DOB,"dd-mm-yyyy")>
-        <cfset local.structResult["profileImage"] = contactDetails.profileImage>
-        <cfset local.structResult["Address"] = contactDetails.address & ", " & contactDetails.streetName & ", " & contactDetails.district & ", " & contactDetails.state & ", " &contactDetails.country>
-        <cfset local.structResult["Pincode"] = contactDetails.pincode>
-        <cfset local.structResult["Email Id"] = contactDetails.emailId>
-        <cfset local.structResult["Phone Number"] = contactDetails.phoneNumber>
+        <cfset local.structResult["Date Of Birth"] = dateFormat(qryViewContactDetails.DOB,"dd-mm-yyyy")>
+        <cfset local.structResult["profileImage"] = qryViewContactDetails.profileImage>
+        <cfset local.structResult["Address"] = contactDetails.address & ", " & qryViewContactDetails.streetName & ", " & qryViewContactDetails.district & ", " & qryViewContactDetails.state & ", " &qryViewContactDetails.country>
+        <cfset local.structResult["Pincode"] = qryViewContactDetails.pincode>
+        <cfset local.structResult["Email Id"] = qryViewContactDetails.emailId>
+        <cfset local.structResult["Phone Number"] = qryViewContactDetails.phoneNumber>
 
         <cfreturn local.structResult>
 
     </cffunction>
 
 <!---     single contact detail to ajax for edit modal --->
-    <cffunction  name="getEditData" access="remote" returnformat="JSON">
+    <cffunction  name="getqryEditData" access="remote" returnformat="JSON">
         <cfargument  name="editId" type="string">
 
         <cfset local.structResult = structNew("ordered")>
 
-        <cfquery name = "editData">
+        <cfquery name = "qryEditData">
             SELECT  title,
                     firstName,
                     lastName,
@@ -348,25 +357,26 @@
             WHERE contactId = <cfqueryparam value='#arguments.editId#' cfsqltype="cf_sql_varchar">;
         </cfquery>
 
-        <cfset local.structResult["title"] = editData.title> 
-        <cfset local.structResult["firstName"] = editData.firstName> 
-        <cfset local.structResult["lastName"] = editData.lastName> 
-        <cfset local.structResult["gender"] = editData.gender>
-        <cfset local.structResult["dateOfBirth"] = dateFormat(editData.DOB,"yyyy-mm-dd")>
-        <cfset local.structResult["profileImage"] = editData.profileImage>
-        <cfset local.structResult["address"] = editData.address>
-        <cfset local.structResult["streetName"] = editData.streetName>
-        <cfset local.structResult["pincode"] = editData.pincode>
-        <cfset local.structResult["district"] = editData.district>
-        <cfset local.structResult["state"] = editData.state>
-        <cfset local.structResult["country"] = editData.country>
-        <cfset local.structResult["email"] = editData.emailId>
-        <cfset local.structResult["phoneNumber"] = editData.phoneNumber>
+        <cfset local.structResult["title"] = qryEditData.title> 
+        <cfset local.structResult["firstName"] = qryEditData.firstName> 
+        <cfset local.structResult["lastName"] = qryEditData.lastName> 
+        <cfset local.structResult["gender"] = qryEditData.gender>
+        <cfset local.structResult["dateOfBirth"] = dateFormat(qryEditData.DOB,"yyyy-mm-dd")>
+        <cfset local.structResult["profileImage"] = qryEditData.profileImage>
+        <cfset local.structResult["address"] = qryEditData.address>
+        <cfset local.structResult["streetName"] = qryEditData.streetName>
+        <cfset local.structResult["pincode"] = qryEditData.pincode>
+        <cfset local.structResult["district"] = qryEditData.district>
+        <cfset local.structResult["state"] = qryEditData.state>
+        <cfset local.structResult["country"] = qryEditData.country>
+        <cfset local.structResult["email"] = qryEditData.emailId>
+        <cfset local.structResult["phoneNumber"] = qryEditData.phoneNumber>
 
         <cfreturn local.structResult>
 
     </cffunction>
 
+<!---     **** print page as pdf not working **** --->
     <cffunction  name="printPage">
         <cfhtmltopdf encryption="AES_128"
                      source = "C:\ColdFusion2021\cfusion\wwwroot\AddressBook\printDocument.cfm"
@@ -376,6 +386,7 @@
         </cfhtmltopdf>
     </cffunction>
 
+<!---     Creating spreadsheet with user defiined name --->
     <cffunction  name="createSpreadsheet" access="remote" returnformat="json">
         <cfargument  name="inputFileName" type="string">
         <cfset local.structResult = structNew()>
@@ -416,5 +427,52 @@
                             overwrite=true>
             <cfreturn true>
         </cfif>
+    </cffunction>
+
+<!---     Checking esistence of email and phonenumber before create or add contact --->
+    <cffunction  name="checkEmailAndNumberExist" returnformat="JSON" access="remote">
+        <cfargument  name="email" type="string">
+        <cfargument  name="phoneNumber" type="string">
+        <cfargument  name="contactId" type="string">
+
+        <cfset local.structResult = structNew()>
+
+        <cfquery name="qryEmailOfUser" >
+            SELECT email
+            FROM userTable 
+            WHERE userId=<cfqueryparam value='#session.userId#' cfsqltype="cf_sql_varchar">;
+        </cfquery>
+
+        <cfquery name="qryEmailInContacts" >
+            SELECT emailId,contactId
+            FROM contactDetails 
+            WHERE _createdBy=<cfqueryparam value='#session.userId#' cfsqltype="cf_sql_varchar">;
+        </cfquery>
+
+        <cfquery name="qryNumberInContacts" >
+            SELECT phoneNumber,contactId
+            FROM contactDetails 
+            WHERE _createdBy=<cfqueryparam value='#session.userId#' cfsqltype="cf_sql_varchar">;
+        </cfquery>
+
+<!---         Check your email --->
+        <cfif qryEmailOfUser.email EQ arguments.email>
+            <cfset local.structResult["emailError"] = "You cant use your own email">
+
+<!---         checks email in other contacts --->
+        <cfelseif qryEmailInContacts.emailId EQ arguments.email AND qryEmailInContacts.contactId NEQ arguments.contactId>
+            <cfset local.structResult["emailError"] = "Email already exists for another contact">
+        <cfelse>
+            <cfset local.structResult["emailSuccess"] = "true">
+        </cfif>
+
+<!---         Check phone number --->
+        <cfif qryNumberInContacts.phoneNumber EQ arguments.phoneNumber AND qryNumberInContacts.contactId NEQ arguments.contactId>
+            <cfset local.structResult["phoneError"] = "Pnone number already exists for another contact">
+        <cfelse>
+            <cfset local.structResult["phoneSuccess"] = "true">
+        </cfif>
+
+        <cfreturn local.structResult>
     </cffunction>
 </cfcomponent>

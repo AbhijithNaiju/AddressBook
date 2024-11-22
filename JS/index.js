@@ -41,22 +41,28 @@ function signUpValidate(event)
 
     printOutput("emailError",emailError);
 
-    if(emailError == "") {
+    if(emailError == "" || userNameError == "") {
         $.ajax({
             type:"POST",
-            url:"./components/addressBook.cfc?method=emailExists",
-            data: {email:email},
+            url:"./components/addressBook.cfc?method=emailAndUNameCheck",
+            data: {email:email,userName:userName},
             success: function(result) {
-                if(result) {
-                    printOutput("emailError","Email already exists");
-                    document.getElementById("submitButton").type="button";
+                resultJson=JSON.parse(result);
+                if(resultJson.phoneSuccess && resultJson.emailSuccess) {
+                    document.getElementById("submitButton").type="submit";
                 }
                 else {
-                    document.getElementById("submitButton").type="submit";
+                    if(resultJson.emailError){
+                        printOutput("emailError",resultJson.emailError);
+                    }if(resultJson.userNameError){
+                        printOutput("userNameError",resultJson.userNameError);
+                    }
+                    document.getElementById("submitButton").type="button";
                 }
             },
             error:function() {
-                printOutput("emailError","Error");
+                printOutput("emailError","Error occured");
+                printOutput("userNameError","Error occured");
                 document.getElementById("submitButton").type="button";
             }
         });
@@ -74,26 +80,6 @@ function signUpValidate(event)
 
     printOutput("userNameError",userNameError);
 
-    if(userNameError == "") {
-        $.ajax({
-            type:"POST",
-            url:"./components/addressBook.cfc?method=userNameExists",
-            data: {userName:userName},
-            success: function(result) {
-                if(result) {
-                    printOutput("userNameError","Username already exists");
-                    document.getElementById("submitButton").type="button";
-                }
-                else {
-                    document.getElementById("submitButton").type="submit";
-                }
-            },
-            error:function() {
-                printOutput("userNameError","Error");
-                document.getElementById("submitButton").type="button";
-            }
-        });
-    }
     if(password.trim().length==0){
 		passwordError = "Please enter the password";
 	}

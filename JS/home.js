@@ -135,22 +135,26 @@ function formValidate(event)
     let country =  document.getElementById("country").value;
     let phoneNumber =  document.getElementById("phoneNumber").value;
     let email =  document.getElementById("email").value;
+    let profileImage = document.getElementById("profileImage").value;
+    let submitButtonId = document.getElementById("modalFormSubmitButton").value;
 
+    let allowedExtentions=["jpg","jpeg","png"];
+    let fileExtension = String(/[^.]+$/.exec(profileImage)).toLowerCase();
 	let email_match=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    let titleError = "";
-    let firstNameError = "";
-    let lastNameError = "";
-    let genderError = "";
-    let dateOfBirthError = "";
-    let addressError = "";
-    let streetNameError = "";
-    let pincodeError = "";
-    let districtError = "";
-    let stateError = "";
-    let countryError = "";
-    let phoneNumberError = "";
-    let emailError = "";
+    var titleError = "";
+    var firstNameError = "";
+    var lastNameError = "";
+    var genderError = "";
+    var dateOfBirthError = "";
+    var addressError = "";
+    var streetNameError = "";
+    var pincodeError = "";
+    var districtError = "";
+    var stateError = "";
+    var countryError = "";
+    var phoneNumberError = "";
+    var emailError = "";
 
     if(title.trim().length==0)
     {
@@ -239,6 +243,17 @@ function formValidate(event)
     }
     printOutput("phoneNumberError",phoneNumberError);
 
+
+    if(!profileImage || allowedExtentions.includes(fileExtension))
+    {
+        profileImageError = "";
+    }
+    else
+    {
+        profileImageError = "Only JPG,JPEG and PNG files are allowed";
+    }
+    printOutput("profileImageError",profileImageError);
+
     if(email.trim().length==0)
     {
         emailError = "Please enter the email";
@@ -248,19 +263,48 @@ function formValidate(event)
     }
     printOutput("emailError",emailError);
 
-    if(titleError  != "" ||
-       firstNameError  != "" ||
-       lastNameError  != "" ||
-       genderError  != "" ||
-       dateOfBirthError  != "" ||
-       addressError  != "" ||
-       streetNameError != "" ||
-       pincodeError != "" ||
-       districtError != "" ||
-       stateError != "" ||
-       countryError != "" ||
-       phoneNumberError != "" ||
-       emailError){
+    if(emailError == "" || phoneNumberError == "") {
+        $.ajax({
+            type:"POST",
+            url:"./components/addressBook.cfc?method=checkEmailAndNumberExist",
+            data: {email:email,phoneNumber:phoneNumber,contactId:submitButtonId},
+            success: function(result) {
+                resultJson=JSON.parse(result);
+                if(resultJson.phoneSuccess && resultJson.emailSuccess) {
+                    document.getElementById("modalFormSubmitButton").type="submit";
+                }
+                else {
+                    document.getElementById("modalFormSubmitButton").type="button";
+                    
+                    if(resultJson.emailError)
+                        printOutput("emailError",resultJson.emailError);
+                    if(resultJson.phoneError)
+                        printOutput("phoneNumberError",resultJson.phoneError);
+                }
+            },
+            error:function() {
+                printOutput("emailError","Error occured");
+                printOutput("phoneNumberError","Error occured");
+                document.getElementById("modalFormSubmitButton").type="button";
+            }
+        });
+    }
+
+    if( titleError  != "" ||
+        firstNameError  != "" ||
+        lastNameError  != "" ||
+        genderError  != "" ||
+        dateOfBirthError  != "" ||
+        addressError  != "" ||
+        streetNameError != "" ||
+        pincodeError != "" ||
+        districtError != "" ||
+        stateError != "" ||
+        countryError != "" ||
+        phoneNumberError != "" ||
+        emailError != "" ||
+        profileImageError != "")
+        {
             event.preventDefault();
         }
 }
