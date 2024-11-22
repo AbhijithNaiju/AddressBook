@@ -1,15 +1,22 @@
 # AddressBook
 
-* signup complete
-* login complete
+* signup complete ✔
+* login complete ✔
 
-* Add contact and edit contact should update contents in home without refreshing
-* default image option
-
--- Delete changed or deleted images from server
--- print options
-
+* Add contact and edit contact should update contents in home without refreshing ✔
+* default image option ✔
+* Delete changed or deleted images from server ✔
+* Directory existence checking ✔
 
 
+1 - print options
 
-** change query checking in qn 28 to queryname.recordcount
+    --> cfdocument to create pdf
+
+2 - form resubmission ?
+
+3 - image validation in contact add
+
+4 - directory exists in expand paths
+
+*** change query checking in qn 28 to queryname.recordcount

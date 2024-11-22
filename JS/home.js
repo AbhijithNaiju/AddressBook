@@ -40,7 +40,14 @@ function openEditModal(editId)
                     $("#country").val(resultJson.country);
                     $("#phoneNumber").val(resultJson.phoneNumber);
                     $("#email").val(resultJson.email);
-                    document.getElementById("profileImageEdit").src = resultJson.profileImage;
+                    if(resultJson.profileImage == "")
+                    {
+                        document.getElementById("profileImageEdit").src = "./Assets/contactPictues/l60Hf.png";
+                    }
+                    else
+                    {
+                        document.getElementById("profileImageEdit").src = resultJson.profileImage;
+                    }
                     
                     $("#modalFormSubmitButton").val(editId.value);
                 }
@@ -77,7 +84,12 @@ function openViewModal(viewId)
                     a=jsonKeys[i];
                     if(a == "profileImage")
                     {
-                        document.getElementById("viewProfileImage").src = resultJson[a];
+                        if(resultJson[a] == ""){
+                            document.getElementById("viewProfileImage").src = "./Assets/contactPictues/l60Hf.png";
+                        }
+                        else{
+                            document.getElementById("viewProfileImage").src = resultJson[a];
+                        }
                     }
                     else
                     {
@@ -106,7 +118,6 @@ function openViewModal(viewId)
 function closeViewModal()
 {
     document.getElementById("viewModal").classList.add("display_none");
-
 }
 
 function formValidate(event)
@@ -279,7 +290,9 @@ function deleteContact(deleteId)
                 success: function(result) {
                     if(result)
                     {
-                        document.getElementById(deleteId.value).style.display="none";
+                        // document.getElementById(deleteId.value).style.display="none";
+                        document.getElementById(deleteId.value).remove();
+
                     }
                 },
                 error:function()
@@ -288,4 +301,57 @@ function deleteContact(deleteId)
                 }
             });
         }
+}
+
+function createSpreadsheet()
+{
+    var fileName = prompt("Enter the name for spreadsheet file");
+    if(fileName == "" || fileName === null)
+    {
+        alert("Please enter any filename")
+    }
+    else
+    {
+        $.ajax({
+            type:"POST",
+            url:"./Components/addressBook.cfc?method=createSpreadsheet",
+            data:{inputFileName:fileName},
+            success: function(result) {
+                if(result == 'true')
+                {
+                    alert("Spreadsheet downloaded")
+                }
+                else
+                {
+                    alert("Filename already exists")
+                }
+            },
+            error:function()
+            {
+                alert("An error occured")
+            }
+        });
+    }
+}
+function printPdf()
+{
+    $.ajax({
+        type:"POST",
+        url:"./Components/addressBook.cfc?method=createSpreadsheet",
+        data:{inputFileName:fileName},
+        success: function(result) {
+            if(result == 'true')
+            {
+                alert("Spreadsheet downloaded")
+            }
+            else
+            {
+                alert("Filename already exists")
+            }
+        },
+        error:function()
+        {
+            alert("An error occured")
+        }
+    });
 }
