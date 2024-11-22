@@ -9,16 +9,10 @@
 
         <cfset local.excludedPages=["/AddressBook/login.cfm","/AddressBook/signup.cfm"]>
 
-        <cfif arrayFind(local.excludedPages,arguments.requestedpage)>
-            <cfinclude  template="#arguments.requestedpage#">
-        <cfelse>
-
-            <cfif structKeyExists(session, "userId")>
+        <cfif arrayFind(local.excludedPages,arguments.requestedpage) OR structKeyExists(session, "userId")>
                 <cfinclude  template="#arguments.requestedpage#" >
-            <cfelse>
-                <cflocation  url="login.cfm">
-            </cfif>
-
+        <cfelse>
+                <cfinclude  template="login.cfm" >
         </cfif>
 
     </cffunction> 
