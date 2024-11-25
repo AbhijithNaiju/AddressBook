@@ -41,27 +41,6 @@ function signUpValidate(event)
 
     printOutput("emailError",emailError);
 
-    if(emailError == "") {
-        $.ajax({
-            type:"POST",
-            url:"./components/addressBook.cfc?method=emailExists",
-            data: {email:email},
-            success: function(result) {
-                if(result) {
-                    printOutput("emailError","Email already exists");
-                    document.getElementById("submitButton").type="button";
-                }
-                else {
-                    document.getElementById("submitButton").type="submit";
-                }
-            },
-            error:function() {
-                printOutput("emailError","Error");
-                document.getElementById("submitButton").type="button";
-            }
-        });
-    }
-
 	if(userName.trim().length==0){
 		userNameError= "Please enter your user name";
 	}
@@ -74,26 +53,6 @@ function signUpValidate(event)
 
     printOutput("userNameError",userNameError);
 
-    if(userNameError == "") {
-        $.ajax({
-            type:"POST",
-            url:"./components/addressBook.cfc?method=userNameExists",
-            data: {userName:userName},
-            success: function(result) {
-                if(result) {
-                    printOutput("userNameError","Username already exists");
-                    document.getElementById("submitButton").type="button";
-                }
-                else {
-                    document.getElementById("submitButton").type="submit";
-                }
-            },
-            error:function() {
-                printOutput("userNameError","Error");
-                document.getElementById("submitButton").type="button";
-            }
-        });
-    }
     if(password.trim().length==0){
 		passwordError = "Please enter the password";
 	}
@@ -142,6 +101,36 @@ function signUpValidate(event)
     printOutput("profileImageError",profileImageError);
     if(firstNameError != "" || emailError != ""|| userNameError != ""|| passwordError != ""|| confirmPasswordError != ""|| profileImageError != ""){
         event.preventDefault();
+    }
+
+    if(emailError == "" || userNameError == "") {
+        $.ajax({
+            type:"POST",
+            url:"./components/addressBook.cfc?method=emailAndUNameCheck",
+            data: {email:email,userName:userName},
+            success: function(result) {
+                resultJson=JSON.parse(result);
+                if(resultJson.phoneSuccess && resultJson.emailSuccess) {
+                    // document.getElementById("submitButton").type="submit";
+                    alert(submit)
+                }
+                else {
+                    document.getElementById("submitButton").type="button";
+                    event.preventDefault();
+                    alert("test");
+                    if(resultJson.emailError){
+                        printOutput("emailError",resultJson.emailError);
+                    }if(resultJson.userNameError){
+                        printOutput("userNameError",resultJson.userNameError);
+                    }
+                }
+            },
+            error:function() {
+                printOutput("emailError","Error occured");
+                printOutput("userNameError","Error occured");
+                document.getElementById("submitButton").type="button";
+            }
+        });
     }
 
 }
