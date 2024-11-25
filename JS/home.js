@@ -118,6 +118,7 @@ function openViewModal(viewId)
 function closeViewModal()
 {
     document.getElementById("viewModal").classList.add("display_none");
+    $('.error_message').text('');
 }
 
 function formValidate(event)
@@ -292,7 +293,7 @@ function formValidate(event)
             }
         });
     }
-
+    
     if( titleError  != "" ||
         firstNameError  != "" ||
         lastNameError  != "" ||

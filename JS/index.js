@@ -116,7 +116,7 @@ function signUpValidate(event)
                 else {
                     document.getElementById("submitButton").type="button";
                     event.preventDefault();
-                    alert("Email or username already exists");
+                    // alert("Email or username already exists");
                     if(resultJson.emailError){
                         printOutput("emailError",resultJson.emailError);
                     }if(resultJson.userNameError){

@@ -543,8 +543,8 @@
         <cfset local.structResult = structNew()>
 
         <cfinclude  template="../printDocument.cfm">
-        <cfset local.structResult["pdfUrl"] = "Assets/pdfFiles/contacts.pdf">
-        <cfset local.structResult["pdfName"] = "contacts.pdf">
+        <cfset local.structResult["pdfUrl"] = "#local.folderName##local.filename#">
+        <cfset local.structResult["pdfName"] = "#local.filename#">
 
         <cfoutput>
             <cfoutput>#serializeJSON(local.structResult)#</cfoutput>  

@@ -34,7 +34,7 @@
             </div>
             <div class="home_body">
                 <div class="home_header">
-                    <div class="text-center text-danger d-flex align-items-center m-auto fw-bold">
+                    <div class="text-center text-danger d-flex align-items-center m-auto error_message">
                         <cfif structKeyExists(form, "addContact")>
 
                             <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>

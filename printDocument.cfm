@@ -5,8 +5,8 @@
 <cfif NOT directoryExists(expandPath("../#local.folderName#"))>
     <cfset directoryCreate(expandPath("../#local.folderName#"))>
 </cfif>
-
-<cfdocument  format="PDF" filename="#local.folderName#/contacts.pdf" overwrite="true">
+<cfset local.filename = "/contacts.pdf">
+<cfdocument  format="PDF" filename="#local.folderName##local.filename#" overwrite="true">
     <table border="2" >
         <tr>
             <th>Image</th>

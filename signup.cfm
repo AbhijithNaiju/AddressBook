@@ -37,7 +37,7 @@
                     <div class="form_left">
                         <img src="./Assets/images/contact_book_logo.png" alt="Image not found">
                     </div>
-                    <form method="post" class="form_right" enctype="multipart/form-data">
+                    <form method="post" class="form_right signup_form" enctype="multipart/form-data">
 
                         <div class="form_heading">
                             SIGN UP
@@ -64,7 +64,7 @@
                         </div>
                         <div id="profileImageError" class="error_message"></div>
 
-                        <input type="submit" onclick="signUpValidate(event)" id = "submitButton" name="submitButton"  class="submit_btn" value="REGISTER">
+                        <input type="button" onclick="signUpValidate(event)" id = "submitButton" name="submitButton"  class="submit_btn" value="REGISTER">
 
                         <div class="register_link">
                             Already have an account? <a href="login.cfm">Login</a> 
