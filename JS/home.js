@@ -118,6 +118,7 @@ function openViewModal(viewId)
 function closeViewModal()
 {
     document.getElementById("viewModal").classList.add("display_none");
+    $('.error_message').text('');
 }
 
 function formValidate(event)
@@ -275,10 +276,12 @@ function formValidate(event)
                 }
                 else {
                     document.getElementById("modalFormSubmitButton").type="button";
-                    event.preventDefault();
-                    alert("Email and phone number can't repeat")
-                    if(resultJson.emailError)
+                    if(resultJson.emailError){
                         printOutput("emailError",resultJson.emailError);
+                        alert(resultJson.emailError);
+                    }
+                    else if(resultJson.phoneError)
+                        alert(resultJson.phoneError);
                     if(resultJson.phoneError)
                         printOutput("phoneNumberError",resultJson.phoneError);
                 }
@@ -290,7 +293,7 @@ function formValidate(event)
             }
         });
     }
-
+    
     if( titleError  != "" ||
         firstNameError  != "" ||
         lastNameError  != "" ||
@@ -350,25 +353,43 @@ function deleteContact(deleteId)
 
 function createSpreadsheet()
 {
-    var fileName = prompt("Enter the name for spreadsheet file");
-    if(fileName == "" || fileName === null)
-    {
-        alert("Please enter any filename")
-    }
-    else
+    if(confirm("Download as spredsheet"))
+    $.ajax({
+        type:"POST",
+        url:"./Components/addressBook.cfc?method=createSpreadsheet",
+        success: function(result) {
+            resultJson=JSON.parse(result);
+            if(resultJson.spreadsheetUrl)
+            {
+                downloadFile(resultJson.spreadsheetUrl,resultJson.spreadsheetName)
+            }
+            else
+            {
+                alert("An Error occured")
+            }
+        },
+        error:function()
+        {
+            alert("An error occured")
+        }
+    });
+}
+function printPdf()
+{
+    if(confirm("Dowload as pdf"))
     {
         $.ajax({
             type:"POST",
-            url:"./Components/addressBook.cfc?method=createSpreadsheet",
-            data:{inputFileName:fileName},
+            url:"./Components/addressBook.cfc?method=createPdf",
             success: function(result) {
-                if(result == 'true')
+                resultJson=JSON.parse(result);
+                if(resultJson.pdfUrl)
                 {
-                    alert("Spreadsheet downloaded")
+                    downloadFile(resultJson.pdfUrl,resultJson.pdfName)
                 }
                 else
                 {
-                    alert("Filename already exists")
+                    alert("An Error occured");
                 }
             },
             error:function()
@@ -378,20 +399,22 @@ function createSpreadsheet()
         });
     }
 }
-function printPdf()
-{
-    if(!confirm("Dowload as pdf"))
-    {
-        event.preventDefault();
-    }
-}
 function printPage()
 {
-    var bodyDiv=document.body.innerHTML;
-    var printDiv=document.getElementById("contactList").innerHTML;
-    document.body.innerHTML=printDiv;
+    var bodyDiv = document.body.innerHTML;
+    var printDiv = document.getElementById("contactList").innerHTML;
+    document.body.innerHTML = printDiv;
     $(".contactButtons").css({"display":"none"});
     window.print();
-    document.body.innerHTML=bodyDiv;
-    $(".contactButtons").show;
+    document.body.innerHTML = bodyDiv;
+}
+
+function downloadFile(fileUrl, fileName) 
+{
+    var spreadsheetlink = document.createElement("a");
+    spreadsheetlink.setAttribute('download', fileName);
+    spreadsheetlink.href = fileUrl;
+    document.body.appendChild(spreadsheetlink);
+    spreadsheetlink.click();
+    spreadsheetlink.remove();
 }

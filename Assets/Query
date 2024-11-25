@@ -2,6 +2,4 @@ Create database addressBook;
 
 create table userTable(userId uniqueidentifier default newid(),fullName varchar(100),email varchar(100) unique,userName varchar(100) unique,password varchar(200),profileImage varchar(200))
 
-
-
 create table contactDetails(contactId uniqueidentifier default newid(),title varchar(20),firstName varchar(50),lastName varchar(50),gender varchar(20),DOB date,profileImage varchar(200),address varchar(100),streetName varchar(50),district varchar(50),state varchar(50),country varchar(50),pincode varchar(50),emailId varchar(100),phoneNumber varchar(100),_createdBy varchar(200),_createdOn date,_updatedBy varchar(200),_updatedOn date)
