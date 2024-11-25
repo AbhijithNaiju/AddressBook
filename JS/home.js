@@ -400,13 +400,12 @@ function printPdf()
 }
 function printPage()
 {
-    var bodyDiv=document.body.innerHTML;
-    var printDiv=document.getElementById("contactList").innerHTML;
-    document.body.innerHTML=printDiv;
+    var bodyDiv = document.body.innerHTML;
+    var printDiv = document.getElementById("contactList").innerHTML;
+    document.body.innerHTML = printDiv;
     $(".contactButtons").css({"display":"none"});
     window.print();
-    document.body.innerHTML=bodyDiv;
-    $(".contactButtons").show;
+    document.body.innerHTML = bodyDiv;
 }
 
 function downloadFile(fileUrl, fileName) 

@@ -121,7 +121,7 @@
                                     <div class="list_profile">
                                         <cfif local.allContactList.profileImage EQ "">
                                             <cfset local.contactProfileImage = "./Assets/contactPictues/l60Hf.png">
-                                        <cfelse>
+                                          <cfelse>
                                             <cfset local.contactProfileImage = local.allContactList.profileImage>
                                         </cfif>
                                         <img src="#local.contactProfileImage#" alt="Image not found">
