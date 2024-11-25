@@ -6,12 +6,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./style/index.css">
         <link rel="stylesheet" href="./style/home_style.css">
+        <link rel="stylesheet" href="./style/bootstrap-5.3.3-dist/css/bootstrap.min.css">
         <title>Home</title>
     </head>
     <body>
         <cfset local.myObject = createObject("component", "components.addressBook")>
         <cfset local.userdetails = local.myObject.userDetails()>
-        <cfset local.allContactList = local.myObject.getAllContacts()>
         <cfset local.pdfPrintData = local.myObject.getPdfData()>
         <cfset local.uploadDirectory = "./Assets/contactPictues/">
 
@@ -34,11 +34,53 @@
             </div>
             <div class="home_body">
                 <div class="home_header">
-                    <form method="post" class="print_options">
+                    <div class="text-center text-danger d-flex align-items-center m-auto fw-bold">
+                        <cfif structKeyExists(form, "addContact")>
+
+                            <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
+
+                                <cffile action="upload"
+                                        filefield="form.profileImage"
+                                        destination="#expandPath(local.uploadDirectory)#"
+                                        nameconflict="makeunique"
+                                        result="fileDetails">
+                                <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
+                            <cfelse>
+                                <cfset local.imageSrc = "">
+                            </cfif>
+
+                            <cfset local.addContactResult = local.myObject.addContact(form,local.imageSrc)> 
+                            <cfif structKeyExists(local.addContactResult, "error")>
+                                <cfoutput>#local.addContactResult["error"]#</cfoutput>
+                            </cfif>
+
+                        </cfif>
+
+                        <cfif structKeyExists(form, "editContact")>
+
+                            <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
+                            <cffile action="upload"
+                                    filefield="form.profileImage"
+                                    destination="#expandPath(local.uploadDirectory)#"
+                                    nameconflict="makeunique"
+                                    result="fileDetails">
+                            <cfset local.editImageSrc = local.uploadDirectory & fileDetails.serverfile>
+                            <cfelse>
+                                <cfset local.editImageSrc = form.profileDefault>
+                            </cfif>
+                            
+                            <cfset local.editContactResult = local.myObject.editContact(form,local.editImageSrc)> 
+                            <cfif structKeyExists(local.editContactResult, "error")>
+                                <cfoutput>#local.editContactResult["error"]#</cfoutput>
+                            </cfif>
+                        </cfif>
+                        <cfset local.allContactList = local.myObject.getAllContacts()>
+                    </div>
+                    <div class="print_options">
                         <button  name="printPdfBtn" onclick="printPdf()"><img src="./Assets/images/acrobat.png" alt="Image not found"></button>
                         <button type="button" onclick="createSpreadsheet()"><img src="./Assets/images/excel.png" alt="Image not found"></button>
                         <button onclick="printPage()" type="button"><img src="./Assets/images/print.png" alt="Image not found"></button>
-                    </form>
+                    </div>
                 </div>
                 <div class="home_elements">
                     <div class="profile_box">
@@ -105,46 +147,11 @@
                     </div>
                 </div>
 
-                <cfif structKeyExists(form, "addContact")>
-
-                    <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
-
-                        <cffile action="upload"
-                                filefield="form.profileImage"
-                                destination="#expandPath(local.uploadDirectory)#"
-                                nameconflict="makeunique"
-                                result="fileDetails">
-                        <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
-                    <cfelse>
-                        <cfset local.imageSrc = "">
-                    </cfif>
-
-                    <cfset local.addContactResult = local.myObject.addContact(form,local.imageSrc)> 
-
-
-                </cfif>
-
-                <cfif structKeyExists(form, "editContact")>
-
-                    <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
-                    <cffile action="upload"
-                            filefield="form.profileImage"
-                            destination="#expandPath(local.uploadDirectory)#"
-                            nameconflict="makeunique"
-                            result="fileDetails">
-                    <cfset local.editImageSrc = local.uploadDirectory & fileDetails.serverfile>
-                    <cfelse>
-                        <cfset local.editImageSrc = form.profileDefault>
-                    </cfif>
-                    
-                    <cfset local.editContactResult = local.myObject.editContact(form,local.editImageSrc)> 
-                </cfif>
-
             </div>
         </main>
         <div class="edit_modal display_none" id="editModal">
             <div class="edit_form">
-                <form method="post" class="edit_form_body" id="createForm" enctype="multipart/form-data">
+                <form method="post" class="edit_form_body" id="createForm" enctype="multipart/form-data" autocomplete>
                     <div class="modal_heading" id="modalHeading"></div>
 
                     <div class="modal_sub_headng">
@@ -285,57 +292,6 @@
                 </div>
             </div>
         </div>
-        <cfif structKeyExists(form, "printPdfBtn")>
-            <cfdocument  format="PDF" filename="./assets/pdfFiles/contacts.pdf" overwrite="true">
-                <table border="2" >
-                    <tr>
-                        <th>Image</th>
-                        <th> NAME </th>
-                        <th>DOB</th>
-                        <th>ADDRESS</th>
-                        <th>PINCODE</th>
-                        <th>PHONE NUMBER</th>
-                        <th>EMAIL ID</th>
-                    </tr>
-                    <cfoutput>
-                        <cfloop query="local.pdfPrintData">
-                            <cfif local.pdfPrintData.profileImage EQ "">
-                                <cfset local.contactProfileImage = "./Assets/contactPictues/l60Hf.png">
-                            <cfelse>
-                                <cfset local.contactProfileImage = local.pdfPrintData.profileImage>
-                            </cfif>
-                            <tr>
-                                <td>
-                                    <img src="#local.contactProfileImage#" alt="Image not found" width="100" height="100">
-                                </td>
-                                <td>
-                                    #local.pdfPrintData.firstName# #local.pdfPrintData.lastName#
-                                </td>
-                                <td>
-                                    #local.pdfPrintData.DOB#
-                                </td>
-                                <td>
-                                    #local.pdfPrintData.address#,
-                                    #local.pdfPrintData.streetName#,
-                                    #local.pdfPrintData.district#,
-                                    #local.pdfPrintData.STATE#,
-                                    #local.pdfPrintData.country#
-                                </td>
-                                <td>
-                                    #local.pdfPrintData.pincode#
-                                </td>
-                                <td>
-                                    #local.pdfPrintData.phoneNumber#
-                                </td>
-                                <td>
-                                    #local.pdfPrintData.emailId#
-                                </td>
-                            </tr>
-                        </cfloop>
-                    </cfoutput>
-                </table>
-            </cfdocument>
-        </cfif>
         <script src="./JS/Jquery/jquery-3.7.1.js"></script>
         <script src="./JS/home.js"></script>
     </body>

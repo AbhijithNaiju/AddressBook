@@ -111,13 +111,12 @@ function signUpValidate(event)
             success: function(result) {
                 resultJson=JSON.parse(result);
                 if(resultJson.phoneSuccess && resultJson.emailSuccess) {
-                    // document.getElementById("submitButton").type="submit";
-                    alert(submit)
+                    document.getElementById("submitButton").type="submit";
                 }
                 else {
                     document.getElementById("submitButton").type="button";
                     event.preventDefault();
-                    alert("test");
+                    alert("Email or username already exists");
                     if(resultJson.emailError){
                         printOutput("emailError",resultJson.emailError);
                     }if(resultJson.userNameError){

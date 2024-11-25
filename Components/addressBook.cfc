@@ -157,8 +157,8 @@
 
         <cfset local.structResult = structNew()>
         <cfset local.createDate = dateformat(now(),"yyyy-mm-dd")>
-
         <cfset local.checkEmailResult = checkEmailAndNumberExist(arguments.structForm["email"],arguments.structForm["phoneNumber"])>
+
         <cfif structKeyExists(local.checkEmailResult, "phoneError") OR structKeyExists(local.checkEmailResult, "emailError")>
             <cfset local.structResult["error"] = "Error email or phone alrady exists">
         <cfelse>
@@ -219,50 +219,57 @@
         <cfargument  name="structForm" type="struct">
         <cfargument  name="imageLink" type="string">
 
-        <!--- getting imagelink to delete --->
-        <cfquery name = "getDeleteImage">
-            SELECT profileImage
-            FROM contactDetails
-            WHERE contactId = < cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar" >;
-        </cfquery>
-
         <cfset local.structResult = structNew()>
         <cfset local.updateDate = dateformat(now(),"yyyy-mm-dd")>
+        <cfset local.checkEmailResult = checkEmailAndNumberExist(arguments.structForm["email"],arguments.structForm["phoneNumber"],arguments.structForm["editContact"])>
 
-        <cftry>
-            <cfquery>
-                UPDATE contactDetails
-                SET title = < cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar" >
-                    ,firstName = < cfqueryparam value = '#arguments.structForm["firstName"]#' cfsqltype = "cf_sql_varchar" >
-                    ,lastName = < cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar" >
-                    ,gender = < cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar" >
-                    ,DOB = < cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date" >
-                    ,profileImage = < cfqueryparam value = '#arguments.imageLink#' cfsqltype = "cf_sql_varchar" >
-                    ,address = < cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar" >
-                    ,streetName = < cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar" >
-                    ,district = < cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar" >
-                    ,STATE = < cfqueryparam value = '#arguments.structForm["state"]#' cfsqltype = "cf_sql_varchar" >
-                    ,country = < cfqueryparam value = '#arguments.structForm["country"]#' cfsqltype = "cf_sql_varchar" >
-                    ,pincode = < cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar" >
-                    ,emailId = < cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar" >
-                    ,phoneNumber = < cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar" >
-                    ,_updatedBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >
-                    ,_updatedOn = < cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date" >
+        <cfif structKeyExists(local.checkEmailResult, "phoneError") OR structKeyExists(local.checkEmailResult, "emailError")>
+            <cfset local.structResult["error"] = "Error email or phone already exists">
+        <cfelse>
+
+            <!--- getting imagelink to delete --->
+            <cfquery name = "getDeleteImage">
+                SELECT profileImage
+                FROM contactDetails
                 WHERE contactId = < cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar" >;
             </cfquery>
 
-            <!--- Deleting old image if new one is added --->
-            <cfif getDeleteImage.profileImage NEQ arguments.imageLink>
-                <cfset local.absolutePath = expandPath("../#getDeleteImage.profileImage#")>
-                <cfif FileExists(local.absolutePath)>
-                    <cffile  action = "delete" file = "#local.absolutePath#">
-                </cfif>
-            </cfif>
 
-        <cfcatch type="exception">
-                <cfset local.structResult["Error"] = "Error occured">
-        </cfcatch>
-        </cftry>
+            <cftry>
+                <cfquery>
+                    UPDATE contactDetails
+                    SET title = < cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar" >
+                        ,firstName = < cfqueryparam value = '#arguments.structForm["firstName"]#' cfsqltype = "cf_sql_varchar" >
+                        ,lastName = < cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar" >
+                        ,gender = < cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar" >
+                        ,DOB = < cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date" >
+                        ,profileImage = < cfqueryparam value = '#arguments.imageLink#' cfsqltype = "cf_sql_varchar" >
+                        ,address = < cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar" >
+                        ,streetName = < cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar" >
+                        ,district = < cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar" >
+                        ,STATE = < cfqueryparam value = '#arguments.structForm["state"]#' cfsqltype = "cf_sql_varchar" >
+                        ,country = < cfqueryparam value = '#arguments.structForm["country"]#' cfsqltype = "cf_sql_varchar" >
+                        ,pincode = < cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar" >
+                        ,emailId = < cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar" >
+                        ,phoneNumber = < cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar" >
+                        ,_updatedBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >
+                        ,_updatedOn = < cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date" >
+                    WHERE contactId = < cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar" >;
+                </cfquery>
+
+                <!--- Deleting old image if new one is added --->
+                <cfif getDeleteImage.profileImage NEQ arguments.imageLink>
+                    <cfset local.absolutePath = expandPath("../#getDeleteImage.profileImage#")>
+                    <cfif FileExists(local.absolutePath)>
+                        <cffile  action = "delete" file = "#local.absolutePath#">
+                    </cfif>
+                </cfif>
+
+            <cfcatch type="exception">
+                    <cfset local.structResult["Error"] = "Error occured">
+            </cfcatch>
+            </cftry>
+        </cfif>
 
         <cfreturn local.structResult>
     </cffunction>
@@ -391,19 +398,8 @@
         <cfreturn local.structResult>
     </cffunction>
 
-<!---     **** print page as pdf not working **** --->
-    <cffunction  name="printPage">
-        <cfhtmltopdf encryption="AES_128"
-                     source = "C:\ColdFusion2021\cfusion\wwwroot\AddressBook\printDocument.cfm"
-                     permissions="AllowPrinting" 
-                     destination="usage_example.pdf" 
-                     overwrite="yes">
-        </cfhtmltopdf>
-    </cffunction>
-
 <!---     Creating spreadsheet with user defiined name --->
     <cffunction  name="createSpreadsheet" access="remote" returnformat="json">
-        <cfargument  name="inputFileName" type="string">
 
         <cfset local.structResult = structNew()>
 
@@ -424,8 +420,13 @@
             WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
 
+        <cfset local.folderName = "../Assets/spreadsheetFiles/">
+        <cfif NOT directoryExists(expandPath(local.folderName))>
+            <cfset directoryCreate(expandPath(local.folderName))>
+        </cfif>
 
-        <cfset local.folderName = "c:\Users\Abhijith\Downloads\">
+        <cfset local.filename = "contacts.xls">
+        <cfset local.filePath = local.folderName  & local.filename>
         <cfset local.sheet = spreadsheetNew("name")>
 
         <cfset spreadsheetAddRow(local.sheet,'First Name,
@@ -443,24 +444,23 @@
         <cfset spreadsheetFormatRow(local.sheet, {bold=true}, 1)>
         <cfset spreadsheetAddRows(local.sheet, xlsData)>
 
-        <cfset local.fileName = local.folderName & arguments.inputFileName & ".xls">
+        <cfspreadsheet  action="write"  
+                        filename="#expandpath(local.filePath)#" 
+                        name="local.sheet"
+                        overwrite="true">
+        <cfset local.structResult["spreadsheetUrl"] = "Assets/spreadsheetFiles/" & local.filename>
+        <cfset local.structResult["spreadsheetName"] = local.filename>
 
-        <cfif  FileExists(local.fileName)>
-            <cfset local.structResult["error"] = "File already exists">
-        <cfelse>
-            <cfspreadsheet  action="write"  
-                            filename="#local.fileName#" 
-                            name="local.sheet"
-                            overwrite=true>
-            <cfreturn true>
-        </cfif>
+
+    <cfreturn local.structResult>
+
     </cffunction>
 
 <!---     Checking esistence of email and phonenumber before create or add contact --->
     <cffunction  name="checkEmailAndNumberExist" returnformat="JSON" access="remote">
         <cfargument  name="email" type="string" default="">
         <cfargument  name="phoneNumber" type="string" default="">
-        <cfargument  name="contactId" type="string" default="00000000-0000-0000-0000-000000000000">
+        <cfargument  name="contactId" type="string" default="">
 
         <cfset local.structResult = structNew()>
 
@@ -513,7 +513,7 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="getPdfData" access="remote" returnformat="json">
+    <cffunction  name="getPdfData">
         <cfargument  name="inputFileName" type="string">
 
         <cfset local.structResult = structNew()>
@@ -537,5 +537,18 @@
         </cfquery>
 
         <cfreturn qryPdfData>
+    </cffunction>
+
+    <cffunction  name="createPdf"  access="remote" returnformat="json">
+        <cfset local.structResult = structNew()>
+
+        <cfinclude  template="../printDocument.cfm">
+        <cfset local.structResult["pdfUrl"] = "Assets/pdfFiles/contacts.pdf">
+        <cfset local.structResult["pdfName"] = "contacts.pdf">
+
+        <cfoutput>
+            <cfoutput>#serializeJSON(local.structResult)#</cfoutput>  
+        </cfoutput>
+<!---         <cfreturn local.structResult> --->
     </cffunction>
 </cfcomponent>
