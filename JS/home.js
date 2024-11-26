@@ -382,6 +382,7 @@ function printPdf()
             type:"POST",
             url:"./Components/addressBook.cfc?method=createPdf",
             success: function(result) {
+                alert(result)
                 resultJson=JSON.parse(result);
                 if(resultJson.pdfUrl)
                 {

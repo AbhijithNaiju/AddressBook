@@ -14,6 +14,8 @@ function signUpValidate(event)
 	let email_match=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 	let name_check=/[^a-zA-Z0-9\s]/;
 	let match_space=/\s/;
+    var passwordMatchSpecial=/[^a-zA-Z0-9]/;
+	var passwordMatchDigit=/[0-9]/;
     let allowedExtentions=["jpg","jpeg","png"];
 
     var firstNameError = "";
@@ -22,6 +24,31 @@ function signUpValidate(event)
     var passwordError = "";
     var confirmPasswordError = "";
     var profileImageError = "";
+
+    $.ajax({
+        type:"POST",
+        url:"./components/addressBook.cfc?method=emailAndUNameCheck",
+        data: {email:email,userName:userName},
+        success: function(result) {
+            resultJson=JSON.parse(result);
+            if(resultJson.userNameSuccess && resultJson.emailSuccess) {
+                document.getElementById("submitButton").type="submit";
+            }
+            else {
+                document.getElementById("submitButton").type="button";
+                if(resultJson.emailError){
+                    printOutput("emailError",resultJson.emailError);
+                }if(resultJson.userNameError){
+                    printOutput("userNameError",resultJson.userNameError);
+                }
+            }
+        },
+        error:function() {
+            printOutput("emailError","Error occured");
+            printOutput("userNameError","Error occured");
+            document.getElementById("submitButton").type="button";
+        }
+    });
 
     if(firstName.trim().length==0) {
         firstNameError="Please enter your first name";
@@ -62,9 +89,14 @@ function signUpValidate(event)
 	else if(password.length<8){
 		passwordError = "Password must be 8 charectors long";
 	}
-	else{
-		passwordError = "";
-	}
+	else if(!passwordMatchSpecial.test(password))
+    {
+        passwordError = "Password must contain 1 special charector";	
+    }
+    else if(!passwordMatchDigit.test(password))
+    {
+        passwordError = "Password must contain 1 digit";	
+    }
 
     printOutput("passwordError",passwordError);
     
@@ -101,35 +133,6 @@ function signUpValidate(event)
     printOutput("profileImageError",profileImageError);
     if(firstNameError != "" || emailError != ""|| userNameError != ""|| passwordError != ""|| confirmPasswordError != ""|| profileImageError != ""){
         event.preventDefault();
-    }
-
-    if(emailError == "" || userNameError == "") {
-        $.ajax({
-            type:"POST",
-            url:"./components/addressBook.cfc?method=emailAndUNameCheck",
-            data: {email:email,userName:userName},
-            success: function(result) {
-                resultJson=JSON.parse(result);
-                if(resultJson.phoneSuccess && resultJson.emailSuccess) {
-                    document.getElementById("submitButton").type="submit";
-                }
-                else {
-                    document.getElementById("submitButton").type="button";
-                    event.preventDefault();
-                    // alert("Email or username already exists");
-                    if(resultJson.emailError){
-                        printOutput("emailError",resultJson.emailError);
-                    }if(resultJson.userNameError){
-                        printOutput("userNameError",resultJson.userNameError);
-                    }
-                }
-            },
-            error:function() {
-                printOutput("emailError","Error occured");
-                printOutput("userNameError","Error occured");
-                document.getElementById("submitButton").type="button";
-            }
-        });
     }
 
 }
