@@ -133,6 +133,7 @@
     <cffunction  name="logOut"  access="remote">
 
         <cfset structClear(session)>
+        <cflogout>
 
         <cfreturn true>
     </cffunction>
@@ -550,5 +551,18 @@
             <cfoutput>#serializeJSON(local.structResult)#</cfoutput>  
         </cfoutput>
 <!---         <cfreturn local.structResult> --->
+    </cffunction>
+
+    <cffunction  name="ssoGoogle">
+
+        <cflogin>
+            <cfoauth
+            type = "google"
+            result = "oauthResult"
+            redirecturi = "http://addressbook.org/login.cfm" >
+            <cfloginuser name = "#oauthResult.other.username#" password = "#oauthResult.access_token#" roles = "user"/>
+        </cflogin>
+        
+        <cflocation url="http://addressbook.org/home.cfm" >
     </cffunction>
 </cfcomponent>

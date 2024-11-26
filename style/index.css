@@ -150,6 +150,11 @@ body
     width: 50px;
     margin: 20px 0px;
 }
+.sign_options button
+{
+    border: none;
+    background: none;
+}
 .register_link
 {
     font-size: 14px;

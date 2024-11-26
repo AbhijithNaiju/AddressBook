@@ -64,7 +64,7 @@
                         </div>
                         <div id="profileImageError" class="error_message"></div>
 
-                        <input type="button" onclick="signUpValidate(event)" id = "submitButton" name="submitButton"  class="submit_btn" value="REGISTER">
+                        <input type="submit" onclick="signUpValidate(event)" id = "submitButton" name="submitButton"  class="submit_btn" value="REGISTER">
 
                         <div class="register_link">
                             Already have an account? <a href="login.cfm">Login</a> 
