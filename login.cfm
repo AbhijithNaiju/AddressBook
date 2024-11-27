@@ -9,6 +9,7 @@
         <title>Login</title>
     </head>
     <body>
+        <cfset local.myObject = createObject("component","components.addressBook")>
         <main class="main">
             <div class="header">
                 <a href="" class="logo">
@@ -50,14 +51,13 @@
                             </span>
                             <div>
                                 <a href><img src="./Assets/images/facebook.png" alt="Image not found"></a>
-                                <a href=""><img src="./Assets/images/Google.png" alt="Image not found"></a>
+                                <a href="./ssologin.cfm" name="googleLogin"><img src="./Assets/images/Google.png" alt="Image not found"></a>
                             </div>
                         </div>
                         <div class="register_link">
                             Don't have an account? <a href="signup.cfm">Register here</a> 
                         </div>
                         <cfif structKeyExists(form, "loginButton")>
-                            <cfset local.myObject = createObject("component","components.addressBook")>
                             <cfset local.result = local.myObject.userLogin(form.userName,form.password)>
                             <cfif structKeyExists(local.result,"error")> 
                                 <cfoutput>

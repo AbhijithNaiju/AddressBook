@@ -142,7 +142,6 @@ function formValidate(event)
     let allowedExtentions=["jpg","jpeg","png"];
     let fileExtension = String(/[^.]+$/.exec(profileImage)).toLowerCase();
 	let email_match=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
     var titleError = "";
     var firstNameError = "";
     var lastNameError = "";
@@ -374,6 +373,7 @@ function createSpreadsheet()
         }
     });
 }
+
 function printPdf()
 {
     if(confirm("Dowload as pdf"))
@@ -399,6 +399,7 @@ function printPdf()
         });
     }
 }
+
 function printPage()
 {
     var bodyDiv = document.body.innerHTML;

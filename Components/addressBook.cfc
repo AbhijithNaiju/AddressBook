@@ -2,8 +2,8 @@
 
 <!---     Checker email or username already exists during signup --->
     <cffunction  name="emailAndUNameCheck" returnformat="JSON" access="remote">
-        <cfargument  name="email" type="string"> 
-        <cfargument  name="userName" type="string"> 
+        <cfargument  name = "email" type = "string"> 
+        <cfargument  name = "userName" type="string" default="" required = "false"> 
 
         <cfset local.structResult = structNew()>
 
@@ -133,6 +133,7 @@
     <cffunction  name="logOut"  access="remote">
 
         <cfset structClear(session)>
+        <cflogout>
 
         <cfreturn true>
     </cffunction>
@@ -550,5 +551,34 @@
             <cfoutput>#serializeJSON(local.structResult)#</cfoutput>  
         </cfoutput>
 <!---         <cfreturn local.structResult> --->
+    </cffunction>
+    <cffunction  name="ssoLogin" returntype = "void">
+        <cfargument  name="oauthResult">
+            <cfset local.emailCheck=emailAndUNameCheck(arguments.oauthResult.other.email)>
+            <cfif structKeyExists(local.emailCheck, "emailSuccess")>
+                <!--- signup --->
+                <cfset userSignup(  arguments.oauthResult.name,
+                                    arguments.oauthResult.other.email,
+                                    arguments.oauthResult.id,
+                                    "",
+                                    arguments.oauthResult.other.picture)>
+            <cfelse>
+                <!--- login --->
+                <cfquery name = "selectUser" >
+                    SELECT userId
+                    FROM userTable
+                    WHERE email = < cfqueryparam value = '#arguments.oauthResult.other.email#' cfsqltype = "cf_sql_varchar" >;
+                </cfquery>
+                
+                <cfif selectUser.recordcount>
+                    <cfset session.userId = selectUser.userId>
+                    <cfset local.structResult["success"] = "success">
+                    <cflocation  url="./home.cfm"  addtoken = "no">
+                <cfelse>
+                    <cflocation  url="./login.cfm?error=Error-occured" addtoken = "no">
+                </cfif>
+            </cfif>
+<!---         <cfset session.userId = "acde070d-8c4c-4f0d-9d8a-162843c10333"> --->
+<!---         <cflocation  url="./home.cfm"> --->
     </cffunction>
 </cfcomponent>
