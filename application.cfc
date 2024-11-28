@@ -7,7 +7,7 @@
 
         <cfargument  name="requestedpage">
 
-        <cfset local.excludedPages=["/login.cfm","/signup.cfm"]>
+        <cfset local.excludedPages=["/login.cfm","/signup.cfm","/ssologin.cfm"]>
 
         <cfif arrayFind(local.excludedPages,arguments.requestedpage) OR structKeyExists(session, "userId")>
                 <cfinclude  template="#arguments.requestedpage#" >
