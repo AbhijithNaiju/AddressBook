@@ -1,13 +1,20 @@
 <cfset local.myObject = createObject("component","components.addressBook")>
 <cfif structKeyExists(session, "userId")>
-    <cfdump  var="#session.userId#">
+    <cfset local.myObject.logOut()>
 </cfif>
-<cflogin> 
-    <cfoauth
-    type = "google"
-    result = "oauthResult"
-    scope="email profile openid">
-</cflogin>
+
+<cftry>
+    <cflogin> 
+        <cfoauth
+        type = "google"
+
+        result = "oauthResult"
+        scope="email profile">
+    </cflogin>
+<cfcatch type="exception">
+    <cflocation  url="./login.cfm?error=Error-occured">
+</cfcatch>
+</cftry>
 
 <cfif isDefined("oauthResult")>
     <cfset local.myobject.ssoLogin(oauthResult)>

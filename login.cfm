@@ -36,7 +36,7 @@
                         <div class="form_heading">
                             LOGIN
                         </div>
-                        <input type="text" placeholder="Username" name = "userName" class="input_fields" id="userName">
+                        <input type="text" placeholder="Email Id" name = "emailId" class="input_fields" id="userName">
                         <div id="userNameError" class="error_message"></div>
 
                         <input type="password" placeholder="Password" name="password" class="input_fields" id="password">                    
@@ -58,12 +58,17 @@
                             Don't have an account? <a href="signup.cfm">Register here</a> 
                         </div>
                         <cfif structKeyExists(form, "loginButton")>
-                            <cfset local.result = local.myObject.userLogin(form.userName,form.password)>
+                            <cfset local.result = local.myObject.userLogin(form.emailId,form.password)>
                             <cfif structKeyExists(local.result,"error")> 
                                 <cfoutput>
                                     <div class = "text-center text-danger" >#local.result["error"]#</div>
                                 </cfoutput>
                             </cfif>
+                        </cfif>
+                        <cfif structKeyExists(url, "error")>
+                            <cfoutput>
+                                <div class = "text-center text-danger" >#url.error#</div>
+                            </cfoutput>
                         </cfif>
                     </form>
                 </div>

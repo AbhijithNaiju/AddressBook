@@ -88,8 +88,8 @@
                         );
                 </cfquery>
 
-            <cfcatch type="exception">
-                <cfset local.structResult["error"] = "Error">
+            <cfcatch type="any">
+                <cfset local.structResult["error"] = "Error occured while creating account.">
             </cfcatch>
 
             </cftry>
@@ -97,7 +97,7 @@
 
         <!---         redirecting to login if signup success --->
         <cfif NOT structKeyExists(local.structResult, "error")>
-            <cfset userLogin(arguments.userName,arguments.password)>
+            <cfset userLogin(arguments.emailId,arguments.password)>
         </cfif>
 
         <cfreturn local.structResult>
@@ -105,7 +105,7 @@
 
 <!---     User login --->
     <cffunction  name="userLogin" returntype="struct">
-        <cfargument  name="userName" type="string">
+        <cfargument  name="emailId" type="string">
         <cfargument  name="password" type="string">
 
         <cfset local.structResult = structNew()>
@@ -114,7 +114,7 @@
         <cfquery name = "selectUser" >
             SELECT userId
             FROM userTable
-            WHERE userName = < cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar" >
+            WHERE email = < cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar" >
                 AND password = < cfqueryparam value = '#local.hashedPassword#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
         
@@ -123,7 +123,7 @@
             <cfset local.structResult["success"] = "success">
             <cflocation  url="./home.cfm">
         <cfelse>
-            <cfset local.structResult["error"] = "Please enter a valid username and password">
+            <cfset local.structResult["error"] = "Please enter a valid email and password">
         </cfif>
 
         <cfreturn local.structResult>
@@ -133,7 +133,6 @@
     <cffunction  name="logOut"  access="remote">
 
         <cfset structClear(session)>
-        <cflogout>
 
         <cfreturn true>
     </cffunction>
@@ -206,8 +205,8 @@
                         ,< cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date" >
                         );
                 </cfquery>
-            <cfcatch type="exception">
-                <cfset local.structResult["error"] = "Error while creating">
+            <cfcatch type="any">
+                <cfset local.structResult["error"] = "Error while creating the contact">
             </cfcatch>
             </cftry>
         </cfif>
@@ -234,7 +233,6 @@
                 FROM contactDetails
                 WHERE contactId = < cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar" >;
             </cfquery>
-
 
             <cftry>
                 <cfquery>
@@ -266,8 +264,8 @@
                     </cfif>
                 </cfif>
 
-            <cfcatch type="exception">
-                    <cfset local.structResult["Error"] = "Error occured">
+            <cfcatch type="any">
+                <cfset local.structResult["Error"] = "Error occured while updating">
             </cfcatch>
             </cftry>
         </cfif>
@@ -302,7 +300,6 @@
             FROM contactDetails
             WHERE contactId = < cfqueryparam value = '#arguments.deleteId#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
-
 
         <cfquery>
             DELETE
@@ -452,7 +449,6 @@
         <cfset local.structResult["spreadsheetUrl"] = "Assets/spreadsheetFiles/" & local.filename>
         <cfset local.structResult["spreadsheetName"] = local.filename>
 
-
     <cfreturn local.structResult>
 
     </cffunction>
@@ -501,12 +497,12 @@
         </cfif>
 
         <!---         Check phone number --->
-
         <cfloop query="qryNumberInContacts">
             <cfif qryNumberInContacts.phoneNumber EQ arguments.phoneNumber AND qryNumberInContacts.contactId NEQ arguments.contactId>
                 <cfset local.structResult["phoneError"] = "Phone number already exists for another contact">
             </cfif>
         </cfloop>
+
         <cfif NOT structKeyExists(local.structResult, "phoneError")>
             <cfset local.structResult["phoneSuccess"] = "true">
         </cfif>
@@ -547,38 +543,44 @@
         <cfset local.structResult["pdfUrl"] = "#local.folderName##local.filename#">
         <cfset local.structResult["pdfName"] = "#local.filename#">
 
-        <cfoutput>
-            <cfoutput>#serializeJSON(local.structResult)#</cfoutput>  
-        </cfoutput>
-<!---         <cfreturn local.structResult> --->
+        <cfreturn local.structResult> 
     </cffunction>
+
     <cffunction  name="ssoLogin" returntype = "void">
         <cfargument  name="oauthResult">
-            <cfset local.emailCheck=emailAndUNameCheck(arguments.oauthResult.other.email)>
-            <cfif structKeyExists(local.emailCheck, "emailSuccess")>
-                <!--- signup --->
-                <cfset userSignup(  arguments.oauthResult.name,
-                                    arguments.oauthResult.other.email,
-                                    arguments.oauthResult.id,
-                                    "",
-                                    arguments.oauthResult.other.picture)>
+        <cfset local.emailCheck=emailAndUNameCheck(arguments.oauthResult.other.email)>
+        <cfif structKeyExists(local.emailCheck, "emailSuccess")>
+            <!--- signup --->
+            <cfset userSignup(  arguments.oauthResult.name,
+                                arguments.oauthResult.other.email,
+                                arguments.oauthResult.id,
+                                "",
+                                arguments.oauthResult.other.picture)>
+        <cfelse>
+            <!--- login --->
+            <cfquery name = "selectUser" >
+                SELECT userId
+                FROM userTable
+                WHERE email = < cfqueryparam value = '#arguments.oauthResult.other.email#' cfsqltype = "cf_sql_varchar" >;
+            </cfquery>
+            
+            <cfif selectUser.recordcount>
+                <cfset session.userId = selectUser.userId>
+                <cfset local.structResult["success"] = "success">
+                <cflocation  url="./home.cfm"  addtoken = "no">
             <cfelse>
-                <!--- login --->
-                <cfquery name = "selectUser" >
-                    SELECT userId
-                    FROM userTable
-                    WHERE email = < cfqueryparam value = '#arguments.oauthResult.other.email#' cfsqltype = "cf_sql_varchar" >;
-                </cfquery>
-                
-                <cfif selectUser.recordcount>
-                    <cfset session.userId = selectUser.userId>
-                    <cfset local.structResult["success"] = "success">
-                    <cflocation  url="./home.cfm"  addtoken = "no">
-                <cfelse>
-                    <cflocation  url="./login.cfm?error=Error-occured" addtoken = "no">
-                </cfif>
+                <cflocation  url="./login.cfm?error=Error-occured" addtoken = "no">
             </cfif>
-<!---         <cfset session.userId = "acde070d-8c4c-4f0d-9d8a-162843c10333"> --->
-<!---         <cflocation  url="./home.cfm"> --->
+        </cfif>
+    </cffunction>
+
+    <cffunction  name="birthday">
+        <cfmail
+            from = "abhijithtechversant@gmail.com"
+            to = "abhijithtechversant@gmail.com"
+            subject = "Birthday wishes"
+            type = "text">
+                sss
+        </cfmail>
     </cffunction>
 </cfcomponent>
