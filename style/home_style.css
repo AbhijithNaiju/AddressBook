@@ -66,8 +66,8 @@ body
 }
 .profile_box img
 {
-    width: 40%;
-    height: 30%;
+    width: 13vh;
+    height: 13vh;
     border-radius: 50%;
 }
 .profile_name
