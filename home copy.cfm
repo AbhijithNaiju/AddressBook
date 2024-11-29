@@ -74,6 +74,7 @@
                                 <cfoutput>#local.editContactResult["error"]#</cfoutput>
                             </cfif>
                         </cfif>
+                        <cfset local.allContactList = local.myObject.getAllContacts()>
                     </div>
                     <div class="print_options">
                         <button  name="printPdfBtn" onclick="printPdf()"><img src="./Assets/images/acrobat.png" alt="Image not found"></button>
@@ -113,32 +114,31 @@
                                 
                             </div>
                         </div>
-                        <cfset ormReload()>
-                        <cfset local.contactDetails = entityLoad("contactOrm",{_createdBy = session.userId})>
-                        <cfloop array="#local.contactDetails#" item = "contactItem">  
+
+                        <cfloop query="local.allContactList">
                             <cfoutput>
-                                <div class="contact_list_item" id="#contactItem.getcontactId()#">
+                                <div class="contact_list_item" id="#local.allContactList.contactId#">
                                     <div class="list_profile">
-                                        <cfif contactItem.getprofileImage() EQ "">
+                                        <cfif local.allContactList.profileImage EQ "">
                                             <cfset local.contactProfileImage = "./Assets/contactPictues/l60Hf.png">
                                           <cfelse>
-                                            <cfset local.contactProfileImage = contactItem.getprofileImage()>
+                                            <cfset local.contactProfileImage = local.allContactList.profileImage>
                                         </cfif>
                                         <img src="#local.contactProfileImage#" alt="Image not found">
                                     </div>
                                     <div class="list_name">
-                                        #contactItem.getfirstName()# #contactItem.getlastName()#
+                                        #local.allContactList.firstName# #local.allContactList.lastName#
                                     </div>
                                     <div class="list_email">
-                                        #contactItem.getemailId()#
+                                        #local.allContactList.emailId#
                                     </div>
                                     <div class="list_phone">
-                                        #contactItem.getphoneNumber()#
+                                        #local.allContactList.phoneNumber#
                                     </div>
                                     <div class="list_button">
-                                        <button type="button" value="#contactItem.getcontactId()#" onclick="openEditModal(this)" class = "contactButtons">EDIT</button>
-                                        <button type="button" value="#contactItem.getcontactId()#" onclick="deleteContact(this)" class = "contactButtons">DELETE</button>
-                                        <button type="button" value="#contactItem.getcontactId()#" onclick="openViewModal(this)" class = "contactButtons">VIEW</button>
+                                        <button type="button" value="#local.allContactList.contactId#" onclick="openEditModal(this)" class = "contactButtons">EDIT</button>
+                                        <button type="button" value="#local.allContactList.contactId#" onclick="deleteContact(this)" class = "contactButtons">DELETE</button>
+                                        <button type="button" value="#local.allContactList.contactId#" onclick="openViewModal(this)" class = "contactButtons">VIEW</button>
                                     </div>
                                 </div>
                             </cfoutput>
