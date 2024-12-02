@@ -583,4 +583,52 @@
                 sss
         </cfmail>
     </cffunction>
+
+    <cffunction  name = "setBirthdaySchedule" returnType = "string">
+        <cfschedule 
+            action="update" 
+            task="birthdayTask" 
+            operation="HTTPRequest" 
+            url="http://addressbook.org/birthdayMail.cfm"
+            startDate="#DateFormat(Now(), 'YYYY-MM-dd')#" 
+            interval ="daily"
+            repeat = "0"
+            overwrite="true">
+
+    </cffunction>
+
+    <cffunction  name="resumeBirthDaySchedule" returnType = "string">
+        <cfschedule 
+            action="resume" 
+            task="birthdayTask" 
+            overwrite="true">
+    </cffunction>
+
+    <cffunction  name="pauseBirthDaySchedule" returnType = "string">
+        <cfschedule 
+            action="pause" 
+            task="birthdayTask" 
+            overwrite="true">
+    </cffunction>
+
+    <cffunction  name="getBDayData" returntype = "void">
+        <cfquery name = "qryBDayData">
+            SELECT firstname
+                ,emailId
+                ,DOB
+            FROM contactDetails;
+        </cfquery>
+         <cfloop query="qryBDayData"> 
+             <cfif dateFormat(qryBDayData.DOB,"dd-mm") EQ dateFormat(now(),"dd-mm")> 
+                <cfmail
+                    from = "abhijithtechversant@gmail.com"
+                    to = "#qryBDayData.emailId#"
+                    subject = "Birthday wishes #qryBDayData.firstname#"
+                    type = "text">
+                        Happy birthday #qryBDayData.firstname#
+                        <cfmailparam file = "./Assets/images/birthday-poster.jpg" disposition="attachment">
+                </cfmail>
+             </cfif>
+        </cfloop>
+    </cffunction>
 </cfcomponent>

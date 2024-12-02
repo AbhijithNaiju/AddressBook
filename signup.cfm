@@ -9,6 +9,8 @@
         <title>Sign UP</title>
     </head>
     <body>
+        <cfset local.myObject = createObject("component","components.addressBook")>
+        <cfset local.uploadDirectory = "./Assets/uploads/">
         <main class="main">
             <div class="header">
 
@@ -69,7 +71,6 @@
                         <div class="register_link">
                             Already have an account? <a href="login.cfm">Login</a> 
                         </div>
-                        <cfset local.uploadDirectory = "./Assets/uploads/">
                         <cfif structKeyExists(form, "submitButton")>
                             <cfif NOT directoryExists(expandPath(local.uploadDirectory))>
                                 <cfset directoryCreate(expandPath(local.uploadDirectory))>
@@ -81,7 +82,6 @@
                                     result="fileDetails">
                             <cfset local.profileImageSrc = local.uploadDirectory & fileDetails.serverfile>
 
-                            <cfset local.myObject = createObject("component","components.addressBook")>
                             <cfset local.result = local.myObject.userSignup(form.fullName,
                                                                             form.emailId,
                                                                             form.userName,
