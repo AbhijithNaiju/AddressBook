@@ -15,6 +15,12 @@
                     <img src="./Assets/images/contact_book_logo.png" alt="Image not found">
                     <span>ADDRESS BOOK</span>
                 </a>
+                <div class="logout_button">
+                    <button onclick="logout()">
+                        <img src="./Assets/images/logout.png" alt="Image not found">
+                        Logout
+                    </button>
+                </div>
             </div>
             <form method="post" class = "d-flex justify-content-around" >
                 <button name="setSchedule" class="btn btn-primary">Set Schedule</button>
@@ -31,5 +37,7 @@
                 <cfset local.myObject.pauseBirthDaySchedule()>
             </cfif>
         </main>
+        <script src="./JS/Jquery/jquery-3.7.1.js"></script>
+        <script src="./JS/home.js"></script>
     </body>
 </html>

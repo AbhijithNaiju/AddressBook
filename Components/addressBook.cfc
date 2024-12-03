@@ -129,6 +129,24 @@
         <cfreturn local.structResult>
     </cffunction>
 
+    <cffunction  name="adminLogin" returntype="struct">
+        <cfargument  name="emailId" type="string">
+        <cfargument  name="password" type="string">
+
+        <cfset local.structResult = structNew()>
+<!---         <cfset local.hashedPassword = hash(arguments.password, "SHA-256")>  --->
+
+        <cfif arguments.emailId EQ "admin@gmail.com" AND arguments.password EQ "adminpass">
+            <cfset session.adminLogin = "true">
+            <cfset local.structResult["success"] = "success">
+            <cflocation  url="./scheduleset.cfm">
+        <cfelse>
+            <cfset local.structResult["error"] = "Please enter a valid email and password">
+        </cfif>
+
+        <cfreturn local.structResult>
+    </cffunction>
+
 <!---     Remote login --->
     <cffunction  name="logOut"  access="remote">
 
