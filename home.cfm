@@ -12,12 +12,20 @@
     <body>
         <cfset local.myObject = createObject("component", "components.addressBook")>
         <cfset local.userdetails = local.myObject.userDetails()>
-        <cfset local.pdfPrintData = local.myObject.getPdfData()>
+        <cfset local.statusStruct = local.myObject.getScheduleStatus("birthdayTask-#userDetails.email#")>
         <cfset local.uploadDirectory = "./Assets/contactPictues/">
 
         <cfif NOT directoryExists(expandPath(local.uploadDirectory))>
             <cfset directoryCreate(expandPath(local.uploadDirectory))>
         </cfif>
+
+            <cfif structKeyExists(form, "pauseSchedule")>
+                <cfset local.myObject.pauseBirthDaySchedule("birthdayTask-#userDetails.email#")>
+            </cfif>
+
+            <cfif structKeyExists(form, "resumeSchedule")>
+                <cfset local.myObject.resumeBirthDaySchedule("birthdayTask-#userDetails.email#")>
+            </cfif>
 
         <main class="main position_absolute">
             <div class="header">
@@ -83,16 +91,23 @@
                 </div>
                 <div class="home_elements">
                     <div class="profile_box">
-                    <cfoutput>
-                        <cfif local.userdetails.profileImage EQ "">
-                            <cfset local.userProfileImage = "./Assets/contactPictues/l60Hf.png">
-                        <cfelse>
-                            <cfset local.userProfileImage = local.userdetails.profileImage>
-                        </cfif>
-                        <img src="#local.userProfileImage#" alt="image not found">
-                        <div class="profile_name">#local.userdetails.fullName#</div>
-                    </cfoutput>
-                        <button onclick="openEditModal(this)" value="">CREATE CONTACT</button>
+                        <cfoutput>
+                            <cfif local.userdetails.profileImage EQ "">
+                                <cfset local.userProfileImage = "./Assets/contactPictues/l60Hf.png">
+                            <cfelse>
+                                <cfset local.userProfileImage = local.userdetails.profileImage>
+                            </cfif>
+                            <img src="#local.userProfileImage#" alt="image not found">
+                            <div class="profile_name">#local.userdetails.fullName#</div>
+                        </cfoutput>
+                        <button onclick="openEditModal(this)" class="create_button" value="">CREATE CONTACT</button>
+                        <form method="post">
+                            <cfif local.statusStruct["status"] EQ "Running">
+                                <button name="pauseSchedule" class="btn btn-danger">Pause Schedule</button>
+                            <cfelse>
+                                <button name="resumeSchedule" class="btn btn-primary">Resume Schedule</button>
+                            </cfif>
+                        </form>
                     </div>
 
                     <div class="contact_list" id="contactList">

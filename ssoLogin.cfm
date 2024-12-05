@@ -7,6 +7,7 @@
     <cflogin> 
         <cfoauth
         type = "google"
+
         result = "oauthResult"
         scope="email profile">
     </cflogin>

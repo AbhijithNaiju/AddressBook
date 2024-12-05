@@ -76,7 +76,7 @@ body
     font-weight: bold;
     font-size: 18px;
 }
-.profile_box button
+.profile_box .create_button
 
 {
     border: none;

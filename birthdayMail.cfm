@@ -10,6 +10,6 @@
     </head>
     <body>
         <cfset local.myObject = createObject("component","components.addressBook")> 
-        <cfset local.result = local.myObject.getBDayData()> 
+        <cfset local.result = local.myObject.getBDayData(url.emailId)> 
     </body>
 </html>

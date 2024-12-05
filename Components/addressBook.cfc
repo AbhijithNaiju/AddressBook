@@ -1,5 +1,26 @@
 <cfcomponent>
+<!---     Get contacts of all contacts created by a user --->
+    <cffunction  name="getContactDetails" returntype = "query">
+        <cfquery name = "qryContactDetails">
+            SELECT firstName
+                ,lastName
+                ,gender
+                ,DOB
+                ,profileImage
+                ,address
+                ,streetName
+                ,district
+                ,STATE
+                ,country
+                ,pincode
+                ,emailId
+                ,phoneNumber
+            FROM contactDetails
+            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
+        </cfquery>
 
+        <cfreturn qryContactDetails>
+    </cffunction>
 <!---     Checker email or username already exists during signup --->
     <cffunction  name="emailAndUNameCheck" returnformat="JSON" access="remote">
         <cfargument  name = "email" type = "string"> 
@@ -55,19 +76,12 @@
         <cfquery name="emailCheck" >
             SELECT count('email') AS userCount
             FROM userTable
-            WHERE email = < cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar" >;
-        </cfquery>
-
-        <cfquery name="userNameCheck" >
-            SELECT count('userName') AS userCount
-            FROM userTable
-            WHERE username = < cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar" >;
+            WHERE email = < cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar" >
+            OR username = < cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
 
         <cfif emailCheck.userCount>
-            <cfset local.structResult["error"] = "Email already exists">
-        <cfelseif userNameCheck.usercount>
-            <cfset local.structResult["error"] = "Username already exists">
+            <cfset local.structResult["error"] = "Email or username already exists">
         <cfelse>
             <cftry>
 
@@ -97,6 +111,17 @@
 
         <!---         redirecting to login if signup success --->
         <cfif NOT structKeyExists(local.structResult, "error")>
+
+            <cfschedule 
+                action="update" 
+                task="birthdayTask-#arguments.emailId#" 
+                operation="HTTPRequest" 
+                url="http://addressbook.org/birthdayMail.cfm?emailId=#arguments.emailId#"
+                startDate="#DateFormat(Now(), 'YYYY-MM-dd')#" 
+                starttime="00:00"
+                interval ="daily"
+                repeat = "0"
+                overwrite="true">
             <cfset userLogin(arguments.emailId,arguments.password)>
         </cfif>
 
@@ -129,25 +154,7 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="adminLogin" returntype="struct">
-        <cfargument  name="emailId" type="string">
-        <cfargument  name="password" type="string">
-
-        <cfset local.structResult = structNew()>
-<!---         <cfset local.hashedPassword = hash(arguments.password, "SHA-256")>  --->
-
-        <cfif arguments.emailId EQ "admin@gmail.com" AND arguments.password EQ "adminpass">
-            <cfset session.adminLogin = "true">
-            <cfset local.structResult["success"] = "success">
-            <cflocation  url="./scheduleset.cfm">
-        <cfelse>
-            <cfset local.structResult["error"] = "Please enter a valid email and password">
-        </cfif>
-
-        <cfreturn local.structResult>
-    </cffunction>
-
-<!---     Remote login --->
+<!---     Remote logout --->
     <cffunction  name="logOut"  access="remote">
 
         <cfset structClear(session)>
@@ -161,6 +168,7 @@
         <cfquery name = "getUserDetails" >
             SELECT fullName
                 ,profileImage
+                ,email
             FROM userTable
             WHERE userId = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
@@ -305,6 +313,8 @@
             WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
 
+<!---         replace with fn --->
+
         <cfreturn allContacts>
     </cffunction>
 
@@ -350,7 +360,7 @@
                 ,address
                 ,streetName
                 ,district
-                ,STATE
+                ,state
                 ,country
                 ,pincode
                 ,emailId
@@ -419,22 +429,7 @@
 
         <cfset local.structResult = structNew()>
 
-        <cfquery name = "xlsData">
-            SELECT firstName
-                ,lastName
-                ,gender
-                ,DOB
-                ,address
-                ,streetName
-                ,district
-                ,STATE
-                ,country
-                ,pincode
-                ,emailId
-                ,phoneNumber
-            FROM contactDetails
-            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
-        </cfquery>
+        <cfset local.xlsData = getContactDetails()>
 
         <cfset local.folderName = "../Assets/spreadsheetFiles/">
         <cfif NOT directoryExists(expandPath(local.folderName))>
@@ -528,32 +523,6 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="getPdfData">
-        <cfargument  name="inputFileName" type="string">
-
-        <cfset local.structResult = structNew()>
-
-        <cfquery name = "qryPdfData">
-            SELECT firstName
-                ,lastName
-                ,gender
-                ,DOB
-                ,profileImage
-                ,address
-                ,streetName
-                ,district
-                ,STATE
-                ,country
-                ,pincode
-                ,emailId
-                ,phoneNumber
-            FROM contactDetails
-            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
-        </cfquery>
-
-        <cfreturn qryPdfData>
-    </cffunction>
-
     <cffunction  name="createPdf"  access="remote" returnformat="json">
         <cfset local.structResult = structNew()>
 
@@ -592,49 +561,37 @@
         </cfif>
     </cffunction>
 
-    <cffunction  name="birthday">
-        <cfmail
-            from = "abhijithtechversant@gmail.com"
-            to = "abhijithtechversant@gmail.com"
-            subject = "Birthday wishes"
-            type = "text">
-                sss
-        </cfmail>
-    </cffunction>
-
-    <cffunction  name = "setBirthdaySchedule" returnType = "string">
-        <cfschedule 
-            action="update" 
-            task="birthdayTask" 
-            operation="HTTPRequest" 
-            url="http://addressbook.org/birthdayMail.cfm"
-            startDate="#DateFormat(Now(), 'YYYY-MM-dd')#" 
-            interval ="daily"
-            repeat = "0"
-            overwrite="true">
-
-    </cffunction>
-
     <cffunction  name="resumeBirthDaySchedule" returnType = "string">
+        <cfargument  name="taskName">
         <cfschedule 
             action="resume" 
-            task="birthdayTask" 
+            task="#arguments.taskName#" 
             overwrite="true">
     </cffunction>
 
     <cffunction  name="pauseBirthDaySchedule" returnType = "string">
+        <cfargument  name="taskName">
         <cfschedule 
             action="pause" 
-            task="birthdayTask" 
+            task="#arguments.taskName#"
             overwrite="true">
     </cffunction>
 
     <cffunction  name="getBDayData" returntype = "void">
+        <cfargument  name="senderEmail" type="string">
+
+        <cfquery name = "getUserId" >
+            SELECT userId
+            FROM userTable
+            WHERE email = < cfqueryparam value = '#arguments.senderEmail#' cfsqltype = "cf_sql_varchar" >;
+        </cfquery>
+        
         <cfquery name = "qryBDayData">
             SELECT firstname
                 ,emailId
                 ,DOB
-            FROM contactDetails;
+            FROM contactDetails
+            WHERE _createdBy = < cfqueryparam value = '#getUserId.userId#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
          <cfloop query="qryBDayData"> 
              <cfif dateFormat(qryBDayData.DOB,"dd-mm") EQ dateFormat(now(),"dd-mm")> 
@@ -647,6 +604,18 @@
                         <cfmailparam file = "./Assets/images/birthday-poster.jpg" disposition="attachment">
                 </cfmail>
              </cfif>
+        </cfloop> 
+    </cffunction>
+
+    <cffunction  name="getScheduleStatus" returntype = "any">
+        <cfargument  name="taskName">
+        <cfset local.statusStruct = structNew()>
+        <cfschedule  action="list"  result = "local.result">
+        <cfloop query="#local.result#">
+            <cfif local.result.task EQ arguments.taskName>
+                <cfset local.statusStruct["status"] = local.result.status>
+            </cfif>
         </cfloop>
+        <cfreturn local.statusStruct>
     </cffunction>
 </cfcomponent>
