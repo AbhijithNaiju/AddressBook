@@ -8,8 +8,8 @@
         <title>Sign UP</title>
     </head>
     <body>
-        <cfset local.myObject = createObject("component","components.addressBook")>
-        <cfset local.uploadDirectory = "./Assets/uploads/">
+        <cfset myObject = createObject("component","components.addressBook")>
+        <cfset uploadDirectory = "./Assets/uploads/">
         <main class="main">
             <div class="header">
 
@@ -71,24 +71,24 @@
                             Already have an account? <a href="login.cfm">Login</a> 
                         </div>
                         <cfif structKeyExists(form, "submitButton")>
-                            <cfif NOT directoryExists(expandPath(local.uploadDirectory))>
-                                <cfset directoryCreate(expandPath(local.uploadDirectory))>
+                            <cfif NOT directoryExists(expandPath(uploadDirectory))>
+                                <cfset directoryCreate(expandPath(uploadDirectory))>
                             </cfif>
                             <cffile action="upload"
                                     filefield="form.profileImage"
-                                    destination="#expandPath(local.uploadDirectory)#"
+                                    destination="#expandPath(uploadDirectory)#"
                                     nameconflict="makeunique"
                                     result="fileDetails">
-                            <cfset local.profileImageSrc = local.uploadDirectory & fileDetails.serverfile>
+                            <cfset profileImageSrc = uploadDirectory & fileDetails.serverfile>
 
-                            <cfset local.result = local.myObject.userSignup(form.fullName,
-                                                                            form.emailId,
-                                                                            form.userName,
-                                                                            form.password,
-                                                                            local.profileImageSrc)>
-                            <cfif structKeyExists(local.result,"error")> 
+                            <cfset result = myObject.userSignup(fullName = form.fullName,
+                                                                emailId = form.emailId,
+                                                                userName = form.userName,
+                                                                password = form.password,
+                                                                profileImageLink = profileImageSrc)>
+                            <cfif structKeyExists(result,"error")> 
                                 <cfoutput>
-                                    <div class = "text-center text-danger" >#local.result["error"]#</div>
+                                    <div class = "text-center text-danger" >#result["error"]#</div>
                                 </cfoutput>
                             </cfif>
                         </cfif>

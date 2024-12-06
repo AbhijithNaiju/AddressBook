@@ -1,6 +1,6 @@
-<cfset local.myObject = createObject("component","components.addressBook")>
+<cfset myObject = createObject("component","components.addressBook")>
 <cfif structKeyExists(session, "userId")>
-    <cfset local.myObject.logOut()>
+    <cfset myObject.logOut()>
 </cfif>
 
 <cftry>
@@ -17,6 +17,6 @@
 </cftry>
 
 <cfif isDefined("oauthResult")>
-    <cfset local.myobject.ssoLogin(oauthResult)>
+    <cfset myobject.ssoLogin(oauthResult = oauthResult)>
 </cfif>
 

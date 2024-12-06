@@ -9,7 +9,7 @@
         <title>Login</title>
     </head>
     <body>
-        <cfset local.myObject = createObject("component","components.addressBook")>
+        <cfset myObject = createObject("component","components.addressBook")>
         <main class="main">
             <div class="header">
                 <a href="" class="logo">
@@ -58,10 +58,11 @@
                             Don't have an account? <a href="signup.cfm">Register here</a> 
                         </div>
                         <cfif structKeyExists(form, "loginButton")>
-                            <cfset local.result = local.myObject.userLogin(form.emailId,form.password)>
-                            <cfif structKeyExists(local.result,"error")> 
+                            <cfset result = myObject.userLogin(emailId = form.emailId,
+                                                               password = form.password)>
+                            <cfif structKeyExists(result,"error")> 
                                 <cfoutput>
-                                    <div class = "text-center text-danger" >#local.result["error"]#</div>
+                                    <div class = "text-center text-danger" >#result["error"]#</div>
                                 </cfoutput>
                             </cfif>
                         </cfif>
