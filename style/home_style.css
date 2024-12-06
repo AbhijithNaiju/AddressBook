@@ -59,7 +59,7 @@ body
     align-items: center;
     justify-content: space-around;
     width: 15.5%;
-    height: 33vh;
+    height: 40vh;
     border-radius: 3px;
     padding: 5px;
     box-sizing: border-box;
@@ -117,6 +117,7 @@ body
 {
     overflow: hidden;
     text-overflow: ellipsis;
+    margin: 0 5px;
 }
 .list_profile,.list_name
 {

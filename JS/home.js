@@ -71,7 +71,7 @@ function openViewModal(viewId)
     document.getElementById("viewModal").classList.remove("display_none");
     $.ajax({
         type:"POST",
-        url:"./Components/addressBook.cfc?method=getContactData",
+        url:"./Components/addressBook.cfc?method=getViewData",
         data:{viewId:viewId.value},
         success: function(result) {
             if(result)
