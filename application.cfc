@@ -8,11 +8,8 @@
 
         <cfargument  name="requestedpage">
 
-        <cfset local.excludedPages=["/login.cfm","/signup.cfm","/ssologin.cfm","/errorPage.cfm","/admin.cfm"]>
-
-        <cfif arguments.requestedpage EQ "./scheduleset.cfm" AND structKeyExists(session, "adminLogin")>
-                <cfinclude  template="#arguments.requestedpage#" >
-        <cfelseif arrayFind(local.excludedPages,arguments.requestedpage) OR structKeyExists(session, "userId")>
+        <cfset local.excludedPages=["/login.cfm","/signup.cfm","/ssologin.cfm","/errorPage.cfm"]>
+        <cfif arrayFind(local.excludedPages,arguments.requestedpage) OR structKeyExists(session, "userId")>
                 <cfinclude  template="#arguments.requestedpage#">
         <cfelseif arguments.requestedpage EQ "/birthdayMail.cfm" AND CGI.HTTP_USER_AGENT EQ "CFSCHEDULE">
                 <cfinclude  template="#arguments.requestedpage#">
@@ -22,11 +19,11 @@
 
     </cffunction>
 
-     <cffunction  name = "onError"> 
+<!---      <cffunction  name = "onError">  
         <cfargument  name = "exception"> 
         <cfargument  name = "eventName" type = "string"> 
 
         <cflocation  url="./errorPage.cfm?exception=?#arguments.exception#&eventName#arguments.eventName#"> 
-     </cffunction> 
+      </cffunction>  --->
 
  </cfcomponent>
