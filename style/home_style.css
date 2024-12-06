@@ -101,7 +101,7 @@ body
     color: #337AB7;
     font-weight: bold;
     font-size: 15px;
-    padding: 20px 0;
+    padding: 20px 10px;
     border-bottom: 1px solid #ececec;
 }
 .contact_list_item
@@ -113,7 +113,7 @@ body
     font-size: 14px;
     align-items: center;
 }
-.contact_list_item>div
+.contact_list_item>td , .contact_list_heading>th
 {
     overflow: hidden;
     text-overflow: ellipsis;

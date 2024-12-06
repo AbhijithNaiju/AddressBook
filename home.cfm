@@ -119,47 +119,47 @@
                         </form>
                     </div>
 
-                    <div class="contact_list" id="contactList">
-                        <div class="contact_list_heading">
-                            <div class="list_profile">
+                    <table class="contact_list" id="contactList">
+                        <tr class="contact_list_heading">
+                            <th class="list_profile">
 
-                            </div>
-                            <div class="list_name">
+                            </th>
+                            <th class="list_name">
                                 NAME
-                            </div>
-                            <div class="list_email">
+                            </th>
+                            <th class="list_email">
                                 EMAIL ID
-                            </div>
-                            <div class="list_phone">
+                            </th>
+                            <th class="list_phone">
                                 PHONE NUMBER
-                            </div>
-                            <div class="list_button">
+                            </th>
+                            <th class="list_button">
                                 
-                            </div>
-                        </div>
+                            </th>
+                        </tr>
                         <cfset ormReload()>
                         <cfset contactDetails = entityLoad("contactOrm",{_createdBy = session.userId})>
                         <cfloop array="#contactDetails#" item = "contactItem">  
                             <cfoutput>
-                                <div class="contact_list_item" id="#contactItem.getcontactId()#">
-                                    <div class="list_profile">
+                                <tr class="contact_list_item" id="#contactItem.getcontactId()#">
+                                    <td class="list_profile">
                                         <cfif contactItem.getprofileImage() EQ "">
                                             <cfset contactProfileImage = "./Assets/contactPictues/l60Hf.png">
                                           <cfelse>
                                             <cfset contactProfileImage = contactItem.getprofileImage()>
                                         </cfif>
                                         <img src="#contactProfileImage#" alt="Image not found">
-                                    </div>
-                                    <div class="list_name">
+                                    </td>
+                                    <td class="list_name">
                                         #contactItem.getfirstName()# #contactItem.getlastName()#
-                                    </div>
-                                    <div class="list_email">
+                                    </td>
+                                    <td class="list_email">
                                         #contactItem.getemailId()#
-                                    </div>
-                                    <div class="list_phone">
+                                    </td>
+                                    <td class="list_phone">
                                         #contactItem.getphoneNumber()#
-                                    </div>
-                                    <div class="list_button">
+                                    </td>
+                                    <td class="list_button">
                                         <button type="button" 
                                                 value="#contactItem.getcontactId()#" 
                                                 onclick="openEditModal(this)" 
@@ -178,11 +178,11 @@
                                                 class = "contactButtons">
                                             VIEW
                                         </button>
-                                    </div>
-                                </div>
+                                    </td>
+                                </tr>
                             </cfoutput>
                         </cfloop>
-                    </div>
+                    </table>
                 </div>
             </div>
         </main>

@@ -16,7 +16,7 @@
                 emailId,
                 phoneNumber
             FROM contactDetails
-            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
+            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
         </cfquery>
 
         <cfreturn qryContactDetails>
@@ -195,7 +195,7 @@
                     profileImage,
                     email
             FROM userTable
-            WHERE userId = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
+            WHERE userId = < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
         </cfquery>
 
         <cfreturn getUserDetails>
@@ -250,9 +250,9 @@
                         < cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar" >,
                         < cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar" >,
                         < cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar" >,
-                        < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >,
+                        < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >,
                         < cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date" >,
-                        < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >,
+                        < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >,
                         < cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date" >
                         );
                 </cfquery>
@@ -306,7 +306,7 @@
                         pincode = < cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar" >,
                         emailId = < cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar" >,
                         phoneNumber = < cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar" >,
-                        _updatedBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >,
+                        _updatedBy = < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >,
                         _updatedOn = < cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date" >
                     WHERE contactId = < cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar" >;
 
@@ -340,7 +340,7 @@
                 emailId,
                 phoneNumber
             FROM contactDetails
-            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
+            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
         </cfquery>
 
 <!---         replace with fn --->
@@ -471,21 +471,21 @@
         <cfquery name="qryEmailOfUser" >
             SELECT email
             FROM userTable
-            WHERE userId = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
+            WHERE userId = < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
         </cfquery>
 
         <cfquery name="qryEmailInContacts" >
             SELECT emailId,
                 contactId
             FROM contactDetails
-            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
+            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
         </cfquery>
 
         <cfquery name="qryNumberInContacts" >
             SELECT phoneNumber,
                 contactId
             FROM contactDetails
-            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_varchar" >;
+            WHERE _createdBy = < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
         </cfquery>
 
         <!---         Check email --->
@@ -583,11 +583,12 @@
         </cfquery>
         
         <cfquery name = "qryBDayData">
-            SELECT firstname,
-                    emailId,
-                    DOB
-            FROM contactDetails
-            WHERE _createdBy = < cfqueryparam value = '#getUserId.userId#' cfsqltype = "cf_sql_varchar" >;
+            SELECT contactDetails.firstname,
+                contactDetails.emailId,
+                contactDetails.DOB
+            FROM userTable
+            INNER JOIN contactDetails ON userTable.userId = contactDetails._createdBy
+            WHERE userTable.email =  < cfqueryparam value = '#arguments.senderEmail#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
          <cfloop query="qryBDayData"> 
              <cfif dateFormat(qryBDayData.DOB,"dd-mm") EQ dateFormat(now(),"dd-mm")> 

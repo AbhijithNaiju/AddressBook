@@ -7,3 +7,5 @@
 * Intentation in queries
 * passing named attributes in functions
 * Use joins 
+* Future date invalid
+* move contact listing to table

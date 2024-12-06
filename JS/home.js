@@ -1,3 +1,7 @@
+$(document).ready(function() {
+    $("#dateOfBirth").attr("max", new Date().toISOString().split('T')[0]);
+});
+
 function printOutput(printLocation,printValue)
 {
 	document.getElementById(printLocation).innerHTML = printValue;
