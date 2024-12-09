@@ -74,7 +74,7 @@
                                 <cfoutput>#local.editContactResult["error"]#</cfoutput>
                             </cfif>
                         </cfif>
-                        <cfset local.allContactList = local.myObject.getContactDetails()>
+                        <cfset local.allContactList = local.myObject.getAllContactDetails()>
                     </div>
                     <div class="print_options">
                         <button  name="printPdfBtn" onclick="printPdf()"><img src="./Assets/images/acrobat.png" alt="Image not found"></button>

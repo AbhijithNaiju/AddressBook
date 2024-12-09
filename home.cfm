@@ -6,6 +6,15 @@
         <link rel="stylesheet" href="./style/index.css">
         <link rel="stylesheet" href="./style/home_style.css">
         <link rel="stylesheet" href="./style/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+
+
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
         <title>Home</title>
     </head>
     <body>
@@ -13,6 +22,7 @@
         <cfset userdetails = myObject.userDetails()>
         <cfset statusStruct = myObject.getScheduleStatus(taskName = "birthdayTask-#userDetails.email#")>
         <cfset uploadDirectory = "./Assets/contactPictues/">
+        <cfset contactRoles = myObject.getRoles()>
 
         <cfif NOT directoryExists(expandPath(uploadDirectory))>
             <cfset directoryCreate(expandPath(uploadDirectory))>
@@ -228,21 +238,33 @@
                             <div class="error_message" id="genderError"></div>
                         </div>
                         <div class="width_45">
-                            <label for="">Date of Birth *</label>
-                            <input type="date" class="form_element" id="dateOfBirth" name="dateOfBirth">
-                            <div class="error_message" id="dateOfBirthError"></div>
+                            <label for="">Role *</label>
+                            <select class="form_element form-control selectpicker" id="role" name="role" multiple>
+                                <cfoutput>
+                                    <cfloop query="contactRoles">
+                                        <option value="#contactRoles.roleId#">#contactRoles.name#</option>
+                                    </cfloop>
+                                </cfoutput>
+                            </select>
+                            <div class="error_message" id="roleError"></div>
                         </div>
                     </div>
 
                     <div class="edit_modal_element">
-                        <div class="">
+                        <div class="width_45">
                             <label for="">Upload Photo *</label>
                             <input type="file" class="form_element" id="profileImage" name="profileImage">
                             <input type="hidden" name="profileDefault" id="profileDefault">
                             <div class="error_message" id="profileImageError"></div>
                         </div>
+                        <div class="width_45">
+                            <label for="">Date of Birth *</label>
+                            <cfoutput>
+                                <input type="date" class="form_element" id="dateOfBirth" name="dateOfBirth" max="#dateformat(now(),"yyyy-mm-dd")#">
+                            </cfoutput>
+                            <div class="error_message" id="dateOfBirthError"></div>
+                        </div>
                     </div>
-
                     <div class="modal_sub_headng">
                         Contact details
                     </div>

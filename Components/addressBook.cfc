@@ -1,6 +1,6 @@
 <cfcomponent>
 <!---     Get contacts of all contacts created by a user --->
-    <cffunction  name="getContactDetails" returntype = "query">
+    <cffunction  name="getAllContactDetails" returntype = "query">
         <cfquery name = "qryContactDetails">
             SELECT firstName,
                 lastName,
@@ -231,9 +231,7 @@
                         emailId,
                         phoneNumber,
                         _createdBy,
-                        _createdOn,
-                        _updatedBy,
-                        _updatedOn
+                        _createdOn
                         )
                     VALUES (
                         < cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar" >,
@@ -250,8 +248,6 @@
                         < cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar" >,
                         < cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar" >,
                         < cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar" >,
-                        < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >,
-                        < cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date" >,
                         < cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >,
                         < cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date" >
                         );
@@ -423,7 +419,7 @@
 
         <cfset local.structResult = structNew()>
 
-        <cfset local.xlsData = getContactDetails()>
+        <cfset local.xlsData = getAllContactDetails()>
 
         <cfset local.folderName = "../Assets/spreadsheetFiles/">
         <cfif NOT directoryExists(expandPath(local.folderName))>
@@ -614,5 +610,13 @@
             </cfif>
         </cfloop>
         <cfreturn local.statusStruct>
+    </cffunction>
+
+    <cffunction  name="getRoles" returntype="query">
+        <cfquery name = "local.contactRoles">
+            SELECT roleId,name
+            FROM roles;
+        </cfquery>
+        <cfreturn local.contactRoles>
     </cffunction>
 </cfcomponent>
