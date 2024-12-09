@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -10,22 +9,14 @@
         <title>Home</title>
     </head>
     <body>
-        <cfset local.myObject = createObject("component", "components.addressBook")>
-        <cfset local.userdetails = local.myObject.userDetails()>
-        <cfset local.statusStruct = local.myObject.getScheduleStatus("birthdayTask-#userDetails.email#")>
-        <cfset local.uploadDirectory = "./Assets/contactPictues/">
+        <cfset myObject = createObject("component", "components.addressBook")>
+        <cfset userdetails = myObject.userDetails()>
+        <cfset statusStruct = myObject.getScheduleStatus(taskName = "birthdayTask-#userDetails.email#")>
+        <cfset uploadDirectory = "./Assets/contactPictues/">
 
-        <cfif NOT directoryExists(expandPath(local.uploadDirectory))>
-            <cfset directoryCreate(expandPath(local.uploadDirectory))>
+        <cfif NOT directoryExists(expandPath(uploadDirectory))>
+            <cfset directoryCreate(expandPath(uploadDirectory))>
         </cfif>
-
-            <cfif structKeyExists(form, "pauseSchedule")>
-                <cfset local.myObject.pauseBirthDaySchedule("birthdayTask-#userDetails.email#")>
-            </cfif>
-
-            <cfif structKeyExists(form, "resumeSchedule")>
-                <cfset local.myObject.resumeBirthDaySchedule("birthdayTask-#userDetails.email#")>
-            </cfif>
 
         <main class="main position_absolute">
             <div class="header">
@@ -49,17 +40,18 @@
 
                                 <cffile action="upload"
                                         filefield="form.profileImage"
-                                        destination="#expandPath(local.uploadDirectory)#"
+                                        destination="#expandPath(uploadDirectory)#"
                                         nameconflict="makeunique"
                                         result="fileDetails">
-                                <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
+                                <cfset imageSrc = uploadDirectory & fileDetails.serverfile>
                             <cfelse>
-                                <cfset local.imageSrc = "">
+                                <cfset imageSrc = "">
                             </cfif>
 
-                            <cfset local.addContactResult = local.myObject.addContact(form,local.imageSrc)> 
-                            <cfif structKeyExists(local.addContactResult, "error")>
-                                <cfoutput>#local.addContactResult["error"]#</cfoutput>
+                            <cfset addContactResult = myObject.addContact(structForm = form,
+                                                                            imageLink = imageSrc)> 
+                            <cfif structKeyExists(addContactResult, "error")>
+                                <cfoutput>#addContactResult["error"]#</cfoutput>
                             </cfif>
 
                         </cfif>
@@ -69,40 +61,57 @@
                             <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
                             <cffile action="upload"
                                     filefield="form.profileImage"
-                                    destination="#expandPath(local.uploadDirectory)#"
+                                    destination="#expandPath(uploadDirectory)#"
                                     nameconflict="makeunique"
                                     result="fileDetails">
-                            <cfset local.editImageSrc = local.uploadDirectory & fileDetails.serverfile>
+                            <cfset editImageSrc = uploadDirectory & fileDetails.serverfile>
                             <cfelse>
-                                <cfset local.editImageSrc = form.profileDefault>
+                                <cfset editImageSrc = form.profileDefault>
                             </cfif>
                             
-                            <cfset local.editContactResult = local.myObject.editContact(form,local.editImageSrc)> 
-                            <cfif structKeyExists(local.editContactResult, "error")>
-                                <cfoutput>#local.editContactResult["error"]#</cfoutput>
+                            <cfset editContactResult = myObject.editContact(structForm = form,
+                                                                            imageLink = editImageSrc)> 
+                            <cfif structKeyExists(editContactResult, "error")>
+                                <cfoutput>#editContactResult["error"]#</cfoutput>
                             </cfif>
+                        </cfif>
+
+                        <cfif structKeyExists(form, "pauseSchedule")>
+                            <cfset myObject.pauseBirthDaySchedule(taskName = "birthdayTask-#userDetails.email#")>
+                        </cfif>
+
+                        <cfif structKeyExists(form, "resumeSchedule")>
+                            <cfset myObject.resumeBirthDaySchedule(taskName = "birthdayTask-#userDetails.email#")>
                         </cfif>
                     </div>
                     <div class="print_options">
-                        <button  name="printPdfBtn" onclick="printPdf()"><img src="./Assets/images/acrobat.png" alt="Image not found"></button>
-                        <button type="button" onclick="createSpreadsheet()"><img src="./Assets/images/excel.png" alt="Image not found"></button>
-                        <button onclick="printPage()" type="button"><img src="./Assets/images/print.png" alt="Image not found"></button>
+                        <button  name="printPdfBtn" onclick="printPdf()">
+                            <img src="./Assets/images/acrobat.png" alt="Image not found">
+                        </button>
+                        <button type="button" onclick="createSpreadsheet()">
+                            <img src="./Assets/images/excel.png" alt="Image not found">
+                        </button>
+                        <button onclick="printPage()" type="button">
+                            <img src="./Assets/images/print.png" alt="Image not found">
+                        </button>
                     </div>
                 </div>
                 <div class="home_elements">
                     <div class="profile_box">
                         <cfoutput>
-                            <cfif local.userdetails.profileImage EQ "">
-                                <cfset local.userProfileImage = "./Assets/contactPictues/l60Hf.png">
+                            <cfif userdetails.profileImage EQ "">
+                                <cfset userProfileImage = "./Assets/contactPictues/l60Hf.png">
                             <cfelse>
-                                <cfset local.userProfileImage = local.userdetails.profileImage>
+                                <cfset userProfileImage = userdetails.profileImage>
                             </cfif>
-                            <img src="#local.userProfileImage#" alt="image not found">
-                            <div class="profile_name">#local.userdetails.fullName#</div>
+                            <img src="#userProfileImage#" alt="image not found">
+                            <div class="profile_name">#userdetails.fullName#</div>
                         </cfoutput>
-                        <button onclick="openEditModal(this)" class="create_button" value="">CREATE CONTACT</button>
+                        <button onclick="openEditModal(this)" class="create_button" value="">
+                            CREATE CONTACT
+                        </button>
                         <form method="post">
-                            <cfif local.statusStruct["status"] EQ "Running">
+                            <cfif statusStruct["status"] EQ "Running">
                                 <button name="pauseSchedule" class="btn btn-danger">Pause Schedule</button>
                             <cfelse>
                                 <button name="resumeSchedule" class="btn btn-primary">Resume Schedule</button>
@@ -110,58 +119,71 @@
                         </form>
                     </div>
 
-                    <div class="contact_list" id="contactList">
-                        <div class="contact_list_heading">
-                            <div class="list_profile">
+                    <table class="contact_list" id="contactList">
+                        <tr class="contact_list_heading">
+                            <th class="list_profile">
 
-                            </div>
-                            <div class="list_name">
+                            </th>
+                            <th class="list_name">
                                 NAME
-                            </div>
-                            <div class="list_email">
+                            </th>
+                            <th class="list_email">
                                 EMAIL ID
-                            </div>
-                            <div class="list_phone">
+                            </th>
+                            <th class="list_phone">
                                 PHONE NUMBER
-                            </div>
-                            <div class="list_button">
+                            </th>
+                            <th class="list_button">
                                 
-                            </div>
-                        </div>
+                            </th>
+                        </tr>
                         <cfset ormReload()>
-                        <cfset local.contactDetails = entityLoad("contactOrm",{_createdBy = session.userId})>
-                        <cfloop array="#local.contactDetails#" item = "contactItem">  
+                        <cfset contactDetails = entityLoad("contactOrm",{_createdBy = session.userId})>
+                        <cfloop array="#contactDetails#" item = "contactItem">  
                             <cfoutput>
-                                <div class="contact_list_item" id="#contactItem.getcontactId()#">
-                                    <div class="list_profile">
+                                <tr class="contact_list_item" id="#contactItem.getcontactId()#">
+                                    <td class="list_profile">
                                         <cfif contactItem.getprofileImage() EQ "">
-                                            <cfset local.contactProfileImage = "./Assets/contactPictues/l60Hf.png">
+                                            <cfset contactProfileImage = "./Assets/contactPictues/l60Hf.png">
                                           <cfelse>
-                                            <cfset local.contactProfileImage = contactItem.getprofileImage()>
+                                            <cfset contactProfileImage = contactItem.getprofileImage()>
                                         </cfif>
-                                        <img src="#local.contactProfileImage#" alt="Image not found">
-                                    </div>
-                                    <div class="list_name">
+                                        <img src="#contactProfileImage#" alt="Image not found">
+                                    </td>
+                                    <td class="list_name">
                                         #contactItem.getfirstName()# #contactItem.getlastName()#
-                                    </div>
-                                    <div class="list_email">
+                                    </td>
+                                    <td class="list_email">
                                         #contactItem.getemailId()#
-                                    </div>
-                                    <div class="list_phone">
+                                    </td>
+                                    <td class="list_phone">
                                         #contactItem.getphoneNumber()#
-                                    </div>
-                                    <div class="list_button">
-                                        <button type="button" value="#contactItem.getcontactId()#" onclick="openEditModal(this)" class = "contactButtons">EDIT</button>
-                                        <button type="button" value="#contactItem.getcontactId()#" onclick="deleteContact(this)" class = "contactButtons">DELETE</button>
-                                        <button type="button" value="#contactItem.getcontactId()#" onclick="openViewModal(this)" class = "contactButtons">VIEW</button>
-                                    </div>
-                                </div>
+                                    </td>
+                                    <td class="list_button">
+                                        <button type="button" 
+                                                value="#contactItem.getcontactId()#" 
+                                                onclick="openEditModal(this)" 
+                                                class = "contactButtons">
+                                            EDIT
+                                        </button>
+                                        <button type="button" 
+                                                value="#contactItem.getcontactId()#" 
+                                                onclick="deleteContact(this)" 
+                                                class = "contactButtons">
+                                            DELETE
+                                        </button>
+                                        <button type="button" 
+                                                value="#contactItem.getcontactId()#" 
+                                                onclick="openViewModal(this)" 
+                                                class = "contactButtons">
+                                            VIEW
+                                        </button>
+                                    </td>
+                                </tr>
                             </cfoutput>
                         </cfloop>
-                        
-                    </div>
+                    </table>
                 </div>
-
             </div>
         </main>
         <div class="edit_modal display_none" id="editModal">
