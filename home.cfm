@@ -7,8 +7,6 @@
         <link rel="stylesheet" href="./style/home_style.css">
         <link rel="stylesheet" href="./style/bootstrap-5.3.3-dist/css/bootstrap.min.css">
 
-
-
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
@@ -22,7 +20,7 @@
         <cfset userdetails = myObject.userDetails()>
         <cfset statusStruct = myObject.getScheduleStatus(taskName = "birthdayTask-#userDetails.email#")>
         <cfset uploadDirectory = "./Assets/contactPictues/">
-        <cfset contactRoles = myObject.getRoles()>
+        <cfset contactRoles = myObject.getAllRoles()>
 
         <cfif NOT directoryExists(expandPath(uploadDirectory))>
             <cfset directoryCreate(expandPath(uploadDirectory))>

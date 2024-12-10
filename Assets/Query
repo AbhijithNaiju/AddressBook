@@ -22,4 +22,6 @@ CREATE TABLE roles (
 );
 
 INSERT INTO roles (name) 
-VALUES ('Admin'), ('Editor'), ('Viewer');
+VALUES ('Role 1'), ('Role 2'), ('Role 3');
+
+create table contactRoles(roleid int,contactId bigint,FOREIGN KEY (roleid) REFERENCES roles(roleid),FOREIGN KEY (contactId) REFERENCES contactDetails(contactId))
