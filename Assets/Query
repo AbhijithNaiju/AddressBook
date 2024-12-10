@@ -1,0 +1,25 @@
+Create database addressBook;
+
+create table userTable(userId uniqueidentifier default newid(),fullName varchar(100),email varchar(100) unique,userName varchar(100) unique,password varchar(200),profileImage varchar(200))
+
+create table contactDetails(contactId uniqueidentifier default newid(),title varchar(20),firstName varchar(50),lastName varchar(50),gender varchar(20),DOB date,profileImage varchar(200),address varchar(100),streetName varchar(50),district varchar(50),state varchar(50),country varchar(50),pincode varchar(50),emailId varchar(100),phoneNumber varchar(100),_createdBy varchar(200),_createdOn date,_updatedBy varchar(200),_updatedOn date)
+
+ALTER TABLE userTable
+ADD PRIMARY KEY (userId);
+
+ALTER TABLE userTable alter column userId  uniqueidentifier NOT NULL
+
+
+
+
+create table userTable(userId int IDENTITY(1,1) PRIMARY KEY,fullName varchar(100),email varchar(100) unique,userName varchar(100) unique,password varchar(200),profileImage varchar(200))
+
+create table contactDetails(contactId bigint IDENTITY(1,1) PRIMARY KEY,title varchar(20),firstName varchar(50),lastName varchar(50),gender varchar(20),DOB date,profileImage varchar(200),address varchar(100),streetName varchar(50),district varchar(50),state varchar(50),country varchar(50),pincode varchar(50),emailId varchar(100),phoneNumber varchar(100),_createdBy bigint,_createdOn date,_updatedBy bigint,_updatedOn date)
+
+CREATE TABLE roles (
+    roleId INT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+INSERT INTO roles (name) 
+VALUES ('Admin'), ('Editor'), ('Viewer');

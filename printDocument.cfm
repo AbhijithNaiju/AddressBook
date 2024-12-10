@@ -1,5 +1,5 @@
 <cfset local.myObject = createObject("component", "components.addressBook")>
-<cfset local.pdfPrintData = local.myObject.getContactDetails()>    
+<cfset local.pdfPrintData = local.myObject.getAllContactDetails()>    
 
 <cfset local.folderName = "./assets/pdfFiles/">
 <cfif NOT directoryExists(expandPath("../#local.folderName#"))>
