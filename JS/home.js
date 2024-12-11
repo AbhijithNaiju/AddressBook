@@ -4,18 +4,18 @@ function printOutput(printLocation,printValue)
 }
 function openEditModal(editId)
 {
+    document.getElementById("editModal").classList.remove("display_none");
+    $('#role').multiselect({includeSelectAlloption:true,nonSelectedtText:'select options',});
     if(editId.value == "")
     {
         document.getElementById("modalFormSubmitButton").name="addContact";
         document.getElementById("modalHeading").innerHTML="CREATE CONTACT";
         document.getElementById("profileImageEdit").src = "./Assets/contactPictues/l60Hf.png";
-        document.getElementById("editModal").classList.remove("display_none");
     }
     else
     {
         document.getElementById("modalFormSubmitButton").name="editContact";
         document.getElementById("modalHeading").innerHTML="EDIT CONTACT";
-        document.getElementById("editModal").classList.remove("display_none");
         
         $.ajax({
         type:"POST",
@@ -25,11 +25,19 @@ function openEditModal(editId)
             if(result)
                 {
                     resultJson=JSON.parse(result);
+                    var roleList = resultJson.role;
+                    var roleArray = roleList.split(",");
+
                     $("#title").val(resultJson.title);
                     $("#firstName").val(resultJson.firstName);
                     $("#lastName").val(resultJson.lastName);
                     $("#gender").val(resultJson.gender);
                     $("#dateOfBirth").val(resultJson.dateOfBirth);
+                    
+
+                    $("#role").val(roleArray);
+                    $("#role").multiselect('refresh');
+                    
                     $("#profileDefault").val(resultJson.profileImage);
                     $("#address").val(resultJson.address);
                     $("#streetName").val(resultJson.streetName);
@@ -47,7 +55,7 @@ function openEditModal(editId)
                     {
                         document.getElementById("profileImageEdit").src = resultJson.profileImage;
                     }
-                    
+
                     $("#modalFormSubmitButton").val(editId.value);
                 }
             },
@@ -63,6 +71,8 @@ function closeEditModal()
         document.getElementById("editModal").classList.add("display_none");
         document.getElementById("createForm").reset();
         $('.error_message').text('');
+        $("#role").multiselect('refresh');
+
 }
 function openViewModal(viewId)
 {
