@@ -127,6 +127,7 @@ function formValidate(event)
     let firstName =  document.getElementById("firstName").value;
     let lastName =  document.getElementById("lastName").value;
     let gender =  document.getElementById("gender").value;
+    let role =  document.getElementById("role").value;
     let dateOfBirth =  document.getElementById("dateOfBirth").value;
     let address =  document.getElementById("address").value;
     let streetName =  document.getElementById("streetName").value;
@@ -138,7 +139,6 @@ function formValidate(event)
     let email =  document.getElementById("email").value;
     let profileImage = document.getElementById("profileImage").value;
     let submitButtonId = document.getElementById("modalFormSubmitButton").value;
-
     let allowedExtentions=["jpg","jpeg","png"];
     let fileExtension = String(/[^.]+$/.exec(profileImage)).toLowerCase();
 	let email_match=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -146,6 +146,7 @@ function formValidate(event)
     var firstNameError = "";
     var lastNameError = "";
     var genderError = "";
+    var roleError = "";
     var dateOfBirthError = "";
     var addressError = "";
     var streetNameError = "";
@@ -180,6 +181,12 @@ function formValidate(event)
         genderError = "Please enter the gender";
     }
     printOutput("genderError",genderError);
+
+    if(role.trim().length==0 )
+    {
+        roleError = "Please enter the role";
+    }
+    printOutput("roleError",roleError);
 
     if(dateOfBirth.trim().length==0)
     {
@@ -306,6 +313,7 @@ function formValidate(event)
         countryError != "" ||
         phoneNumberError != "" ||
         emailError != "" ||
+        roleError != "" ||
         profileImageError != "")
         {
             event.preventDefault();
@@ -337,7 +345,6 @@ function deleteContact(deleteId)
                 success: function(result) {
                     if(result)
                     {
-                        // document.getElementById(deleteId.value).style.display="none";
                         document.getElementById(deleteId.value).remove();
                     }
                 },
