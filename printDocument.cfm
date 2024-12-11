@@ -1,6 +1,5 @@
 <cfset local.myObject = createObject("component", "components.addressBook")>
 <cfset local.pdfPrintData = local.myObject.getAllContactDetails()>   
-<cfset local.roleList = "">
 
 <cfset local.folderName = "./assets/pdfFiles/">
 <cfif NOT directoryExists(expandPath("../#local.folderName#"))>
@@ -22,9 +21,6 @@
         <cfoutput>
             <cfloop query="local.pdfPrintData">
                 <cfset local.qryContactRole = local.myObject.getContactRoles(local.pdfPrintData.contactId)>
-                <cfloop query="local.qryContactRole">
-                    <cfset local.roleList = local.roleList & local.qryContactRole.name & " ">
-                </cfloop>
                 <cfif local.pdfPrintData.profileImage EQ "">
                     <cfset local.contactProfileImage = "./Assets/contactPictues/l60Hf.png">
                 <cfelse>
@@ -44,7 +40,7 @@
                         #local.pdfPrintData.address#,
                         #local.pdfPrintData.streetName#,
                         #local.pdfPrintData.district#,
-                        #local.pdfPrintData.STATE#,
+                        #local.pdfPrintData.state#,
                         #local.pdfPrintData.country#
                     </td>
                     <td>
@@ -57,7 +53,7 @@
                         #local.pdfPrintData.emailId#
                     </td>
                     <td>
-                        #local.roleList#
+                        #local.pdfPrintData.roleNames#
                     </td>
                 </tr>
             </cfloop>
