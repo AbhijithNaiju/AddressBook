@@ -307,3 +307,7 @@ body
     width: 60%;
     color: #505050;
 }
+.bootstrap-select
+{
+    width: 100% !important;
+}

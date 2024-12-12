@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="">
     </head>
     <body>
-        <cfset myObject = createObject("component","components.addressBook")> 
-        <cfset result = myObject.getBDayData(senderEmail = url.emailId)> 
+        <cfset addressBookObj = createObject("component","components.addressBook")> 
+        <cfset result = addressBookObj.getBDayData(senderEmail = url.emailId)> 
     </body>
 </html>

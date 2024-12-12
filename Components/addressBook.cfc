@@ -4,44 +4,54 @@
         <cfargument name = "contactId" default = "">
 
         <cfif arguments.contactId EQ "">
-            <cfset local.whereCondition = "_createdBy">
+            <cfset local.whereCondition = "cd._createdBy">
             <cfset local.whereValue = session.userId>
         <cfelse>
-            <cfset local.whereCondition = "contactId">
+            <cfset local.whereCondition = "cd.contactId">
             <cfset local.whereValue = arguments.contactId>
         </cfif>
 
-        <cfquery name = "qryContactDetails">
-            SELECT contactId,
-                title,
-                firstName,
-                lastName,
-                gender,
-                DOB,
-                profileImage,
-                address,
-                streetName,
-                district,
-                STATE,
-                country,
-                pincode,
-                emailId,
-                phoneNumber,
-                (SELECT STRING_AGG(name, ',')
-                    FROM contactRoles
-                    INNER JOIN roles ON roles.roleid = contactRoles.roleid
-                    WHERE contactRoles.contactId = contactDetails.contactId
-                    ) AS roleNames,
-                ( SELECT STRING_AGG(contactRoles.roleId, ',')
-                    FROM contactRoles
-                    INNER JOIN roles ON roles.roleid = contactRoles.roleid
-                    WHERE contactRoles.contactId = contactDetails.contactId
-                    ) AS roleIds
-            FROM contactDetails
-            WHERE #local.whereCondition# = <cfqueryparam value = '#local.whereValue#' cfsqltype = "cf_sql_varchar" >;
+        <cfquery name = "local.qryContactDetails">
+             SELECT cd.contactId,
+                cd.title,
+                cd.firstName,
+                cd.lastName,
+                cd.gender,
+                cd.DOB,
+                cd.profileImage,
+                cd.address,
+                cd.streetName,
+                cd.district,
+                cd.STATE,
+                cd.country,
+                cd.pincode,
+                cd.emailId,
+                cd.phoneNumber,
+                STRING_AGG(cr.roleId, ',') AS roleIds,
+                STRING_AGG(r.name, ',') AS roleNames
+            FROM contactDetails as cd
+            LEFT JOIN contactRoles as cr ON cd.contactId = cr.contactId
+            LEFT JOIN roles as r ON r.roleId = cr.roleId
+            WHERE #local.whereCondition# = <cfqueryparam value = '#local.whereValue#' cfsqltype = "cf_sql_INTEGER">
+            AND cd.active = <cfqueryparam value = 1 cfsqltype = "cf_sql_integer">
+            GROUP BY cd.contactId,
+                    cd.title,
+                    cd.firstName,
+                    cd.lastName,
+                    cd.gender,
+                    cd.DOB,
+                    cd.profileImage,
+                    cd.address,
+                    cd.streetName,
+                    cd.district,
+                    cd.STATE,
+                    cd.country,
+                    cd.pincode,
+                    cd.emailId,
+                    cd.phoneNumber;
         </cfquery>
 
-        <cfreturn qryContactDetails>
+        <cfreturn local.qryContactDetails>
     </cffunction>
 
 <!---     Get roles of specific user --->
@@ -49,11 +59,11 @@
         <cfargument  name="contactId">
         
         <cfquery name="local.qryRoles">
-            SELECT contactRoles.roleid,
-                    roles.name
-            FROM contactRoles
-            INNER JOIN roles 
-            ON contactRoles.roleId = roles.roleId
+            SELECT cr.roleid,
+                    r.name
+            FROM contactRoles as cr
+            LEFT JOIN roles as r
+            ON cr.roleId = r.roleId
             WHERE contactId = <cfqueryparam value = '#arguments.contactId#' cfsqltype = "CF_SQL_BIGINT">;
         </cfquery>
         
@@ -78,13 +88,13 @@
 
         <cfif arguments.email NEQ "">
 
-            <cfquery name="qryEmailExist" >
+            <cfquery name="local.qryEmailExist" >
                 SELECT count('email') AS emailCount
                 FROM userTable
-                WHERE email = <cfqueryparam value = '#arguments.email#' cfsqltype = "cf_sql_varchar" >;
+                WHERE email = <cfqueryparam value = '#arguments.email#' cfsqltype = "cf_sql_varchar">;
             </cfquery>
 
-            <cfif qryEmailExist.emailCount>
+            <cfif local.qryEmailExist.emailCount>
                 <cfset local.structResult["emailError"] = "Email already exists">
             <cfelse>
                 <cfset local.structResult["emailSuccess"] = "true">
@@ -94,13 +104,13 @@
 
         <cfif arguments.userName NEQ "">
 
-            <cfquery name="qryUserNameExist" >
+            <cfquery name="local.qryUserNameExist" >
                 SELECT count('userName') AS userNameCount
                 FROM userTable
-                WHERE username = <cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar" >;
+                WHERE username = <cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar">;
             </cfquery>
 
-            <cfif qryUserNameExist.userNameCount>
+            <cfif local.qryUserNameExist.userNameCount>
                 <cfset local.structResult["userNameError"] = "UserName already exists">
             <cfelse>
                 <cfset local.structResult["userNameSuccess"] = "true">
@@ -121,14 +131,14 @@
         <cfset local.structResult = structNew()>
         <cfset local.hashedPassword = hash(arguments.password, "SHA-256")> 
 
-        <cfquery name="emailCheck" >
+        <cfquery name="local.emailCheck" >
             SELECT count('email') AS userCount
             FROM userTable
-            WHERE email = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar" >
-            OR username = <cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar" >;
+            WHERE email = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar">
+            OR username = <cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar">;
         </cfquery>
 
-        <cfif emailCheck.userCount>
+        <cfif local.emailCheck.userCount>
             <cfset local.structResult["error"] = "Email or username already exists">
         <cfelse>
             <cftry>
@@ -142,11 +152,11 @@
                         profileImage
                         )
                     VALUES (
-                        <cfqueryparam value = '#arguments.fullName#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.profileImageLink#' cfsqltype = "cf_sql_varchar" >
+                        <cfqueryparam value = '#arguments.fullName#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.profileImageLink#' cfsqltype = "cf_sql_varchar">
                         );
                 </cfquery>
 
@@ -184,15 +194,16 @@
         <cfset local.structResult = structNew()>
         <cfset local.hashedPassword = hash(arguments.password, "SHA-256")> 
 
-        <cfquery name = "selectUser" >
+        <cfquery name = "local.selectUser" >
             SELECT userId
             FROM userTable
-            WHERE email = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar" >
-                AND password = <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "cf_sql_varchar" >;
+            WHERE email = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar">
+                AND password = <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "cf_sql_varchar">;
         </cfquery>
         
-        <cfif selectUser.recordcount>
-            <cfset session.userId = selectUser.userId>
+        <cfif local.selectUser.recordcount>
+            <cfset session.userId = local.selectUser.userId>
+            <cfset session.userName = local.selectUser.fullName>
             <cfset local.structResult["success"] = "success">
             <cflocation  url="./home.cfm">
         <cfelse>
@@ -202,26 +213,26 @@
         <cfreturn local.structResult>
     </cffunction>
 
-<!---     Remote logout --->
+<!---     User details for homepage --->
+    <cffunction  name="userDetails">
+
+        <cfquery name = "local.getUserDetails" >
+            SELECT  fullName,
+                    profileImage,
+                    email
+            FROM userTable
+            WHERE userId = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">;
+        </cfquery>
+
+        <cfreturn local.getUserDetails>
+    </cffunction>
+
+<!---    logout --->
     <cffunction  name="logOut"  access="remote">
 
         <cfset structClear(session)>
 
         <cfreturn true>
-    </cffunction>
-
-<!---     User details for homepage --->
-    <cffunction  name="userDetails">
-
-        <cfquery name = "getUserDetails" >
-            SELECT  fullName,
-                    profileImage,
-                    email
-            FROM userTable
-            WHERE userId = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
-        </cfquery>
-
-        <cfreturn getUserDetails>
     </cffunction>
 
 <!---     Creating contact --->
@@ -256,22 +267,22 @@
                         _createdOn
                         )
                     VALUES (
-                        <cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["firstName"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date" >,
-                        <cfqueryparam value = '#arguments.imageLink#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["state"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["country"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar" >,
-                        <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >,
-                        <cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date" >
+                        <cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["firstName"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
+                        <cfqueryparam value = '#arguments.imageLink#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["state"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["country"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">,
+                        <cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date">
                         );
                 </cfquery>
             <cfcatch type="any">
@@ -286,8 +297,8 @@
                             contactId
                         )
                         values(
-                            <cfqueryparam value = '#local.roleItem#' cfsqltype = "CF_SQL_INTEGER" >,
-                            <cfqueryparam value = '#local.insertResult.generatedkey#' cfsqltype = "CF_SQL_INTEGER" >
+                            <cfqueryparam value = '#local.roleItem#' cfsqltype = "CF_SQL_INTEGER">,
+                            <cfqueryparam value = '#local.insertResult.generatedkey#' cfsqltype = "CF_SQL_INTEGER">
                         )
                         
                     </cfquery>
@@ -320,38 +331,38 @@
         <cfelse>
 
             <!--- getting imagelink to delete --->
-            <cfquery name = "getDeleteImage">
+            <cfquery name = "local.getDeleteImage">
                 SELECT profileImage
                 FROM contactDetails
-                WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar" >;
+                WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar">;
             </cfquery>
 
             <cftry>
                 <cfquery>
                     UPDATE contactDetails
-                    SET title = <cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar" >,
-                        firstName = <cfqueryparam value = '#arguments.structForm["firstName"]#' cfsqltype = "cf_sql_varchar" >,
-                        lastName = <cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar" >,
-                        gender = <cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar" >,
-                        DOB = <cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date" >,
-                        profileImage = <cfqueryparam value = '#arguments.imageLink#' cfsqltype = "cf_sql_varchar" >,
-                        address = <cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar" >,
-                        streetName = <cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar" >,
-                        district = <cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar" >,
-                        state = <cfqueryparam value = '#arguments.structForm["state"]#' cfsqltype = "cf_sql_varchar" >,
-                        country = <cfqueryparam value = '#arguments.structForm["country"]#' cfsqltype = "cf_sql_varchar" >,
-                        pincode = <cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar" >,
-                        emailId = <cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar" >,
-                        phoneNumber = <cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar" >,
-                        _updatedBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >,
-                        _updatedOn = <cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date" >
-                    WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT" >;
+                    SET title = <cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar">,
+                        firstName = <cfqueryparam value = '#arguments.structForm["firstName"]#' cfsqltype = "cf_sql_varchar">,
+                        lastName = <cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar">,
+                        gender = <cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar">,
+                        DOB = <cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
+                        profileImage = <cfqueryparam value = '#arguments.imageLink#' cfsqltype = "cf_sql_varchar">,
+                        address = <cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar">,
+                        streetName = <cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar">,
+                        district = <cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar">,
+                        state = <cfqueryparam value = '#arguments.structForm["state"]#' cfsqltype = "cf_sql_varchar">,
+                        country = <cfqueryparam value = '#arguments.structForm["country"]#' cfsqltype = "cf_sql_varchar">,
+                        pincode = <cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar">,
+                        emailId = <cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar">,
+                        phoneNumber = <cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar">,
+                        _updatedBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">,
+                        _updatedOn = <cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date">
+                    WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT">;
 
                 </cfquery>
 
                 <!--- Deleting old image if new one is added --->
-                <cfif getDeleteImage.profileImage NEQ arguments.imageLink>
-                    <cfset local.absolutePath = expandPath("../#getDeleteImage.profileImage#")>
+                <cfif local.getDeleteImage.profileImage NEQ arguments.imageLink>
+                    <cfset local.absolutePath = expandPath("../#local.getDeleteImage.profileImage#")>
                     <cfif FileExists(local.absolutePath)>
                         <cffile  action = "delete" file = "#local.absolutePath#">
                     </cfif>
@@ -362,10 +373,10 @@
                         <cfset arrayDelete(local.roleArray, local.currentRoles.roleId)>
                     <cfelse>
                         <cfquery>
-                        DELETE 
-                        FROM contactRoles
-                        WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT" >
-                            AND roleId = <cfqueryparam value = '#local.currentRoles.roleId#' cfsqltype = "cf_sql_varchar" >;
+                            DELETE 
+                            FROM contactRoles
+                            WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT">
+                                AND roleId = <cfqueryparam value = '#local.currentRoles.roleId#' cfsqltype = "cf_sql_INTEGER">;
                         </cfquery>
                     </cfif>
                 </cfloop>
@@ -376,8 +387,8 @@
                             contactId
                         )
                         values(
-                            <cfqueryparam value = '#local.newRole#' cfsqltype = "CF_SQL_INTEGER" >,
-                            <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT" >
+                            <cfqueryparam value = '#local.newRole#' cfsqltype = "CF_SQL_INTEGER">,
+                            <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT">
                         )
                         
                     </cfquery>
@@ -393,33 +404,14 @@
     </cffunction>
 
 <!---     Delete contact from table --->
-    <cffunction  name="deleteContact" access="remote">
+    <cffunction  name="deleteContact" access="remote" returnformat = "plain">
         <cfargument  name="deleteId" type="string">
 
-        <!--- getting imagelink to delete --->
-        <cfquery name = "getDeleteImage">
-            SELECT profileImage
-            FROM contactDetails
-            WHERE contactId = <cfqueryparam value = '#arguments.deleteId#' cfsqltype = "cf_sql_varchar" >;
-        </cfquery>
-
         <cfquery>
-            DELETE 
-            FROM contactRoles
-            WHERE contactId = <cfqueryparam value = '#arguments.deleteId#' cfsqltype = "cf_sql_varchar" >;
+            UPDATE contactDetails
+            SET active = 0
+            WHERE contactId = <cfqueryparam value = '#arguments.deleteId#' cfsqltype = "cf_sql_varchar">;
         </cfquery>
-
-        <cfquery>
-            DELETE
-            FROM contactDetails
-            WHERE contactId = <cfqueryparam value = '#arguments.deleteId#' cfsqltype = "cf_sql_varchar" >;
-        </cfquery>
-        
-        <!---   Deleting image --->
-        <cfset local.absolutePath = expandPath("../#getDeleteImage.profileImage#")>
-        <cfif FileExists(local.absolutePath)>
-            <cffile  action = "delete" file = "#local.absolutePath#">
-        </cfif>
 
         <cfreturn true>
     </cffunction>
@@ -477,12 +469,17 @@
         <cfset local.structResult = structNew()>
         <cfset local.xlsData = getAllContactDetails()>
         <cfset local.folderName = "../Assets/spreadsheetFiles/">
+        <cfset local.filename = session.userName & "_" & dateTimeFormat(now(),"dd-mm-yyy-HH-nn-ss") & ".xls">
 
         <cfif NOT directoryExists(expandPath(local.folderName))>
             <cfset directoryCreate(expandPath(local.folderName))>
         </cfif>
+        <cfset QueryDeleteColumn(local.xlsData,"contactId")>
+        <cfset QueryDeleteColumn(local.xlsData,"profileImage")>
+        <cfset QueryDeleteColumn(local.xlsData,"roleIds")>
+        <cfset QueryDeleteColumn(local.xlsData,"title")>
 
-        <cfset local.filename = "contacts.xls">
+
         <cfset local.filePath = local.folderName  & local.filename>
         <cfset local.sheet = spreadsheetNew("name")>
 
@@ -492,30 +489,17 @@
                                             DOB,
                                             Address,
                                             Street Name,
-                                            Pincode,
                                             District,
                                             State,
                                             Country,
+                                            Pincode,
                                             Email ID,
                                             Phone Number,
                                             Role')>
         <cfset spreadsheetFormatRow(local.sheet, {bold=true}, 1)>
         <cfloop query="local.xlsData">
             <cfset local.roleNames = local.xlsData.roleNames>
-            <cfset spreadsheetAddRow(local.sheet, '#local.xlsData.firstName#,
-                                                    #local.xlsData.lastName#,
-                                                    #local.xlsData.gender#,
-                                                    #local.xlsData.DOB#,
-                                                    #local.xlsData.Address#,
-                                                    #local.xlsData.streetName#,
-                                                    #local.xlsData.pincode#,
-                                                    #local.xlsData.district#,
-                                                    #local.xlsData.State#,
-                                                    #local.xlsData.country#,
-                                                    #local.xlsData.emailId#,
-                                                    #local.xlsData.phoneNumber#,
-                                                    #local.roleNames#'
-                                                        )>
+            <cfset spreadsheetAddRows(local.sheet, local.xlsData)>
         </cfloop>
 
         <cfspreadsheet  action="write"  
@@ -537,34 +521,36 @@
 
         <cfset local.structResult = structNew()>
 
-        <cfquery name="qryEmailOfUser" >
+        <cfquery name="local.qryEmailOfUser" >
             SELECT email
             FROM userTable
-            WHERE userId = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
+            WHERE userId = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">;
         </cfquery>
 
-        <cfquery name="qryEmailInContacts" >
+        <cfquery name="local.qryEmailInContacts" >
             SELECT emailId,
                 contactId
             FROM contactDetails
-            WHERE _createdBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
+            WHERE _createdBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">
+            AND active = <cfqueryparam value = 1 cfsqltype = "cf_sql_integer" >;
         </cfquery>
 
-        <cfquery name="qryNumberInContacts" >
+        <cfquery name="local.qryNumberInContacts" >
             SELECT phoneNumber,
                 contactId
             FROM contactDetails
-            WHERE _createdBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >;
+            WHERE _createdBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">
+            AND active = <cfqueryparam value = 1 cfsqltype = "cf_sql_integer" >;
         </cfquery>
 
         <!---         Check email --->
-        <cfif qryEmailOfUser.email EQ arguments.email>
+        <cfif local.qryEmailOfUser.email EQ arguments.email>
             <cfset local.structResult["emailError"] = "You cant use your own email">
         </cfif>
 
-        <cfloop query="qryEmailInContacts">
-            <cfif qryEmailInContacts.emailId EQ arguments.email 
-                AND qryEmailInContacts.contactId NEQ arguments.contactId>
+        <cfloop query="local.qryEmailInContacts">
+            <cfif local.qryEmailInContacts.emailId EQ arguments.email 
+                AND local.qryEmailInContacts.contactId NEQ arguments.contactId>
                 <cfset local.structResult["emailError"] = "Email already exists for another contact">
             </cfif>
         </cfloop>
@@ -574,9 +560,9 @@
         </cfif>
 
         <!---         Check phone number --->
-        <cfloop query="qryNumberInContacts">
-            <cfif qryNumberInContacts.phoneNumber EQ arguments.phoneNumber 
-                AND qryNumberInContacts.contactId NEQ arguments.contactId>
+        <cfloop query="local.qryNumberInContacts">
+            <cfif local.qryNumberInContacts.phoneNumber EQ arguments.phoneNumber 
+                AND local.qryNumberInContacts.contactId NEQ arguments.contactId>
                 <cfset local.structResult["phoneError"] = "Phone number already exists for another contact">
             </cfif>
         </cfloop>
@@ -600,8 +586,8 @@
 
     <cffunction  name="ssoLogin" returntype = "void">
         <cfargument  name="oauthResult">
-        <cfset local.emailCheck=emailAndUNameCheck(arguments.oauthResult.other.email)>
-        <cfif structKeyExists(local.emailCheck, "emailSuccess")>
+        <cfset local.local.emailCheck=emailAndUNameCheck(arguments.oauthResult.other.email)>
+        <cfif structKeyExists(local.local.emailCheck, "emailSuccess")>
             <!--- signup --->
             <cfset userSignup(  arguments.oauthResult.name,
                                 arguments.oauthResult.other.email,
@@ -610,14 +596,16 @@
                                 arguments.oauthResult.other.picture)>
         <cfelse>
             <!--- login --->
-            <cfquery name = "selectUser" >
-                SELECT userId
+            <cfquery name = "local.selectUser" >
+                SELECT userId,
+                        fullName
                 FROM userTable
-                WHERE email = <cfqueryparam value = '#arguments.oauthResult.other.email#' cfsqltype = "cf_sql_varchar" >;
+                WHERE email = <cfqueryparam value = '#arguments.oauthResult.other.email#' cfsqltype = "cf_sql_varchar">;
             </cfquery>
             
-            <cfif selectUser.recordcount>
-                <cfset session.userId = selectUser.userId>
+            <cfif local.selectUser.recordcount>
+                <cfset session.userId = local.selectUser.userId>
+                <cfset session.userName = local.selectUser.fullName>
                 <cfset local.structResult["success"] = "success">
                 <cflocation  url="./home.cfm"  addtoken = "no">
             <cfelse>
@@ -645,28 +633,28 @@
     <cffunction  name="getBDayData" returntype = "void">
         <cfargument  name="senderEmail" type="string">
 
-        <cfquery name = "getUserId" >
+        <cfquery name = "local.getUserId" >
             SELECT userId
             FROM userTable
-            WHERE email = <cfqueryparam value = '#arguments.senderEmail#' cfsqltype = "cf_sql_varchar" >;
+            WHERE email = <cfqueryparam value = '#arguments.senderEmail#' cfsqltype = "cf_sql_varchar">;
         </cfquery>
         
-        <cfquery name = "qryBDayData">
+        <cfquery name = "local.qryBDayData">
             SELECT contactDetails.firstname,
                 contactDetails.emailId,
                 contactDetails.DOB
             FROM userTable
             INNER JOIN contactDetails ON userTable.userId = contactDetails._createdBy
-            WHERE userTable.email =  <cfqueryparam value = '#arguments.senderEmail#' cfsqltype = "cf_sql_varchar" >;
+            WHERE userTable.email =  <cfqueryparam value = '#arguments.senderEmail#' cfsqltype = "cf_sql_varchar">;
         </cfquery>
-         <cfloop query="qryBDayData"> 
-             <cfif dateFormat(qryBDayData.DOB,"dd-mm") EQ dateFormat(now(),"dd-mm")> 
+         <cfloop query="local.qryBDayData"> 
+             <cfif dateFormat(local.qryBDayData.DOB,"dd-mm") EQ dateFormat(now(),"dd-mm")> 
                 <cfmail
                     from = "abhijithtechversant@gmail.com"
-                    to = "#qryBDayData.emailId#"
-                    subject = "Birthday wishes #qryBDayData.firstname#"
+                    to = "#local.qryBDayData.emailId#"
+                    subject = "Birthday wishes #local.qryBDayData.firstname#"
                     type = "text">
-                        Happy birthday #qryBDayData.firstname#
+                        Happy birthday #local.qryBDayData.firstname#
                         <cfmailparam file = "./Assets/images/birthday-poster.jpg" disposition="attachment">
                 </cfmail>
              </cfif>

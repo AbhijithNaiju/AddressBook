@@ -6,4 +6,5 @@
     <cfproperty  name="phoneNumber">
     <cfproperty  name="contactId">
     <cfproperty  name="_createdBy">
+    <cfproperty  name="active">
 </cfcomponent>

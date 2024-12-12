@@ -25,3 +25,12 @@ INSERT INTO roles (name)
 VALUES ('Role 1'), ('Role 2'), ('Role 3');
 
 create table contactRoles(roleid int,contactId bigint,FOREIGN KEY (roleid) REFERENCES roles(roleid),FOREIGN KEY (contactId) REFERENCES contactDetails(contactId))
+
+ALTER TABLE contactDetails
+ADD active int default 1;
+
+ALTER TABLE contactDetails
+ADD deletedBy int;
+
+ALTER TABLE contactDetails
+ADD deletedOn int;

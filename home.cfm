@@ -7,19 +7,14 @@
         <link rel="stylesheet" href="./style/home_style.css">
         <link rel="stylesheet" href="./style/bootstrap-5.3.3-dist/css/bootstrap.min.css">
 
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
         <title>Home</title>
     </head>
     <body>
-        <cfset myObject = createObject("component", "components.addressBook")>
-        <cfset userdetails = myObject.userDetails()>
-        <cfset statusStruct = myObject.getScheduleStatus(taskName = "birthdayTask-#userDetails.email#")>
+        <cfset addressBookObj = createObject("component", "components.addressBook")>
+        <cfset userdetails = addressBookObj.userDetails()>
+        <cfset statusStruct = addressBookObj.getScheduleStatus(taskName = "birthdayTask-#userDetails.email#")>
         <cfset uploadDirectory = "./Assets/contactPictues/">
-        <cfset contactRoles = myObject.getAllRoles()>
+        <cfset contactRoles = addressBookObj.getAllRoles()>
 
         <cfif NOT directoryExists(expandPath(uploadDirectory))>
             <cfset directoryCreate(expandPath(uploadDirectory))>
@@ -55,7 +50,7 @@
                                 <cfset imageSrc = "">
                             </cfif>
 
-                            <cfset addContactResult = myObject.addContact(structForm = form,
+                            <cfset addContactResult = addressBookObj.addContact(structForm = form,
                                                                             imageLink = imageSrc)> 
                             <cfif structKeyExists(addContactResult, "error")>
                                 <cfoutput>#addContactResult["error"]#</cfoutput>
@@ -76,7 +71,7 @@
                                 <cfset editImageSrc = form.profileDefault>
                             </cfif>
                             
-                            <cfset editContactResult = myObject.editContact(structForm = form,
+                            <cfset editContactResult = addressBookObj.editContact(structForm = form,
                                                                             imageLink = editImageSrc)> 
                             <cfif structKeyExists(editContactResult, "error")>
                                 <cfoutput>#editContactResult["error"]#</cfoutput>
@@ -84,11 +79,11 @@
                         </cfif>
 
                         <cfif structKeyExists(form, "pauseSchedule")>
-                            <cfset myObject.pauseBirthDaySchedule(taskName = "birthdayTask-#userDetails.email#")>
+                            <cfset addressBookObj.pauseBirthDaySchedule(taskName = "birthdayTask-#userDetails.email#")>
                         </cfif>
 
                         <cfif structKeyExists(form, "resumeSchedule")>
-                            <cfset myObject.resumeBirthDaySchedule(taskName = "birthdayTask-#userDetails.email#")>
+                            <cfset addressBookObj.resumeBirthDaySchedule(taskName = "birthdayTask-#userDetails.email#")>
                         </cfif>
                     </div>
                     <div class="print_options">
@@ -145,10 +140,10 @@
                             </th>
                         </tr>
                         <cfset ormReload()>
-                        <cfset contactDetails = entityLoad("contactOrm",{_createdBy = session.userId})>
+                        <cfset contactDetails = entityLoad("contactOrm",{_createdBy = session.userId,active = 1})>
                         <cfloop array="#contactDetails#" item = "contactItem">  
                             <cfoutput>
-                                <tr class="contact_list_item" id="#contactItem.getcontactId()#">
+                                <tr class="contact_list_item">
                                     <td class="list_profile">
                                         <cfif contactItem.getprofileImage() EQ "">
                                             <cfset contactProfileImage = "./Assets/contactPictues/l60Hf.png">
@@ -236,7 +231,8 @@
                         </div>
                         <div class="width_45">
                             <label for="">Role *</label>
-                            <select class="form_element" id="role" name="role" multiple>
+<!---                       <select class="form_element" id="role" name="role" multiple> --->
+                            <select class="selectpicker" multiple data-live-search="true" required id="role" name="role">
                                 <cfoutput>
                                     <cfloop query="contactRoles">
                                         <option value="#contactRoles.roleId#">#contactRoles.name#</option>
@@ -352,7 +348,16 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@0.9.15/dist/css/bootstrap-multiselect.css">
 
         <script src="./JS/Jquery/jquery-3.7.1.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@0.9.15/dist/js/bootstrap-multiselect.min.js"></script>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css" rel="stylesheet">
+        
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+        
         <script src="./JS/home.js"></script>
     </body>
 </html>
