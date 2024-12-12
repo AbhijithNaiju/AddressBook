@@ -7,9 +7,8 @@
         <link rel="stylesheet" href="./style/home_style.css">
         <link rel="stylesheet" href="./style/bootstrap-5.3.3-dist/css/bootstrap.min.css">
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
@@ -237,7 +236,7 @@
                         </div>
                         <div class="width_45">
                             <label for="">Role *</label>
-                            <select class="form_element form-control selectpicker" id="role" name="role" multiple>
+                            <select class="form_element" id="role" name="role" multiple>
                                 <cfoutput>
                                     <cfloop query="contactRoles">
                                         <option value="#contactRoles.roleId#">#contactRoles.name#</option>
@@ -349,7 +348,11 @@
                 </div>
             </div>
         </div>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@0.9.15/dist/css/bootstrap-multiselect.css">
+
         <script src="./JS/Jquery/jquery-3.7.1.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@0.9.15/dist/js/bootstrap-multiselect.min.js"></script>
         <script src="./JS/home.js"></script>
     </body>
 </html>

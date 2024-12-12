@@ -1,5 +1,5 @@
 <cfcomponent>
-<!---     Get contacts of all contacts created by a user --->
+<!---     Get details of all contacts created by a user --->
     <cffunction  name="getAllContactDetails" returntype = "query">
         <cfargument name = "contactId" default = "">
 
@@ -26,7 +26,17 @@
                 country,
                 pincode,
                 emailId,
-                phoneNumber
+                phoneNumber,
+                (SELECT STRING_AGG(name, ',')
+                    FROM contactRoles
+                    INNER JOIN roles ON roles.roleid = contactRoles.roleid
+                    WHERE contactRoles.contactId = contactDetails.contactId
+                    ) AS roleNames,
+                ( SELECT STRING_AGG(contactRoles.roleId, ',')
+                    FROM contactRoles
+                    INNER JOIN roles ON roles.roleid = contactRoles.roleid
+                    WHERE contactRoles.contactId = contactDetails.contactId
+                    ) AS roleIds
             FROM contactDetails
             WHERE #local.whereCondition# = <cfqueryparam value = '#local.whereValue#' cfsqltype = "cf_sql_varchar" >;
         </cfquery>
@@ -34,6 +44,7 @@
         <cfreturn qryContactDetails>
     </cffunction>
 
+<!---     Get roles of specific user --->
     <cffunction  name="getContactRoles" returnType = "query">
         <cfargument  name="contactId">
         
@@ -48,6 +59,16 @@
         
         <cfreturn local.qryRoles>
     </cffunction>
+
+<!---     Get all roles for from role table --->
+    <cffunction  name="getAllRoles" returntype="query">
+        <cfquery name = "local.contactRoles">
+            SELECT roleId,name
+            FROM roles;
+        </cfquery>
+        <cfreturn local.contactRoles>
+    </cffunction>
+
 <!---     Checker email or username already exists during signup --->
     <cffunction  name="emailAndUNameCheck" returnformat="JSON" access="remote">
         <cfargument  name = "email" type = "string"> 
@@ -215,7 +236,7 @@
             <cfset local.structResult["error"] = "Error email or phone already exists">
         <cfelse>
             <cftry>
-                <cfquery>
+                <cfquery result = "local.insertResult">
                     INSERT INTO contactDetails (
                         title,
                         firstName,
@@ -226,7 +247,7 @@
                         address,
                         streetName,
                         district,
-                        STATE,
+                        State,
                         country,
                         pincode,
                         emailId,
@@ -266,10 +287,7 @@
                         )
                         values(
                             <cfqueryparam value = '#local.roleItem#' cfsqltype = "CF_SQL_INTEGER" >,
-                            (SELECT contactId 
-                            FROM contactDetails
-                            WHERE emailId =  <cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar" >
-                                AND _createdBy = <cfqueryparam value = '#session.userId#' cfsqltype = "CF_SQL_BIGINT">)
+                            <cfqueryparam value = '#local.insertResult.generatedkey#' cfsqltype = "CF_SQL_INTEGER" >
                         )
                         
                     </cfquery>
@@ -287,8 +305,8 @@
     <cffunction  name="editContact" returntype="struct">
         <cfargument  name="structForm" type="struct">
         <cfargument  name="imageLink" type="string">
-        <cfdump  var="#structForm#">
 
+        <cfset local.currentRoles = getContactRoles(arguments.structForm["editContact"])>
         <cfset local.structResult = structNew()>
         <cfset local.updateDate = dateformat(now(),"yyyy-mm-dd")>
         <cfset local.checkEmailResult = checkEmailAndNumberExist(   arguments.structForm["email"],
@@ -327,7 +345,7 @@
                         phoneNumber = <cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar" >,
                         _updatedBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT" >,
                         _updatedOn = <cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date" >
-                    WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar" >;
+                    WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT" >;
 
                 </cfquery>
 
@@ -338,11 +356,31 @@
                         <cffile  action = "delete" file = "#local.absolutePath#">
                     </cfif>
                 </cfif>
-
-                <cfloop query="query name">
+                <cfset local.roleArray = listToArray(arguments.structForm["role"],",")>
+                <cfloop query="local.currentRoles">
+                    <cfif arrayContains(local.roleArray, local.currentRoles.roleId)>
+                        <cfset arrayDelete(local.roleArray, local.currentRoles.roleId)>
+                    <cfelse>
+                        <cfquery>
+                        DELETE 
+                        FROM contactRoles
+                        WHERE contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT" >
+                            AND roleId = <cfqueryparam value = '#local.currentRoles.roleId#' cfsqltype = "cf_sql_varchar" >;
+                        </cfquery>
+                    </cfif>
                 </cfloop>
-                <cfloop list="#arguments.structForm["role"]#" item="local.roleItem" delimiters = ",">
-                    <cfdump  var = "#local.roleItem#">
+                <cfloop array="#local.roleArray#" item="local.newRole">
+                    <cfquery>
+                        INSERT INTO contactRoles(
+                            roleId,
+                            contactId
+                        )
+                        values(
+                            <cfqueryparam value = '#local.newRole#' cfsqltype = "CF_SQL_INTEGER" >,
+                            <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT" >
+                        )
+                        
+                    </cfquery>
                 </cfloop>
 
             <cfcatch type="any">
@@ -390,12 +428,7 @@
     <cffunction  name="getViewData" access="remote" returnformat="JSON">
         <cfargument  name="viewId" type="string">
 
-        <cfset local.roleList = "">
         <cfset local.contactDetail = getAllContactDetails(arguments.viewId)>
-        <cfset local.qryContactRole = getContactRoles(arguments.viewId)>
-        <cfloop query="local.qryContactRole">
-            <cfset local.roleList = local.roleList & local.qryContactRole.name & " ">
-        </cfloop>
         <cfset local.structResult = structNew("ordered")>
 
         <cfset local.structResult["Name"] = local.contactDetail.title & " " & local.contactDetail.firstName & " " & local.contactDetail.lastName> 
@@ -404,7 +437,7 @@
         <cfset local.structResult["profileImage"] = local.contactDetail.profileImage>
         <cfset local.structResult["Address"] = local.contactDetail.address & ", " & local.contactDetail.streetName & ", " & local.contactDetail.district & ", " & local.contactDetail.state & ", " &local.contactDetail.country>
         <cfset local.structResult["Pincode"] = local.contactDetail.pincode>
-        <cfset local.structResult["Roles"] = local.roleList>
+        <cfset local.structResult["Roles"] = local.contactDetail.roleNames>
         <cfset local.structResult["Email Id"] = local.contactDetail.emailId>
         <cfset local.structResult["Phone Number"] = local.contactDetail.phoneNumber>
 
@@ -416,6 +449,7 @@
         <cfargument  name="editId" type="string">
 
         <cfset local.contactDetail = getAllContactDetails(arguments.editId)>
+        <cfset local.qryContactRole = getContactRoles(arguments.editId)>
         <cfset local.structResult = structNew("ordered")>
 
         <cfset local.structResult["title"] = local.contactDetail.title> 
@@ -432,6 +466,7 @@
         <cfset local.structResult["country"] = local.contactDetail.country>
         <cfset local.structResult["email"] = local.contactDetail.emailId>
         <cfset local.structResult["phoneNumber"] = local.contactDetail.phoneNumber>
+        <cfset local.structResult["role"] = local.contactDetail.roleIds>
 
         <cfreturn local.structResult>
     </cffunction>
@@ -440,21 +475,9 @@
     <cffunction  name="createSpreadsheet" access="remote" returnformat="json">
 
         <cfset local.structResult = structNew()>
-
         <cfset local.xlsData = getAllContactDetails()>
-        <cfset local.myColumnValues = ArrayNew(1)>
-
-        <cfloop query="local.xlsData">
-            <cfset local.roleList = "">
-            <cfset local.qryContactRole = getContactRoles(local.xlsData.contactId)>
-            <cfloop query="local.qryContactRole">
-                <cfset local.roleList = local.roleList & local.qryContactRole.name & " ">
-            </cfloop>
-            <cfset arrayAppend(local.mycolumnValues, local.roleList)>
-        </cfloop>
-        <cfset QueryAddColumn(local.xlsData,"userRole","varchar",myColumnValues)>
-
         <cfset local.folderName = "../Assets/spreadsheetFiles/">
+
         <cfif NOT directoryExists(expandPath(local.folderName))>
             <cfset directoryCreate(expandPath(local.folderName))>
         </cfif>
@@ -477,7 +500,23 @@
                                             Phone Number,
                                             Role')>
         <cfset spreadsheetFormatRow(local.sheet, {bold=true}, 1)>
-        <cfset spreadsheetAddRows(local.sheet, xlsData)>
+        <cfloop query="local.xlsData">
+            <cfset local.roleNames = local.xlsData.roleNames>
+            <cfset spreadsheetAddRow(local.sheet, '#local.xlsData.firstName#,
+                                                    #local.xlsData.lastName#,
+                                                    #local.xlsData.gender#,
+                                                    #local.xlsData.DOB#,
+                                                    #local.xlsData.Address#,
+                                                    #local.xlsData.streetName#,
+                                                    #local.xlsData.pincode#,
+                                                    #local.xlsData.district#,
+                                                    #local.xlsData.State#,
+                                                    #local.xlsData.country#,
+                                                    #local.xlsData.emailId#,
+                                                    #local.xlsData.phoneNumber#,
+                                                    #local.roleNames#'
+                                                        )>
+        </cfloop>
 
         <cfspreadsheet  action="write"  
                         filename="#expandpath(local.filePath)#" 
@@ -644,14 +683,6 @@
             </cfif>
         </cfloop>
         <cfreturn local.statusStruct>
-    </cffunction>
-
-    <cffunction  name="getAllRoles" returntype="query">
-        <cfquery name = "local.contactRoles">
-            SELECT roleId,name
-            FROM roles;
-        </cfquery>
-        <cfreturn local.contactRoles>
     </cffunction>
 
 </cfcomponent>
