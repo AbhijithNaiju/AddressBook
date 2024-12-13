@@ -8,8 +8,6 @@
         <title>Sign UP</title>
     </head>
     <body>
-        <cfset addressBookObj = createObject("component","components.addressBook")>
-        <cfset uploadDirectory = "./Assets/uploads/">
         <main class="main">
             <div class="header">
 
@@ -65,33 +63,12 @@
                         </div>
                         <div id="profileImageError" class="error_message"></div>
 
-                        <input type="submit" onclick="signUpValidate(event)" id = "submitButton" name="submitButton"  class="submit_btn" value="REGISTER">
+                        <input type="button" onclick="signUpValidate(event)" id = "submitButton" name="submitButton"  class="submit_btn" value="REGISTER">
 
                         <div class="register_link">
                             Already have an account? <a href="login.cfm">Login</a> 
                         </div>
-                        <cfif structKeyExists(form, "submitButton")>
-                            <cfif NOT directoryExists(expandPath(uploadDirectory))>
-                                <cfset directoryCreate(expandPath(uploadDirectory))>
-                            </cfif>
-                            <cffile action="upload"
-                                    filefield="form.profileImage"
-                                    destination="#expandPath(uploadDirectory)#"
-                                    nameconflict="makeunique"
-                                    result="fileDetails">
-                            <cfset profileImageSrc = uploadDirectory & fileDetails.serverfile>
-
-                            <cfset result = addressBookObj.userSignup(fullName = form.fullName,
-                                                                emailId = form.emailId,
-                                                                userName = form.userName,
-                                                                password = form.password,
-                                                                profileImageLink = profileImageSrc)>
-                            <cfif structKeyExists(result,"error")> 
-                                <cfoutput>
-                                    <div class = "text-center text-danger" >#result["error"]#</div>
-                                </cfoutput>
-                            </cfif>
-                        </cfif>
+                        <div class = "text-center text-danger" id="signupError"></div>
                     </form>
                 </div>
             </div>

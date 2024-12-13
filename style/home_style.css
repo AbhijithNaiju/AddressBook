@@ -176,7 +176,7 @@ body
 }
 .display_none
 {
-    display: none;
+    display: none !important;
 }
 .edit_form_body
 {
@@ -310,4 +310,97 @@ body
 .bootstrap-select
 {
     width: 100% !important;
+}
+.openExcel
+{
+    background-color: #1D6F42 !important;
+    color: #fff !important;
+}
+#excelModal
+{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #969696a2;
+    justify-content: center;
+    display: flex;
+}
+.excelModalBody
+{
+    width: 50%;
+    height: 60%;
+    top: 8vh;
+    border-radius: 5px;
+    background-color: #fff;
+    position: relative;
+    box-sizing: border-box;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.getExcelBtns
+{
+    margin-left: auto;
+}
+.getExcelBtns button
+{
+    padding: 4px 10px;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+    margin: 10px 5px;
+} 
+.dataTemplateBtn
+{
+    background-color: #4993d3;
+}
+.plainTemplateBtn
+{
+    background-color: #5caa7f;
+}
+.excelModalHeading
+{
+    width: 70%;
+    color: #5b95c9;
+    font-weight: bold;
+    font-size: 20px;
+    border-bottom: 2px solid #4993d3;
+}
+.excelModalContent
+{
+    margin: auto 0;
+}
+.excelModalInput
+{
+    margin: 20px 0;
+    color: #337AB7;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+}
+.excelModalInput label
+{
+    margin-bottom:0;
+}
+.uploadExcel
+{
+    margin-top: 30px;
+}
+.uploadExcel button
+{
+    border-radius: 20px;
+    padding: 5px 15px;
+    border: 1px solid #337AB7;
+}
+.closeExcelModal
+{
+    background: none;
+    color: #337AB7;
+}
+.submitExcel
+{
+    background-color: #337AB7;
+    color: #fff;
 }
