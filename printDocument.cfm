@@ -1,11 +1,11 @@
-<cfset local.myObject = createObject("component", "components.addressBook")>
-<cfset local.pdfPrintData = local.myObject.getAllContactDetails()>   
+<cfset local.addressBookObj = createObject("component", "components.addressBook")>
+<cfset local.pdfPrintData = local.addressBookObj.getAllContactDetails()>   
 
 <cfset local.folderName = "./assets/pdfFiles/">
 <cfif NOT directoryExists(expandPath("../#local.folderName#"))>
     <cfset directoryCreate(expandPath("../#local.folderName#"))>
 </cfif>
-<cfset local.filename = "contacts.pdf">
+<cfset local.filename = session.userName & "_" & dateTimeFormat(now(),"dd-mm-yyy-HH-nn-ss") & ".pdf">
 <cfdocument  format="PDF" filename="#local.folderName##local.filename#" overwrite="true">
     <table border="2" >
         <tr>
@@ -20,7 +20,7 @@
         </tr>
         <cfoutput>
             <cfloop query="local.pdfPrintData">
-                <cfset local.qryContactRole = local.myObject.getContactRoles(local.pdfPrintData.contactId)>
+                <cfset local.qryContactRole = local.addressBookObj.getContactRoles(local.pdfPrintData.contactId)>
                 <cfif local.pdfPrintData.profileImage EQ "">
                     <cfset local.contactProfileImage = "./Assets/contactPictues/l60Hf.png">
                 <cfelse>

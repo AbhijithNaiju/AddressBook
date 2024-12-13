@@ -8,7 +8,7 @@
         <title>Sign UP</title>
     </head>
     <body>
-        <cfset myObject = createObject("component","components.addressBook")>
+        <cfset addressBookObj = createObject("component","components.addressBook")>
         <cfset uploadDirectory = "./Assets/uploads/">
         <main class="main">
             <div class="header">
@@ -81,7 +81,7 @@
                                     result="fileDetails">
                             <cfset profileImageSrc = uploadDirectory & fileDetails.serverfile>
 
-                            <cfset result = myObject.userSignup(fullName = form.fullName,
+                            <cfset result = addressBookObj.userSignup(fullName = form.fullName,
                                                                 emailId = form.emailId,
                                                                 userName = form.userName,
                                                                 password = form.password,
