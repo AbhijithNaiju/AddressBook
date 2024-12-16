@@ -77,14 +77,6 @@
                                 <cfoutput>#editContactResult["error"]#</cfoutput>
                             </cfif>
                         </cfif>
-
-                        <cfif structKeyExists(form, "pauseSchedule")>
-                            <cfset addressBookObj.pauseBirthDaySchedule(taskName = "birthdayTask-#userDetails.email#")>
-                        </cfif>
-
-                        <cfif structKeyExists(form, "resumeSchedule")>
-                            <cfset addressBookObj.resumeBirthDaySchedule(taskName = "birthdayTask-#userDetails.email#")>
-                        </cfif>
                     </div>
                     <div class="print_options">
                         <button  name="printPdfBtn" onclick="printPdf()">
@@ -112,13 +104,7 @@
                         <button onclick="openEditModal(this)" class="create_button" value="">
                             CREATE CONTACT
                         </button>
-                        <form method="post">
-                            <cfif statusStruct["status"] EQ "Running">
-                                <button name="pauseSchedule" class="btn btn-danger">Pause Schedule</button>
-                            <cfelse>
-                                <button name="resumeSchedule" class="btn btn-primary">Resume Schedule</button>
-                            </cfif>
-                        </form>
+                        <button onclick="openExcelModal()" class="openExcel btn">Upload Contact</button>
                     </div>
 
                     <table class="contact_list" id="contactList">
@@ -344,20 +330,37 @@
                 </div>
             </div>
         </div>
+        <div class="excelModal display_none" id = "excelModal">
+            <div class="excelModalBody">
+                <div class="getExcelBtns">
+                    <button class="dataTemplateBtn">Template with data</button>
+                    <button class="plainTemplateBtn">Plain template</button>
+                </div>
+                <div class = "excelModalContent">
+                    <div class="excelModalHeading">
+                        Upload Excel File
+                    </div>
+                    <div class="excelModalInput">
+                        <label for="excelInput">Upload Excel *</label>
+                        <input type="file"  class="" name="excelInput" id="excelInput">
+                        <div class="error_message" id="excelUploadError"></div>
+                    </div>
+                    <div class="uploadExcel">
+                        <button class="submitExcel">SUBMIT</button>
+                        <button class="closeExcelModal" onclick="closeExcelModal()">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@0.9.15/dist/css/bootstrap-multiselect.css">
 
         <script src="./JS/Jquery/jquery-3.7.1.js"></script>
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css" rel="stylesheet">
-        
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
-        
         <script src="./JS/home.js"></script>
     </body>
 </html>

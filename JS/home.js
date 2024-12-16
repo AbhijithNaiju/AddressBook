@@ -435,3 +435,12 @@ function downloadFile(fileUrl, fileName)
     spreadsheetlink.click();
     spreadsheetlink.remove();
 }
+
+function openExcelModal()
+{
+    document.getElementById("excelModal").classList.remove("display_none");
+}
+function closeExcelModal()
+{
+    document.getElementById("excelModal").classList.add("display_none");
+}
