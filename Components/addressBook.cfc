@@ -440,9 +440,10 @@
 
 <!---     Creating spreadsheet with user defiined name --->
     <cffunction  name="createSpreadsheet" access="remote" returnformat="json">
+        <cfargument  name="contactData">
 
-        <cfset local.structResult = structNew()>
         <cfset local.xlsData = getAllContactDetails()>
+        <cfset local.structResult = structNew()>
         <cfset local.folderName = "../Assets/spreadsheetFiles/">
         <cfset local.filename = session.userName & "_" & dateTimeFormat(now(),"dd-mm-yyy-HH-nn-ss") & ".xls">
 
@@ -458,24 +459,12 @@
         <cfset local.filePath = local.folderName  & local.filename>
         <cfset local.sheet = spreadsheetNew("name")>
 
-        <cfset spreadsheetAddRow(local.sheet,'First Name,
-                                            Last Name,
-                                            Gender,
-                                            DOB,
-                                            Address,
-                                            Street Name,
-                                            District,
-                                            State,
-                                            Country,
-                                            Pincode,
-                                            Email ID,
-                                            Phone Number,
-                                            Role')>
+        <cfset spreadsheetAddRow(local.sheet,'First Name,Last Name,Gender,DOB,Address,Street Name,District,State,Country,Pincode,Email ID,Phone Number,Role')>
         <cfset spreadsheetFormatRow(local.sheet, {bold=true}, 1)>
-        <cfloop query="local.xlsData">
-            <cfset local.roleNames = local.xlsData.roleNames>
+
+        <cfif arguments.contactData>
             <cfset spreadsheetAddRows(local.sheet, local.xlsData)>
-        </cfloop>
+        </cfif>
 
         <cfspreadsheet  action="write"  
                         filename="#expandpath(local.filePath)#" 
@@ -484,8 +473,18 @@
         <cfset local.structResult["spreadsheetUrl"] = "Assets/spreadsheetFiles/" & local.filename>
         <cfset local.structResult["spreadsheetName"] = local.filename>
 
-    <cfreturn local.structResult>
+        <cfreturn local.structResult>
 
+    </cffunction>
+
+    <cffunction  name="uploadContact" returnformat = "JSON" access = "remote">
+        <cfargument  name="excelFile">
+            <cfspreadsheet  action="read" 
+                            src = "#arguments.excelFile#" 
+                            headerrow="1" 
+                            excludeHeaderRow = "true" 
+                            query  = "local.excelQuery">
+        <cfreturn local.excelQuery>
     </cffunction>
 
 <!---     Checking esistence of email and phonenumber before create or add contact --->

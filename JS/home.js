@@ -366,17 +366,81 @@ function deleteContact(deleteId)
         }
 }
 
-function createSpreadsheet()
-{
+function createSpreadsheet(){
     if(confirm("Download as spredsheet"))
     $.ajax({
         type:"POST",
         url:"./Components/addressBook.cfc?method=createSpreadsheet",
+        data: {contactData: true},
         success: function(result) {
             resultJson=JSON.parse(result);
             if(resultJson.spreadsheetUrl)
             {
                 downloadFile(resultJson.spreadsheetUrl,resultJson.spreadsheetName)
+            }
+            else
+            {
+                alert("An Error occured")
+            }
+        },
+        error:function()
+        {
+            alert("An error occured")
+        }
+    });
+}
+
+function uploadSpreadSheet(){
+    var excelUploadError = ""
+    const allowedExtentions = ["xlsx","xls"];
+    var excelFile = document.getElementById("excelInput").files[0];
+    if (excelFile) 
+    {
+        fileExtension = String(/[^.]+$/.exec(excelFile.name));
+        if(allowedExtentions.includes(fileExtension.toLowerCase()))
+        {
+            const excelformData = new FormData();
+            excelformData.append("excelFile",excelFile);
+            
+            $.ajax({
+                type: "POST",
+                url: "./components/addressBook.cfc?method=uploadContact",
+                data: excelformData,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    resultJson = JSON.parse(result);
+                    alert(result)
+                },
+                error: function() {
+                    printOutput("excelUploadError", "Excel Upload Error");
+                }
+            });
+        }
+        else
+        {
+            excelUploadError = "Only xlsx & xls files are allowed";
+        }
+    }
+    else
+    {
+        excelUploadError = "Please enter a file"
+    }
+    printOutput("excelUploadError",excelUploadError);
+
+}
+
+function createPlainTemp(){
+    if(confirm("Download as spredsheet"))
+        $.ajax({
+    type:"POST",
+    data: {contactData: false},
+    url:"./Components/addressBook.cfc?method=createSpreadsheet",
+    success: function(result) {
+        resultJson=JSON.parse(result);
+            if(resultJson.spreadsheetUrl)
+            {
+                downloadFile(resultJson.spreadsheetUrl,"Plain_Template")
             }
             else
             {
@@ -443,4 +507,7 @@ function openExcelModal()
 function closeExcelModal()
 {
     document.getElementById("excelModal").classList.add("display_none");
+    excelUploadError = "";
+    printOutput("excelUploadError",excelUploadError);
+    $("#excelInput").val("");
 }
