@@ -330,11 +330,11 @@
                 </div>
             </div>
         </div>
-        <div class="excelModal display_none" id = "excelModal">
+        <div class="excelModal " id = "excelModal">
             <div class="excelModalBody">
                 <div class="getExcelBtns">
-                    <button class="dataTemplateBtn">Template with data</button>
-                    <button class="plainTemplateBtn">Plain template</button>
+                    <button class="dataTemplateBtn" onclick = "createSpreadsheet()">Template with data</button>
+                    <button class="plainTemplateBtn" onclick = "createPlainTemp()">Plain template</button>
                 </div>
                 <div class = "excelModalContent">
                     <div class="excelModalHeading">
@@ -346,7 +346,7 @@
                         <div class="error_message" id="excelUploadError"></div>
                     </div>
                     <div class="uploadExcel">
-                        <button class="submitExcel">SUBMIT</button>
+                        <button class="submitExcel" onclick = "uploadSpreadSheet()">SUBMIT</button>
                         <button class="closeExcelModal" onclick="closeExcelModal()">CLOSE</button>
                     </div>
                 </div>
