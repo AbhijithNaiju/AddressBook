@@ -477,7 +477,7 @@
 
     </cffunction>
 
-    <cffunction  name="uploadContact" returnformat = "JSON" access = "remote">
+    <cffunction name="uploadContact" returnformat = "JSON" access = "remote">
         <cfargument  name="excelFile">
             <cfspreadsheet  action="read" 
                             src = "#arguments.excelFile#" 
@@ -488,10 +488,10 @@
     </cffunction>
 
 <!---     Checking esistence of email and phonenumber before create or add contact --->
-    <cffunction  name="checkEmailAndNumberExist" returnformat="JSON" access="remote">
-        <cfargument  name="email" type="string" default="">
-        <cfargument  name="phoneNumber" type="string" default="">
-        <cfargument  name="contactId" type="string" default="">
+    <cffunction name="checkEmailAndNumberExist" returnformat="JSON" access="remote">
+        <cfargument name="email" type="string" default="">
+        <cfargument name="phoneNumber" type="string" default="">
+        <cfargument name="contactId" type="string" default="">
 
         <cfset local.structResult = structNew()>
 
