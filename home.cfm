@@ -38,20 +38,7 @@
                     <div class="text-center text-danger d-flex align-items-center m-auto error_message">
                         <cfif structKeyExists(form, "addContact")>
 
-                            <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
-
-                                <cffile action="upload"
-                                        filefield="form.profileImage"
-                                        destination="#expandPath(uploadDirectory)#"
-                                        nameconflict="makeunique"
-                                        result="fileDetails">
-                                <cfset imageSrc = uploadDirectory & fileDetails.serverfile>
-                            <cfelse>
-                                <cfset imageSrc = "">
-                            </cfif>
-
-                            <cfset addContactResult = addressBookObj.addContact(structForm = form,
-                                                                            imageLink = imageSrc)> 
+                            <cfset addContactResult = addressBookObj.addContact(structForm = form)> 
                             <cfif structKeyExists(addContactResult, "error")>
                                 <cfoutput>#addContactResult["error"]#</cfoutput>
                             </cfif>

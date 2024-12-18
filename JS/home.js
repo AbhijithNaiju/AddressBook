@@ -280,14 +280,14 @@ function formValidate(event)
     }
     printOutput("emailError",emailError);
 
-    if(emailError == "" || phoneNumberError == "") {
+    if(emailError == "") {
         $.ajax({
             type:"POST",
-            url:"./components/addressBook.cfc?method=checkEmailAndNumberExist",
-            data: {email:email,phoneNumber:phoneNumber,contactId:submitButtonId},
+            url:"./components/addressBook.cfc?method=checkEmailExist",
+            data: {email:email,contactId:submitButtonId},
             success: function(result) {
                 resultJson=JSON.parse(result);
-                if(resultJson.phoneSuccess && resultJson.emailSuccess) {
+                if(resultJson.emailSuccess) {
                     document.getElementById("modalFormSubmitButton").type="submit";
                 }
                 else {
@@ -298,8 +298,6 @@ function formValidate(event)
                     }
                     else if(resultJson.phoneError)
                         alert(resultJson.phoneError);
-                    if(resultJson.phoneError)
-                        printOutput("phoneNumberError",resultJson.phoneError);
                 }
             },
             error:function() {
