@@ -16,7 +16,7 @@ function openEditModal(editId)
     }
     else
     {
-        document.getElementById("modalFormSubmitButton").name="editContact";
+        document.getElementById("modalFormSubmitButton").name="editContactId";
         document.getElementById("modalHeading").innerHTML="EDIT CONTACT";
         
         $.ajax({
@@ -391,14 +391,14 @@ function createSpreadsheet(){
 function uploadSpreadSheet(){
     var excelUploadError = ""
     const allowedExtentions = ["xlsx","xls"];
-    var excelFile = document.getElementById("excelInput").files[0];
-    if (excelFile) 
+    var inputFile = document.getElementById("excelInput").files[0];
+    if (inputFile) 
     {
-        fileExtension = String(/[^.]+$/.exec(excelFile.name));
+        fileExtension = String(/[^.]+$/.exec(inputFile.name));
         if(allowedExtentions.includes(fileExtension.toLowerCase()))
         {
             const excelformData = new FormData();
-            excelformData.append("excelFile",excelFile);
+            excelformData.append("inputFile",inputFile);
             
             $.ajax({
                 type: "POST",
@@ -407,8 +407,13 @@ function uploadSpreadSheet(){
                 processData: false,
                 contentType: false,
                 success: function(result) {
+                    alert("hh")
                     resultJson = JSON.parse(result);
-                    alert(result)
+                    alert(resultJson)
+                    // if(resultJson.resultFileUrl && resultJson.resultFileName)
+                    // {
+                        downloadFile(resultJson.resultFileUrl,resultJson.resultFileName)
+                    // }
                 },
                 error: function() {
                     printOutput("excelUploadError", "Excel Upload Error");

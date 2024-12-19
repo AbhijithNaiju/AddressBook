@@ -198,14 +198,14 @@
         <cfset local.createDate = dateformat(now(),"yyyy-mm-dd")>
         <cfset local.checkEmailResult = checkEmailExist(arguments.structForm["email"])>
 
-        <cfset uploadDirectory = "./Assets/contactPictues/">
+        <cfset local.uploadDirectory = "./Assets/contactPictues/">
         <cfif structKeyExists(arguments.structForm, "profileImage") && len(arguments.structForm.profileImage)>
             <cffile action="upload"
-            filefield="arguments.structForm.profileImage"
-            destination="#expandPath(uploadDirectory)#"
+            filefield="profileImage"
+            destination="#expandPath(local.uploadDirectory)#"
             nameconflict="makeunique"
             result="fileDetails">
-            <cfset local.imageSrc = uploadDirectory & fileDetails.serverfile>
+            <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
         <cfelse>
             <cfset local.imageSrc = "">
         </cfif>
@@ -284,20 +284,28 @@
 <!---     Edit contact details --->
     <cffunction  name="editContact" returntype="struct">
         <cfargument  name="structForm" type="struct">
-        <cfargument  name="imageLink" type="string">
-        <cfargument  name="emailId" type="string" required = "false">
 
-        <cfif structKeyExists(arguments, "emailId")>
-            <cfset local.updateCondition = "emailId">
-            <cfset local.updateValue = "expression">
+        <cfset local.uploadDirectory = "./Assets/contactPictues/">
+
+        <cfif structKeyExists(arguments.structForm, "profileImage") && len(arguments.structForm.profileImage)>
+            <cffile action="upload"
+            filefield="profileImage"
+            destination="#expandPath(local.uploadDirectory)#"
+            nameconflict="makeunique"
+            result="fileDetails">
+            <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
+        <cfelseif structKeyExists(arguments.structForm,"profileDefault")>
+            <cfset local.imageSrc = arguments.structForm.profileDefault>
+        <cfelse>
+            <cfset local.imageSrc = "">
         </cfif>
 
-        <cfset local.currentRoles = getContactRoles(arguments.structForm["editContact"])>
+        <cfset local.currentRoles = getContactRoles(arguments.structForm["editContactId"])>
         <cfset local.structResult = structNew()>
         <cfset local.updateDate = dateformat(now(),"yyyy-mm-dd")>
         <cfset local.checkEmailResult = checkEmailExist(arguments.structForm["email"],
-                                                                arguments.structForm["editContact"]
-                                                                )>
+                                                        arguments.structForm["editContactId"]
+                                                        )>
 
         <cfif structKeyExists(local.checkEmailResult, "phoneError") 
             OR structKeyExists(local.checkEmailResult, "emailError")>
@@ -311,7 +319,7 @@
                 FROM 
                     contactDetails
                 WHERE 
-                    contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "cf_sql_varchar">;
+                    contactId = <cfqueryparam value = '#arguments.structForm["editContactId"]#' cfsqltype = "cf_sql_varchar">;
             </cfquery>
 
             <cftry>
@@ -324,7 +332,7 @@
                         lastName = <cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar">,
                         gender = <cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar">,
                         DOB = <cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
-                        profileImage = <cfqueryparam value = '#arguments.imageLink#' cfsqltype = "cf_sql_varchar">,
+                        profileImage = <cfqueryparam value = '#local.imageSrc#' cfsqltype = "cf_sql_varchar">,
                         address = <cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar">,
                         streetName = <cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar">,
                         district = <cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar">,
@@ -336,13 +344,13 @@
                         _updatedBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">,
                         _updatedOn = <cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date">
                     WHERE
-                        contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT">
-                        AND _createdby = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT">;
+                        contactId = <cfqueryparam value = '#arguments.structForm["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
+                        AND _createdby = <cfqueryparam value = '#session.userId#' cfsqltype = "CF_SQL_BIGINT">;
 
                 </cfquery>
 
                 <!--- Deleting old image if new one is added --->
-                <cfif local.getDeleteImage.profileImage NEQ arguments.imageLink>
+                <cfif local.getDeleteImage.profileImage NEQ local.imageSrc>
                     <cfset local.absolutePath = expandPath("../#local.getDeleteImage.profileImage#")>
                     <cfif FileExists(local.absolutePath)>
                         <cffile  action = "delete" file = "#local.absolutePath#">
@@ -360,7 +368,7 @@
                             FROM 
                                 contactRoles
                             WHERE 
-                                contactId = <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT">
+                                contactId = <cfqueryparam value = '#arguments.structForm["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
                                 AND roleId = <cfqueryparam value = '#local.currentRoles.roleId#' cfsqltype = "cf_sql_INTEGER">;
                         </cfquery>
                     </cfif>
@@ -375,7 +383,7 @@
                             )
                         values(
                             <cfqueryparam value = '#local.newRole#' cfsqltype = "CF_SQL_INTEGER">,
-                            <cfqueryparam value = '#arguments.structForm["editContact"]#' cfsqltype = "CF_SQL_BIGINT">
+                            <cfqueryparam value = '#arguments.structForm["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
                         )
                         
                     </cfquery>
@@ -470,13 +478,12 @@
         <cfset QueryDeleteColumn(local.xlsData,"contactId")>
         <cfset QueryDeleteColumn(local.xlsData,"profileImage")>
         <cfset QueryDeleteColumn(local.xlsData,"roleIds")>
-        <cfset QueryDeleteColumn(local.xlsData,"title")>
 
 
         <cfset local.filePath = local.folderName  & local.filename>
         <cfset local.sheet = spreadsheetNew("name")>
 
-        <cfset spreadsheetAddRow(local.sheet,'First Name,Last Name,Gender,DOB,Address,Street Name,District,State,Country,Pincode,Email ID,Phone Number,Role')>
+        <cfset spreadsheetAddRow(local.sheet,'Title,First Name,Last Name,Gender,DOB,Address,Street Name,District,State,Country,Pincode,Email ID,Phone Number,Role')>
         <cfset spreadsheetFormatRow(local.sheet, {bold=true}, 1)>
 
         <cfif arguments.contactData>
@@ -492,16 +499,6 @@
 
         <cfreturn local.structResult>
 
-    </cffunction>
-
-    <cffunction name="uploadContact" returnformat = "JSON" access = "remote">
-        <cfargument  name="excelFile">
-            <cfspreadsheet  action="read" 
-                            src = "#arguments.excelFile#" 
-                            headerrow="1" 
-                            excludeHeaderRow = "true" 
-                            query  = "local.excelQuery">
-        <cfreturn local.excelQuery>
     </cffunction>
 
 <!---     Checking esistence of email before create or add contact --->
@@ -729,4 +726,175 @@
         
         <cfreturn local.structResult>
     </cffunction>
+    <cffunction  name="uploadContact" returnFormat = "JSON" access = "remote">
+        <cfargument  name="inputFile">
+
+        <cfspreadsheet  action="read" 
+                        src = "#arguments.inputFile#" 
+                        headerrow="1" 
+                        excludeHeaderRow = "true" 
+                        query = "local.excelValues">
+
+        <cfset local.resultStruct = structNew()>
+        <cfset local.structContactDetails = structNew()>
+
+        <cfquery name = "local.existingEmails" datasource = "addressBook">
+            SELECT 
+                contactId,emailId 
+            FROM
+                contactDetails
+            WHERE 
+                active = <cfqueryparam value = '1' cfsqltype = "cf_sql_integer">
+                AND _createdBy = <cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_integer">
+        </cfquery>
+
+        <cfquery name = "local.existingRoles" datasource = "addressBook">
+            SELECT 
+                roleId,name 
+            FROM 
+                roles
+        </cfquery>
+
+        <cfset local.headingArray = ["Title","First Name","Last Name","Gender","DOB","Address","Street Name","District","State","Country","Pincode","Email ID","Phone Number","Role"]>
+        <cfset local.arrayExistingGender = ["Male","Female"]>
+        <cfset local.arrayExistingTitle = ["mr","mrs"]>
+        <cfset local.arrayExistingEmails = valueArray(local.existingEmails,"emailId")>
+        <cfset local.arrayExistingRoles = valueArray(local.existingRoles,"name")>
+        <cfset local.emailPattern = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+        <cfset local.arrayResultColumn = arrayNew(1)>
+        <cfset local.errorArray = arrayNew(1)>
+
+        <cfloop query="local.excelValues">
+            <cfset local.missingArray = arrayNew(1)>
+            <cfset local.errorArray = arrayNew(1)>
+
+            <cfloop array="#local.headingArray#" item="local.headingArrayItem">
+
+                <cfif NOT structKeyExists(local.excelValues, local.headingArrayItem)>
+                    <cfset local.resultStruct["error"] = "Missing Column #local.headingArrayItem#">
+                    <cfreturn local.resultStruct>
+                </cfif>
+
+                <cfif local.excelValues[local.headingArrayItem].toString() EQ "">
+                    <cfset arrayAppend(local.missingArray , local.headingArrayItem)>
+                <cfelse>
+                    <cfif local.headingArrayItem EQ "Email Id" AND reFindNoCase(local.emailPattern, local.excelValues[local.headingArrayItem].toString()) EQ false>
+                        <cfset arrayAppend(local.errorArray, local.headingArrayItem)>
+
+                    <cfelseif (local.headingArrayItem EQ "pincode" OR local.headingArrayItem EQ "Phone Number") AND NOT isNumeric(local.excelValues[local.headingArrayItem].toString())>
+                        <cfset arrayAppend(local.errorArray, local.headingArrayItem)>
+
+                    <cfelseif local.headingArrayItem EQ "pincode" AND local.excelValues[local.headingArrayItem].toString().len() NEQ 6>
+                        <cfset arrayAppend(local.errorArray, local.headingArrayItem)>
+
+                    <cfelseif local.headingArrayItem EQ "Phone Number" AND local.excelValues[local.headingArrayItem].toString().len() NEQ 10>
+                        <cfset arrayAppend(local.errorArray, local.headingArrayItem)>
+
+                    <cfelseif local.headingArrayItem EQ "Role">
+
+                        <cfloop list="#local.excelValues["Role"].toString()#" item="local.roleItem" delimiters = ",">
+                            <cfif NOT arrayFindNoCase(local.arrayExistingRoles, local.roleItem)>
+                                <cfset arrayAppend(local.errorArray, local.headingArrayItem)>
+                            </cfif>
+                        </cfloop>
+
+                    <cfelseif local.headingArrayItem EQ "Title">
+
+                        <cfif NOT arrayFindNoCase(local.arrayExistingTitle, trim(local.excelValues[local.headingArrayItem].toString()))>
+                            <cfset arrayAppend(local.errorArray, local.headingArrayItem)>
+                        </cfif>
+                    <cfelseif local.headingArrayItem EQ "Gender">
+
+                        <cfif NOT arrayFindNoCase(local.arrayExistingGender, trim(local.excelValues[local.headingArrayItem].toString())) >
+                            <cfset arrayAppend(local.errorArray, local.headingArrayItem)>
+                        </cfif>
+
+                    </cfif>
+
+                </cfif>
+
+            </cfloop>
+
+            <cfif NOT arrayIsEmpty(local.missingArray)>
+                <cfset local.arrayResultColumn[local.excelValues.currentRow] = "Missing columns - " & arrayToList(local.missingArray,',')>
+            <cfelseif NOT arrayIsEmpty(local.errorArray)>
+                <cfset local.arrayResultColumn[local.excelValues.currentRow] = "Error values - " & arrayToList(local.errorArray,',')>
+            <cfelse>
+
+                <cfset local.roleIds = arrayNew(1)>
+                <cfset local.structContactDetails["title"] = local.excelValues["Title"].toString()> 
+                <cfset local.structContactDetails["firstName"] = local.excelValues["First Name"].toString()>
+                <cfset local.structContactDetails["lastName"] = local.excelValues["Last Name"].toString()>
+                <cfset local.structContactDetails["gender"] = local.excelValues["Gender"].toString()>
+                <cfset local.structContactDetails["dateOfBirth"] = local.excelValues["DOB"].toString()>
+                <cfset local.structContactDetails["address"] = local.excelValues["Address"].toString()>
+                <cfset local.structContactDetails["streetName"] = local.excelValues["Street Name"].toString()>
+                <cfset local.structContactDetails["pincode"] = local.excelValues["Pincode"].toString()>
+                <cfset local.structContactDetails["district"] = local.excelValues["District"].toString()>
+                <cfset local.structContactDetails["state"] = local.excelValues["State"].toString()>
+                <cfset local.structContactDetails["country"] = local.excelValues["Country"].toString()>
+                <cfset local.structContactDetails["email"] = local.excelValues["Email Id"].toString()>
+                <cfset local.structContactDetails["phoneNumber"] = local.excelValues["Phone Number"].toString()>
+                <cfset local.structContactDetails["profileImage"] = "">
+
+                <cfloop list="#local.excelValues["role"].toString()#" item="local.RoleItem">
+
+                    <cfquery name = "local.qryGetRoleId" dbtype= "query">
+                        SELECT 
+                            roleId 
+                        FROM 
+                            local.existingRoles
+                        WHERE 
+                            name = <cfqueryparam value = '#local.RoleItem#' cfsqltype = "cf_sql_varchar">
+                    </cfquery>
+
+                    <cfset arrayAppend(local.roleIds, local.qryGetRoleId.roleId)>
+                </cfloop>
+
+                <cfset local.structContactDetails["role"] = arrayToList(local.roleIds,',')>
+
+                <cfif arrayFindNoCase(local.arrayExistingEmails, local.excelValues["email Id"].toString())>
+                    <cfquery name = "local.qryGetContactId" dbtype = "query">
+                        SELECT 
+                            contactId 
+                        FROM 
+                            local.existingEmails
+                        WHERE 
+                            emailId = <cfqueryparam value = '#local.excelValues["Email Id"].toString()#' cfsqltype = "cf_sql_varchar">
+                    </cfquery>
+
+                    <cfset local.structContactDetails["editContactId"] = local.qryGetContactId.contactId> 
+                    <cfset local.updateResult = editContact(structForm = structContactDetails)>
+                    <cfif structKeyExists(local.updateResult, "Error")>
+                        <cfset local.arrayResultColumn[local.excelValues.currentRow] = "Error while updating">
+                    <cfelse>
+                        <cfset local.arrayResultColumn[local.excelValues.currentRow] = "Updated">
+                    </cfif>
+                <cfelse>
+                    <cfset local.createResult = addContact(structContactDetails)>
+                    <cfif structKeyExists(local.createResult, "Error")>
+                        <cfset local.arrayResultColumn[local.excelValues.currentRow] = "Added">
+                    </cfif>
+                </cfif>
+            </cfif>
+        </cfloop>
+        <cfset queryAddColumn(local.excelValues, "Result", local.arrayResultColumn)>
+
+
+        <cfset local.folderName = "../Assets/spreadsheetFiles/">
+        <cfset local.fileName = "upload_result.xlsx">
+        <cfset local.filePath = local.folderName  & local.fileName>
+        <cfset local.sheet = spreadsheetNew("name")>
+        <cfset spreadsheetAddRows(local.sheet, local.excelValues)>
+
+        <cfspreadsheet  action="write"  
+                        filename="#expandpath(local.filePath)#" 
+                        name="local.sheet"
+                        overwrite="true">
+
+        <cfset local.resultStruct["resultFileUrl"] = local.filePath>
+        <cfset local.resultStruct["resultFileName"] = local.fileName>
+        <cfreturn local.resultStruct>
+    </cffunction>
+
 </cfcomponent>

@@ -45,21 +45,11 @@
 
                         </cfif>
 
-                        <cfif structKeyExists(form, "editContact")>
+                        <cfif structKeyExists(form, "editContactId")>
 
-                            <cfif structKeyExists(form, "profileImage") AND len(form.profileImage)>
-                            <cffile action="upload"
-                                    filefield="form.profileImage"
-                                    destination="#expandPath(uploadDirectory)#"
-                                    nameconflict="makeunique"
-                                    result="fileDetails">
-                            <cfset editImageSrc = uploadDirectory & fileDetails.serverfile>
-                            <cfelse>
-                                <cfset editImageSrc = form.profileDefault>
-                            </cfif>
+
                             
-                            <cfset editContactResult = addressBookObj.editContact(structForm = form,
-                                                                            imageLink = editImageSrc)> 
+                            <cfset editContactResult = addressBookObj.editContact(structForm = form)> 
                             <cfif structKeyExists(editContactResult, "error")>
                                 <cfoutput>#editContactResult["error"]#</cfoutput>
                             </cfif>
@@ -175,8 +165,8 @@
                             <label for="">Title *</label>
                             <select class="form_element" id="title" name="title">
                                 <option value=""></option>
-                                <option value="Mr ">Mr</option>
-                                <option value="Mrs ">Mrs</option>
+                                <option value="Mr">Mr</option>
+                                <option value="Mrs">Mrs</option>
                             </select>
                             <div class="error_message" id="titleError"></div>
                         </div>
