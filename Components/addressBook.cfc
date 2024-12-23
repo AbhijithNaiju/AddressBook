@@ -217,22 +217,22 @@
                 <cfquery result = "local.insertResult">
                     INSERT INTO 
                         contactDetails (
-                        title,
-                        firstName,
-                        lastName,
-                        gender,
-                        DOB,
-                        profileImage,
-                        address,
-                        streetName,
-                        district,
-                        State,
-                        country,
-                        pincode,
-                        emailId,
-                        phoneNumber,
-                        _createdBy,
-                        _createdOn
+                            title,
+                            firstName,
+                            lastName,
+                            gender,
+                            DOB,
+                            profileImage,
+                            address,
+                            streetName,
+                            district,
+                            State,
+                            country,
+                            pincode,
+                            emailId,
+                            phoneNumber,
+                            _createdBy,
+                            _createdOn
                         )
                     VALUES (
                         <cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar">,
@@ -529,6 +529,7 @@
         <cfreturn local.structResult>
     </cffunction>
 
+<!---     Download contacts as pdf --->
     <cffunction  name="createPdf"  access="remote" returnformat="json">
         <cfset local.structResult = structNew()>
 
@@ -539,6 +540,7 @@
         <cfreturn local.structResult> 
     </cffunction>
 
+<!---     Google sso login --->
     <cffunction  name="ssoLogin" returntype = "void">
         <cfargument  name="oauthResult">
         <cfset local.local.emailCheck=emailAndUNameCheck(arguments.oauthResult.other.email)>
@@ -572,6 +574,7 @@
         </cfif>
     </cffunction>
 
+<!---     resume birthday schedule --->
     <cffunction  name="resumeBirthDaySchedule" returnType = "string">
         <cfargument  name="taskName">
         <cfschedule 
@@ -580,6 +583,7 @@
             overwrite="true">
     </cffunction>
 
+<!---     Pause birthday scedule --->
     <cffunction  name="pauseBirthDaySchedule" returnType = "string">
         <cfargument  name="taskName">
         <cfschedule 
@@ -588,6 +592,7 @@
             overwrite="true">
     </cffunction>
 
+<!---     Get data for birthday data --->
     <cffunction  name="getBDayData" returntype = "void">
         <cfargument  name="senderEmail" type="string">
 
@@ -637,6 +642,7 @@
         <cfreturn local.statusStruct>
     </cffunction>
 
+<!---     User signup --->
     <cffunction  name="userSignup" access="remote" returnformat = "JSON">
         <cfargument  name="fullName">
         <cfargument  name="emailId">
@@ -708,6 +714,8 @@
         
         <cfreturn local.structResult>
     </cffunction>
+
+<!---     Excel upload contact --->
     <cffunction  name="uploadContact" returnFormat = "JSON" access = "remote">
         <cfargument  name="inputFile" required = "True">
 
@@ -723,11 +731,12 @@
         <cfset local.resultStruct["updateCount"] = 0>
         <cfset local.structContactDetails = structNew()>
         <cfset local.qryExistingRoles = getAllRoles()>
-        <cfset local.arrayExistingRoles = valueArray(local.qryExistingRoles,"name")>
         <cfset local.structExistingRoles = structNew()>
+
         <cfloop query="local.qryExistingRoles">
             <cfset local.structExistingRoles[local.qryExistingRoles.name] = local.qryExistingRoles.roleId>
         </cfloop>
+
         <cfquery name = "local.existingEmails">
             SELECT 
                 contactId,emailId 
@@ -736,8 +745,12 @@
             WHERE 
                 active = <cfqueryparam value = '1' cfsqltype = "cf_sql_integer">
                 AND _createdBy = <cfqueryparam value = '#session.userId#' cfsqltype = "cf_sql_integer">
-        </cfquery>
-        <cfset local.arrayExistingEmails = valueArray(local.existingEmails,"emailId")>
+         </cfquery>
+
+        <cfloop query="local.existingEmails">
+            <cfset local.structExistingEmails[local.existingEmails.emailId] = local.existingEmails.contactId>
+        </cfloop>
+
         <cfif structKeyExists(local.excelValues, "Result")>
             <cfset queryDeleteColumn(local.excelValues,"Result")>
         </cfif>
@@ -845,18 +858,11 @@
                 </cfloop>
                 <cfset local.structContactDetails["role"] = arrayToList(local.roleIds,',')>
 
-                <cfif arrayFindNoCase(local.arrayExistingEmails, local.excelValues["email Id"].toString())>
+                <cfif structKeyExists(local.structExistingEmails, local.excelValues["email Id"].toString())>
 
                     <!---   Email already exists(update contact) --->
-                    <cfquery name = "local.qryGetContactId" dbtype = "query">
-                        SELECT 
-                            contactId 
-                        FROM 
-                            local.existingEmails
-                        WHERE 
-                            emailId = <cfqueryparam value = '#local.excelValues["Email Id"].toString()#' cfsqltype = "cf_sql_varchar">
-                    </cfquery>
-                    <cfset local.structContactDetails["editContactId"] = local.qryGetContactId.contactId> 
+
+                    <cfset local.structContactDetails["editContactId"] = local.structExistingEmails[local.excelValues["email Id"].toString()]> 
 
                     <cfset local.updateResult = editContact(structForm = structContactDetails)>
 
@@ -908,23 +914,19 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
+<!---     Sort function for excel query --->
     <cffunction  name="sortExcelResult" returnType = "numeric">
         <cfargument  name="row1">
         <cfargument  name="row2">
 
         <cfset local.resultOrder = {"Updated": 2, "Added": 3}>
-        <cfif structKeyExists(local.resultOrder, arguments.row1.Result)>
-            <cfset local.input1 = local.resultOrder[arguments.row1.Result]>
-        <cfelse>
-            <cfset local.input1 = 1>
+        <cfif NOT structKeyExists(local.resultOrder, arguments.row1.Result)>
+            <cfset local.resultOrder[arguments.row1.Result] = 0>
+        </cfif>
+        <cfif NOT structKeyExists(local.resultOrder, arguments.row2.Result)>
+            <cfset local.resultOrder[arguments.row2.Result] = 0>
         </cfif>
 
-        <cfif structKeyExists(local.resultOrder, arguments.row2.Result)>
-            <cfset local.input2 = local.resultOrder[arguments.row2.Result]>
-        <cfelse>
-            <cfset local.input2 = 1>
-        </cfif>
-
-        <cfreturn compare(local.input1,local.input2)>
+        <cfreturn compare(local.resultOrder[arguments.row1.Result],local.resultOrder[arguments.row2.Result])>
     </cffunction>
 </cfcomponent>
