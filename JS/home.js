@@ -389,6 +389,9 @@ function createSpreadsheet(){
 }
 
 function uploadSpreadSheet(){
+    printOutput("downloadLink","");
+    printOutput("excelUploadError","");
+    printOutput("excelUploadResult","");
     var excelUploadError = ""
     const allowedExtentions = ["xlsx","xls"];
     var inputFile = document.getElementById("excelInput").files[0];
@@ -407,13 +410,21 @@ function uploadSpreadSheet(){
                 processData: false,
                 contentType: false,
                 success: function(result) {
-                    alert("hh")
                     resultJson = JSON.parse(result);
-                    alert(resultJson)
-                    // if(resultJson.resultFileUrl && resultJson.resultFileName)
-                    // {
-                        downloadFile(resultJson.resultFileUrl,resultJson.resultFileName)
-                    // }
+                    if(resultJson.error)
+                    {
+                        printOutput("excelUploadError", resultJson.error);
+                    }
+                    else{
+                        if(resultJson.resultFileUrl && resultJson.resultFileName)
+                            {
+                                var downloadLink = document.getElementById("downloadLink");
+                                downloadLink.innerHTML = "Download result";
+                                downloadLink.setAttribute('download', resultJson.resultFileName);
+                                downloadLink.href = resultJson.resultFileUrl;
+                            }
+                            printOutput("excelUploadResult","Contacts created :"+resultJson.createCount +"<br>Updated contacts :"+resultJson.updateCount+ "<br>Errors :" + resultJson.errorCount);
+                    }
                 },
                 error: function() {
                     printOutput("excelUploadError", "Excel Upload Error");
@@ -495,22 +506,24 @@ function printPage()
 
 function downloadFile(fileUrl, fileName) 
 {
-    var spreadsheetlink = document.createElement("a");
-    spreadsheetlink.setAttribute('download', fileName);
-    spreadsheetlink.href = fileUrl;
-    document.body.appendChild(spreadsheetlink);
-    spreadsheetlink.click();
-    spreadsheetlink.remove();
+    var downloadLink = document.createElement("a");
+    downloadLink.setAttribute('download', fileName);
+    downloadLink.href = fileUrl;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
 }
 
 function openExcelModal()
 {
     document.getElementById("excelModal").classList.remove("display_none");
 }
+
 function closeExcelModal()
 {
     document.getElementById("excelModal").classList.add("display_none");
-    excelUploadError = "";
-    printOutput("excelUploadError",excelUploadError);
+    printOutput("downloadLink","");
+    printOutput("excelUploadError","");
     $("#excelInput").val("");
+    printOutput("excelUploadResult","");
 }

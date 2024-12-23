@@ -187,8 +187,8 @@
                             <label for="">Gender *</label>
                             <select class="form_element" id="gender" name="gender">
                                 <option value=""></option>
-                                <option value="Male ">Male</option>
-                                <option value="Female ">Female</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
                             </select>
                             <div class="error_message" id="genderError"></div>
                         </div>
@@ -307,7 +307,7 @@
                 </div>
             </div>
         </div>
-        <div class="excelModal " id = "excelModal">
+        <div class="excelModal display_none" id = "excelModal">
             <div class="excelModalBody">
                 <div class="getExcelBtns">
                     <button class="dataTemplateBtn" onclick = "createSpreadsheet()">Template with data</button>
@@ -317,11 +317,13 @@
                     <div class="excelModalHeading">
                         Upload Excel File
                     </div>
-                    <div class="excelModalInput">
+                    <div class="excelModalInput" id = "excelModalInput">
                         <label for="excelInput">Upload Excel *</label>
                         <input type="file"  class="" name="excelInput" id="excelInput">
                         <div class="error_message" id="excelUploadError"></div>
                     </div>
+                        <div class="" id="excelUploadResult"></div>
+                        <a href = "" id = "downloadLink"></a>
                     <div class="uploadExcel">
                         <button class="submitExcel" onclick = "uploadSpreadSheet()">SUBMIT</button>
                         <button class="closeExcelModal" onclick="closeExcelModal()">CLOSE</button>
