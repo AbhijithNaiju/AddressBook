@@ -45,7 +45,7 @@
 
                         </cfif>
 
-                        <cfif structKeyExists(form, "editContactId")>
+<!---                         <cfif structKeyExists(form, "editContactId")> 
 
 
                             
@@ -53,7 +53,7 @@
                             <cfif structKeyExists(editContactResult, "error")>
                                 <cfoutput>#editContactResult["error"]#</cfoutput>
                             </cfif>
-                        </cfif>
+                         </cfif> --->
                     </div>
                     <div class="print_options">
                         <button  name="printPdfBtn" onclick="printPdf()">
@@ -280,7 +280,7 @@
 
                     <div class="modal_buttons">
                         <button onclick="closeEditModal()" type="button">Cancel</button>
-                        <button type="button" onclick="formValidate(event)" id="modalFormSubmitButton">Submit</button>
+                        <button type="button"  id="modalFormSubmitButton">Submit</button>
                     </div>
 
                 </form>

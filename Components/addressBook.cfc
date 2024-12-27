@@ -912,4 +912,9 @@
 
         <cfreturn compare(local.resultOrder[arguments.row1.Result],local.resultOrder[arguments.row2.Result])>
     </cffunction>
+
+    <cffunction  name="editContactTest" access = "remote" returnFormat = "json">
+        <cfargument  name="formData">
+        <cfdump  var="#arguments#">
+    </cffunction>
 </cfcomponent>

@@ -131,22 +131,22 @@ function closeViewModal()
     $('.error_message').text('');
 }
 
-function formValidate(event)
+$('#createForm').click(function(event)
 {
-    let title =  document.getElementById("title").value;
-    let firstName =  document.getElementById("firstName").value;
-    let lastName =  document.getElementById("lastName").value;
-    let gender =  document.getElementById("gender").value;
-    let role =  document.getElementById("role").value;
-    let dateOfBirth =  document.getElementById("dateOfBirth").value;
-    let address =  document.getElementById("address").value;
-    let streetName =  document.getElementById("streetName").value;
-    let pincode =  document.getElementById("pincode").value;
-    let district =  document.getElementById("district").value;
-    let state =  document.getElementById("state").value;
-    let country =  document.getElementById("country").value;
-    let phoneNumber =  document.getElementById("phoneNumber").value;
-    let email =  document.getElementById("email").value;
+    let title = document.getElementById("title").value;
+    let firstName = document.getElementById("firstName").value;
+    let lastName = document.getElementById("lastName").value;
+    let gender = document.getElementById("gender").value;
+    let role = document.getElementById("role").value;
+    let dateOfBirth = document.getElementById("dateOfBirth").value;
+    let address = document.getElementById("address").value;
+    let streetName = document.getElementById("streetName").value;
+    let pincode = document.getElementById("pincode").value;
+    let district = document.getElementById("district").value;
+    let state = document.getElementById("state").value;
+    let country = document.getElementById("country").value;
+    let phoneNumber = document.getElementById("phoneNumber").value;
+    let email = document.getElementById("email").value;
     let profileImage = document.getElementById("profileImage").value;
     let submitButtonId = document.getElementById("modalFormSubmitButton").value;
     let allowedExtentions=["jpg","jpeg","png"];
@@ -166,7 +166,7 @@ function formValidate(event)
     var countryError = "";
     var phoneNumberError = "";
     var emailError = "";
-
+    
     if(title.trim().length==0)
     {
         titleError = "Please enter title";
@@ -280,33 +280,33 @@ function formValidate(event)
     }
     printOutput("emailError",emailError);
 
-    if(emailError == "") {
-        $.ajax({
-            type:"POST",
-            url:"./components/addressBook.cfc?method=checkEmailExist",
-            data: {email:email,contactId:submitButtonId},
-            success: function(result) {
-                resultJson=JSON.parse(result);
-                if(resultJson.emailSuccess) {
-                    document.getElementById("modalFormSubmitButton").type="submit";
-                }
-                else {
-                    document.getElementById("modalFormSubmitButton").type="button";
-                    if(resultJson.emailError){
-                        printOutput("emailError",resultJson.emailError);
-                        alert(resultJson.emailError);
-                    }
-                    else if(resultJson.phoneError)
-                        alert(resultJson.phoneError);
-                }
-            },
-            error:function() {
-                printOutput("emailError","Error occured");
-                printOutput("phoneNumberError","Error occured");
-                document.getElementById("modalFormSubmitButton").type="button";
-            }
-        });
-    }
+    // if(emailError == "") {
+    //     $.ajax({
+    //         type:"POST",
+    //         url:"./components/addressBook.cfc?method=checkEmailExist",
+    //         data: {email:email,contactId:submitButtonId},
+    //         success: function(result) {
+    //             resultJson=JSON.parse(result);
+    //             if(resultJson.emailSuccess) {
+    //                 document.getElementById("modalFormSubmitButton").type="submit";
+    //             }
+    //             else {
+    //                 document.getElementById("modalFormSubmitButton").type="button";
+    //                 if(resultJson.emailError){
+    //                     printOutput("emailError",resultJson.emailError);
+    //                     alert(resultJson.emailError);
+    //                 }
+    //                 else if(resultJson.phoneError)
+    //                     alert(resultJson.phoneError);
+    //             }
+    //         },
+    //         error:function() {
+    //             printOutput("emailError","Error occured");
+    //             printOutput("phoneNumberError","Error occured");
+    //             document.getElementById("modalFormSubmitButton").type="button";
+    //         }
+    //     });
+    // }
     
     if( titleError  != "" ||
         firstNameError  != "" ||
@@ -326,7 +326,32 @@ function formValidate(event)
         {
             event.preventDefault();
         }
-}
+    else
+    {
+        if(document.getElementById("modalFormSubmitButton").name == "editContactId")
+        {
+            const formData = new FormData(this);
+            formData.append("contactId", submitButtonId);
+            if (!profileImage) {
+                profileDefault = document.getElementById("profileDefault").value;
+                formData.append("profileDefault", profileDefault);
+            }
+            
+            $.ajax({
+                type: "POST",
+                url: "./components/addressBook.cfc?method=editContactTest",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    alert(result);
+                    // console.log(result);
+                }
+            });
+        }
+
+    }
+})
 
 function logout()
 {
