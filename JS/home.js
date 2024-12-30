@@ -131,7 +131,7 @@ function closeViewModal()
     $('.error_message').text('');
 }
 
-$('#createForm').click(function(event)
+function submitEditModal(event)
 {
     let title = document.getElementById("title").value;
     let firstName = document.getElementById("firstName").value;
@@ -330,12 +330,9 @@ $('#createForm').click(function(event)
     {
         if(document.getElementById("modalFormSubmitButton").name == "editContactId")
         {
-            const formData = new FormData(this);
+            var formElement = document.getElementById("createForm");
+            const formData = new FormData(formElement);
             formData.append("contactId", submitButtonId);
-            if (!profileImage) {
-                profileDefault = document.getElementById("profileDefault").value;
-                formData.append("profileDefault", profileDefault);
-            }
             
             $.ajax({
                 type: "POST",
@@ -351,7 +348,7 @@ $('#createForm').click(function(event)
         }
 
     }
-})
+}
 
 function logout()
 {

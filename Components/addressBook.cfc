@@ -914,7 +914,10 @@
     </cffunction>
 
     <cffunction  name="editContactTest" access = "remote" returnFormat = "json">
-        <cfargument  name="formData">
+        <cfargument  name="structForm">
+
+
+
         <cfdump  var="#arguments#">
     </cffunction>
 </cfcomponent>

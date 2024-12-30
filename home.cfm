@@ -194,7 +194,6 @@
                         </div>
                         <div class="width_45">
                             <label for="">Role *</label>
-<!---                       <select class="form_element" id="role" name="role" multiple> --->
                             <select class="selectpicker" multiple data-live-search="true" required id="role" name="role">
                                 <cfoutput>
                                     <cfloop query="contactRoles">
@@ -280,7 +279,7 @@
 
                     <div class="modal_buttons">
                         <button onclick="closeEditModal()" type="button">Cancel</button>
-                        <button type="button"  id="modalFormSubmitButton">Submit</button>
+                        <button type="button" onclick="submitEditModal(this)" id="modalFormSubmitButton">Submit</button>
                     </div>
 
                 </form>
