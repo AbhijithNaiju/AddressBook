@@ -20,7 +20,6 @@
             <cfset directoryCreate(expandPath(uploadDirectory))>
         </cfif>
 
-        <main class="main position_absolute">
             <div class="header">
                 <a href="" class="logo">
                     <img src="./Assets/images/contact_book_logo.png" alt="Image not found">
@@ -33,28 +32,9 @@
                     </button>
                 </div>
             </div>
+        <main class="main position_absolute">
             <div class="home_body">
                 <div class="home_header">
-                    <div class="text-center text-danger d-flex align-items-center m-auto error_message">
-                        <cfif structKeyExists(form, "addContact")>
-
-                            <cfset addContactResult = addressBookObj.addContact(structForm = form)> 
-                            <cfif structKeyExists(addContactResult, "error")>
-                                <cfoutput>#addContactResult["error"]#</cfoutput>
-                            </cfif>
-
-                        </cfif>
-
-<!---                         <cfif structKeyExists(form, "editContactId")> 
-
-
-                            
-                            <cfset editContactResult = addressBookObj.editContact(structForm = form)> 
-                            <cfif structKeyExists(editContactResult, "error")>
-                                <cfoutput>#editContactResult["error"]#</cfoutput>
-                            </cfif>
-                         </cfif> --->
-                    </div>
                     <div class="print_options">
                         <button  name="printPdfBtn" onclick="printPdf()">
                             <img src="./Assets/images/acrobat.png" alt="Image not found">
@@ -281,6 +261,7 @@
                         <button onclick="closeEditModal()" type="button">Cancel</button>
                         <button type="button" onclick="submitEditModal(this)" id="modalFormSubmitButton">Submit</button>
                     </div>
+                    <div class="error_message" id="editModalError"></div>
 
                 </form>
                 <div class="edit_form_image">

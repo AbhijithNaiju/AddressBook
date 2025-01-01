@@ -131,7 +131,7 @@ function closeViewModal()
     $('.error_message').text('');
 }
 
-function submitEditModal(event)
+function submitEditModal(contactId)
 {
     let title = document.getElementById("title").value;
     let firstName = document.getElementById("firstName").value;
@@ -148,7 +148,6 @@ function submitEditModal(event)
     let phoneNumber = document.getElementById("phoneNumber").value;
     let email = document.getElementById("email").value;
     let profileImage = document.getElementById("profileImage").value;
-    let submitButtonId = document.getElementById("modalFormSubmitButton").value;
     let allowedExtentions=["jpg","jpeg","png"];
     let fileExtension = String(/[^.]+$/.exec(profileImage)).toLowerCase();
 	let email_match=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -166,6 +165,7 @@ function submitEditModal(event)
     var countryError = "";
     var phoneNumberError = "";
     var emailError = "";
+    var profileImageError = "";
     
     if(title.trim().length==0)
     {
@@ -279,73 +279,55 @@ function submitEditModal(event)
         emailError = "Please enter a valid email";
     }
     printOutput("emailError",emailError);
-
-    // if(emailError == "") {
-    //     $.ajax({
-    //         type:"POST",
-    //         url:"./components/addressBook.cfc?method=checkEmailExist",
-    //         data: {email:email,contactId:submitButtonId},
-    //         success: function(result) {
-    //             resultJson=JSON.parse(result);
-    //             if(resultJson.emailSuccess) {
-    //                 document.getElementById("modalFormSubmitButton").type="submit";
-    //             }
-    //             else {
-    //                 document.getElementById("modalFormSubmitButton").type="button";
-    //                 if(resultJson.emailError){
-    //                     printOutput("emailError",resultJson.emailError);
-    //                     alert(resultJson.emailError);
-    //                 }
-    //                 else if(resultJson.phoneError)
-    //                     alert(resultJson.phoneError);
-    //             }
-    //         },
-    //         error:function() {
-    //             printOutput("emailError","Error occured");
-    //             printOutput("phoneNumberError","Error occured");
-    //             document.getElementById("modalFormSubmitButton").type="button";
-    //         }
-    //     });
-    // }
     
-    if( titleError  != "" ||
-        firstNameError  != "" ||
-        lastNameError  != "" ||
-        genderError  != "" ||
-        dateOfBirthError  != "" ||
-        addressError  != "" ||
-        streetNameError != "" ||
-        pincodeError != "" ||
-        districtError != "" ||
-        stateError != "" ||
-        countryError != "" ||
-        phoneNumberError != "" ||
-        emailError != "" ||
-        roleError != "" ||
-        profileImageError != "")
-        {
-            event.preventDefault();
-        }
-    else
+    if( titleError  == "" &&
+        firstNameError  == "" &&
+        lastNameError  == "" &&
+        genderError  == "" &&
+        dateOfBirthError  == "" &&
+        addressError  == "" &&
+        streetNameError == "" &&
+        pincodeError == "" &&
+        districtError == "" &&
+        stateError == "" &&
+        countryError == "" &&
+        phoneNumberError == "" &&
+        emailError == "" &&
+        roleError == "" &&
+        profileImageError == "")
     {
-        if(document.getElementById("modalFormSubmitButton").name == "editContactId")
+        if(contactId.value == "")
         {
-            var formElement = document.getElementById("createForm");
-            const formData = new FormData(formElement);
-            formData.append("contactId", submitButtonId);
-            
-            $.ajax({
-                type: "POST",
-                url: "./components/addressBook.cfc?method=editContactTest",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(result) {
-                    alert(result);
-                    // console.log(result);
-                }
-            });
+            contactFunction = "addContactTest"
         }
+        else
+        {
+            contactFunction = "editContactTest"
+        }
+        var formElement = document.getElementById("createForm");
+        var formData = new FormData(formElement);
+        formData.append("editContactId", contactId.value);
+        $.ajax({
+            type: "POST",
+            url: "./components/addressBook.cfc?method="+contactFunction,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(result) {
+            resultJson=JSON.parse(result);
+                if(resultJson.error){
+                    printOutput("editModalError",resultJson.error);
+                }
+                else if(resultJson.emailError){
+                    printOutput("emailError",resultJson.emailError);
+                }
+                else
+                {
+                    closeEditModal();
+                    location.reload();
+                }
+            }
+        });
 
     }
 }

@@ -8,29 +8,28 @@
         <title>Sign UP</title>
     </head>
     <body>
-        <main class="main">
-            <div class="header">
+        <div class="header">
 
-                <a href="" class="logo">
-                    <img src="./Assets/images/contact_book_logo.png" alt="Image not found">
-                    <span>ADDRESS BOOK</span>
+            <a href="" class="logo">
+                <img src="./Assets/images/contact_book_logo.png" alt="Image not found">
+                <span>ADDRESS BOOK</span>
+            </a>
+
+            <div class="header_buttons">
+
+                <a href="./signup.cfm">
+                    <img src="./Assets/images/user_icon.png" alt="Image not found">
+                    Sign Up
                 </a>
 
-                <div class="header_buttons">
-
-                    <a href="./signup.cfm">
-                        <img src="./Assets/images/user_icon.png" alt="Image not found">
-                        Sign Up
-                    </a>
-
-                    <a href="./login.cfm">
-                        <img src="./Assets/images/login-2.png" alt="Image not found">
-                        Login
-                    </a>
-
-                </div>
+                <a href="./login.cfm">
+                    <img src="./Assets/images/login-2.png" alt="Image not found">
+                    Login
+                </a>
 
             </div>
+        </div>
+        <main class="main">
             <div class="main_body signup_padding">
                 <div class="form_container">
                     <div class="form_left">
