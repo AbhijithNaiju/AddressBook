@@ -13,7 +13,7 @@
         <cfset addressBookObj = createObject("component", "components.addressBook")>
         <cfset userdetails = addressBookObj.userDetails()>
         <cfset statusStruct = addressBookObj.getScheduleStatus(taskName = "birthdayTask-#userDetails.email#")>
-        <cfset uploadDirectory = "./Assets/contactPictues/">
+        <cfset uploadDirectory = "./Assets/contactPictures/">
         <cfset contactRoles = addressBookObj.getAllRoles()>
 
         <cfif NOT directoryExists(expandPath(uploadDirectory))>
@@ -32,10 +32,10 @@
                     </button>
                 </div>
             </div>
-        <main class="main position_absolute">
-            <div class="home_body">
-                <div class="home_header">
-                    <div class="print_options">
+        <main class="main positionAbsolute">
+            <div class="homeBody">
+                <div class="homeHeader">
+                    <div class="printOptions">
                         <button  name="printPdfBtn" onclick="printPdf()">
                             <img src="./Assets/images/acrobat.png" alt="Image not found">
                         </button>
@@ -47,103 +47,105 @@
                         </button>
                     </div>
                 </div>
-                <div class="home_elements">
-                    <div class="profile_box">
+                <div class="homeElements">
+                    <div class="profileBox">
                         <cfoutput>
                             <cfif userdetails.profileImage EQ "">
-                                <cfset userProfileImage = "./Assets/contactPictues/l60Hf.png">
+                                <cfset userProfileImage = "./Assets/contactPictures/l60Hf.png">
                             <cfelse>
                                 <cfset userProfileImage = userdetails.profileImage>
                             </cfif>
                             <img src="#userProfileImage#" alt="image not found">
-                            <div class="profile_name">#userdetails.fullName#</div>
+                            <div class="profileName">#userdetails.fullName#</div>
                         </cfoutput>
-                        <button onclick="openEditModal(this)" class="create_button" value="">
+                        <button onclick="openEditModal(this)" class="createButton" value="">
                             CREATE CONTACT
                         </button>
                         <button onclick="openExcelModal()" class="openExcel btn">Upload Contact</button>
                     </div>
 
-                    <table class="contact_list" id="contactList">
-                        <tr class="contact_list_heading">
-                            <th class="list_profile">
+                    <div class = "contactListContainer" id="contactList">
+                        <table class="contactList">
+                            <tr class="contactListHeading">
+                                <th class="listProfile">
 
-                            </th>
-                            <th class="list_name">
-                                NAME
-                            </th>
-                            <th class="list_email">
-                                EMAIL ID
-                            </th>
-                            <th class="list_phone">
-                                PHONE NUMBER
-                            </th>
-                            <th class="list_button">
-                                
-                            </th>
-                        </tr>
-                        <cfset ormReload()>
-                        <cfset contactDetails = entityLoad("contactOrm",{_createdBy = session.userId,active = 1})>
-                        <cfloop array="#contactDetails#" item = "contactItem">  
-                            <cfoutput>
-                                <tr class="contact_list_item">
-                                    <td class="list_profile">
-                                        <cfif contactItem.getprofileImage() EQ "">
-                                            <cfset contactProfileImage = "./Assets/contactPictues/l60Hf.png">
-                                          <cfelse>
-                                            <cfset contactProfileImage = contactItem.getprofileImage()>
-                                        </cfif>
-                                        <img src="#contactProfileImage#" alt="Image not found">
-                                    </td>
-                                    <td class="list_name">
-                                        #contactItem.getfirstName()# #contactItem.getlastName()#
-                                    </td>
-                                    <td class="list_email">
-                                        #contactItem.getemailId()#
-                                    </td>
-                                    <td class="list_phone">
-                                        #contactItem.getphoneNumber()#
-                                    </td>
-                                    <td class="list_button">
-                                        <button type="button" 
-                                                value="#contactItem.getcontactId()#" 
-                                                onclick="openEditModal(this)" 
-                                                class = "contactButtons">
-                                            EDIT
-                                        </button>
-                                        <button type="button" 
-                                                value="#contactItem.getcontactId()#" 
-                                                onclick="deleteContact(this)" 
-                                                class = "contactButtons">
-                                            DELETE
-                                        </button>
-                                        <button type="button" 
-                                                value="#contactItem.getcontactId()#" 
-                                                onclick="openViewModal(this)" 
-                                                class = "contactButtons">
-                                            VIEW
-                                        </button>
-                                    </td>
-                                </tr>
-                            </cfoutput>
-                        </cfloop>
-                    </table>
+                                </th>
+                                <th class="list_name">
+                                    NAME
+                                </th>
+                                <th class="listEmail">
+                                    EMAIL ID
+                                </th>
+                                <th class="listPhone">
+                                    PHONE NUMBER
+                                </th>
+                                <th class="listButton">
+                                    
+                                </th>
+                            </tr>
+                            <cfset ormReload()>
+                            <cfset contactDetails = entityLoad("contactOrm",{_createdBy = session.userId,active = 1})>
+                            <cfloop array="#contactDetails#" item = "contactItem">  
+                                <cfoutput>
+                                    <tr class="contactListItem">
+                                        <td class="listProfile">
+                                            <cfif contactItem.getprofileImage() EQ "">
+                                                <cfset contactProfileImage = "./Assets/contactPictures/l60Hf.png">
+                                            <cfelse>
+                                                <cfset contactProfileImage = contactItem.getprofileImage()>
+                                            </cfif>
+                                            <img src="#contactProfileImage#" alt="Image not found">
+                                        </td>
+                                        <td class="listName">
+                                            #contactItem.getfirstName()# #contactItem.getlastName()#
+                                        </td>
+                                        <td class="listEmail">
+                                            #contactItem.getemailId()#
+                                        </td>
+                                        <td class="listPhone">
+                                            #contactItem.getphoneNumber()#
+                                        </td>
+                                        <td class="listButton">
+                                            <button type="button" 
+                                                    value="#contactItem.getcontactId()#" 
+                                                    onclick="openEditModal(this)" 
+                                                    class = "contactButtons">
+                                                EDIT
+                                            </button>
+                                            <button type="button" 
+                                                    value="#contactItem.getcontactId()#" 
+                                                    onclick="deleteContact(this)" 
+                                                    class = "contactButtons">
+                                                DELETE
+                                            </button>
+                                            <button type="button" 
+                                                    value="#contactItem.getcontactId()#" 
+                                                    onclick="openViewModal(this)" 
+                                                    class = "contactButtons">
+                                                VIEW
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </cfoutput>
+                            </cfloop>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
-        <div class="edit_modal display_none" id="editModal">
-            <div class="edit_form">
-                <form method="post" class="edit_form_body" id="createForm" enctype="multipart/form-data" autocomplete>
+        <div class="editModal displayNone" id="editModal">
+            <div class="editForm">
+                <form method="post" class="editFormBody" id="createForm" enctype="multipart/form-data" autocomplete>
                     <div class="modal_heading" id="modalHeading"></div>
 
-                    <div class="modal_sub_headng">
+                    <div class="modalSubHeadng">
                         Personal contact
                     </div>
 
-                    <div class="edit_modal_element">
+                    <div class="editModalElement">
                         <div class="width_20">
                             <label for="">Title *</label>
-                            <select class="form_element" id="title" name="title">
+                            <select class="formElement" id="title" name="title">
                                 <option value=""></option>
                                 <option value="Mr">Mr</option>
                                 <option value="Mrs">Mrs</option>
@@ -152,20 +154,20 @@
                         </div>
                         <div class="width_30">
                             <label for="">First name *</label>
-                            <input type="text" placeholder=" First name" class="form_element" id="firstName" name="firstName">
+                            <input type="text" placeholder=" First name" class="formElement" id="firstName" name="firstName">
                             <div class="error_message" id="firstNameError"></div>
                         </div>
                         <div class="width_30">
                             <label for="">Last name *</label>
-                            <input type="text" placeholder=" Last name" class="form_element" id="lastName" name="lastName">
+                            <input type="text" placeholder=" Last name" class="formElement" id="lastName" name="lastName">
                             <div class="error_message" id="lastNameError"></div>
                         </div>
                     </div>
 
-                    <div class="edit_modal_element">
+                    <div class="editModalElement">
                         <div class="width_45">
                             <label for="">Gender *</label>
-                            <select class="form_element" id="gender" name="gender">
+                            <select class="formElement" id="gender" name="gender">
                                 <option value=""></option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
@@ -185,109 +187,109 @@
                         </div>
                     </div>
 
-                    <div class="edit_modal_element">
+                    <div class="editModalElement">
                         <div class="width_45">
                             <label for="">Upload Photo *</label>
-                            <input type="file" class="form_element" id="profileImage" name="profileImage">
+                            <input type="file" class="formElement" id="profileImage" name="profileImage">
                             <input type="hidden" name="profileDefault" id="profileDefault">
                             <div class="error_message" id="profileImageError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">Date of Birth *</label>
                             <cfoutput>
-                                <input type="date" class="form_element" id="dateOfBirth" name="dateOfBirth" max="#dateformat(now(),"yyyy-mm-dd")#">
+                                <input type="date" class="formElement" id="dateOfBirth" name="dateOfBirth" max="#dateformat(now(),"yyyy-mm-dd")#">
                             </cfoutput>
                             <div class="error_message" id="dateOfBirthError"></div>
                         </div>
                     </div>
-                    <div class="modal_sub_headng">
+                    <div class="modalSubHeadng">
                         Contact details
                     </div>
 
-                    <div class="edit_modal_element">
+                    <div class="editModalElement">
                         <div class="width_45">
                             <label for="">Address *</label>
-                            <input type="text" placeholder=" Address" class="form_element" name="address" id="address">
+                            <input type="text" placeholder=" Address" class="formElement" name="address" id="address">
                             <div class="error_message" id="addressError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">Street *</label>
-                            <input type="text" placeholder=" Street Name" class="form_element" id="streetName" name="streetName">
+                            <input type="text" placeholder=" Street Name" class="formElement" id="streetName" name="streetName">
                             <div class="error_message" id="streetNameError"></div>
                         </div>
                     </div>
 
-                    <div class="edit_modal_element">
+                    <div class="editModalElement">
                     <div class="width_45">
                         <label for="">Pincode *</label>
-                            <input type="text" placeholder=" Pincode" class="form_element" id="pincode" name="pincode">
+                            <input type="text" placeholder=" Pincode" class="formElement" id="pincode" name="pincode">
                             <div class="error_message" id="pincodeError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">District *</label>
-                            <input type="text" placeholder=" District" class="form_element" id="district" name="district">
+                            <input type="text" placeholder=" District" class="formElement" id="district" name="district">
                             <div class="error_message" id="districtError"></div>
                         </div>
                     </div>
 
-                    <div class="edit_modal_element">
+                    <div class="editModalElement">
                         <div class="width_45">
                             <label for="">State *</label>
-                            <input type="text" placeholder=" State" class="form_element" name="state" id="state">
+                            <input type="text" placeholder=" State" class="formElement" name="state" id="state">
                             <div class="error_message" id="stateError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">Country *</label>
-                            <input type="text" placeholder=" Country" class="form_element" name="country" id="country">
+                            <input type="text" placeholder=" Country" class="formElement" name="country" id="country">
                             <div class="error_message" id="countryError"></div>
                         </div>
                     </div>
 
-                    <div class="edit_modal_element">
+                    <div class="editModalElement">
                         <div class="width_45">
                             <label for="">Phone *</label>
-                            <input type="text" placeholder=" Phone" class="form_element" name="phoneNumber" id="phoneNumber">
+                            <input type="text" placeholder=" Phone" class="formElement" name="phoneNumber" id="phoneNumber">
                             <div class="error_message" id="phoneNumberError"></div>
 
                         </div>
                         <div class="width_45">
                             <label for="">Email *</label>
-                            <input type="text" placeholder="Email" class="form_element" name="email" id="email">
+                            <input type="text" placeholder="Email" class="formElement" name="email" id="email">
                             <div class="error_message" id="emailError"></div>
                         </div>
                     </div>
 
-                    <div class="modal_buttons">
+                    <div class="modalButtons">
                         <button onclick="closeEditModal()" type="button">Cancel</button>
                         <button type="button" onclick="submitEditModal(this)" id="modalFormSubmitButton">Submit</button>
                     </div>
                     <div class="error_message" id="editModalError"></div>
 
                 </form>
-                <div class="edit_form_image">
-                    <img src="Assets\contactPictues\l60Hf.png" id="profileImageEdit" alt="Image not found">
+                <div class="editFormImage">
+                    <img src="Assets\contactPictures\l60Hf.png" id="profileImageEdit" alt="Image not found">
                 </div>
             </div>
         </div>
-        <div class="view_modal display_none" id="viewModal">
-            <div class="edit_form">
-                <div class="edit_form_body"  enctype="multipart/form-data">
-                    <div class="modal_heading">
+        <div class="viewModal displayNone" id="viewModal">
+            <div class="editForm">
+                <div class="editFormBody"  enctype="multipart/form-data">
+                    <div class="modalHeading">
                         CONTACT DETAILS
                     </div>
                     <div id="viewModalBody">
 
                     </div>
-                    <div class="modal_buttons">
+                    <div class="modalButtons">
                         <button onclick="closeViewModal()" type="button">Close</button>
                     </div>
                 </div>
-                <div class="view_form_image">
-                    <img src="Assets\contactPictues\l60Hf.png" alt="Image not found" id = "viewProfileImage">
+                <div class="viewFormImage">
+                    <img src="Assets\contactPictures\l60Hf.png" alt="Image not found" id = "viewProfileImage">
                 </div>
             </div>
         </div>
-        <div class="excelModal display_none" id = "excelModal">
+        <div class="excelModal displayNone" id = "excelModal">
             <div class="excelModalBody">
                 <div class="getExcelBtns">
                     <button class="dataTemplateBtn" onclick = "createSpreadsheet()">Template with data</button>
@@ -302,7 +304,9 @@
                         <input type="file"  class="" name="excelInput" id="excelInput">
                         <div class="error_message" id="excelUploadError"></div>
                     </div>
-                        <div class="" id="excelUploadResult"></div>
+                        <div class="" id="createCount"></div>
+                        <div class="" id="updateCount"></div>
+                        <div class="" id="errorCount"></div>
                         <a href = "" id = "downloadLink"></a>
                     <div class="uploadExcel">
                         <button class="submitExcel" onclick = "uploadSpreadSheet()">SUBMIT</button>

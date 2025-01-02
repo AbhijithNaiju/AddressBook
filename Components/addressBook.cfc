@@ -193,13 +193,28 @@
 
 <!---     Creating contact --->
     <cffunction  name="addContact" returntype="struct">
-        <cfargument  name="structForm" type="struct">
+        <cfargument  name = "title" type = "string">
+        <cfargument  name = "firstName" type = "string">
+        <cfargument  name = "lastName" type = "string">
+        <cfargument  name = "gender" type = "string">
+        <cfargument  name = "dateOfBirth">
+        <cfargument  name = "address" type = "string">
+        <cfargument  name = "streetName" type = "string">
+        <cfargument  name = "pincode" type = "string">
+        <cfargument  name = "district" type = "string">
+        <cfargument  name = "state" type = "string">
+        <cfargument  name = "country" type = "string">
+        <cfargument  name = "email" type = "string">
+        <cfargument  name = "phoneNumber" type = "string">
+        <cfargument  name = "profileImage">
+        <cfargument  name = "role" type = "string">
+
         <cfset local.structResult = structNew()>
         <cfset local.createDate = dateformat(now(),"yyyy-mm-dd")>
-        <cfset local.checkEmailResult = checkEmailExist(arguments.structForm["email"])>
+        <cfset local.checkEmailResult = checkEmailExist(arguments["email"])>
+        <cfset local.uploadDirectory = "./Assets/contactPictures/">
 
-        <cfset local.uploadDirectory = "./Assets/contactPictues/">
-        <cfif structKeyExists(arguments.structForm, "profileImage") && len(arguments.structForm.profileImage)>
+        <cfif structKeyExists(arguments, "profileImage") && len(arguments.profileImage)>
             <cffile action="upload"
             filefield="profileImage"
             destination="#expandPath(local.uploadDirectory)#"
@@ -235,20 +250,20 @@
                             _createdOn
                         )
                     VALUES (
-                        <cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["firstName"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
+                        <cfqueryparam value = '#arguments["title"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["firstName"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["lastName"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["gender"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
                         <cfqueryparam value = '#local.imageSrc#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["state"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["country"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["address"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["streetName"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["district"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["state"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["country"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["pincode"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["email"]#' cfsqltype = "cf_sql_varchar">,
+                        <cfqueryparam value = '#arguments["phoneNumber"]#' cfsqltype = "cf_sql_varchar">,
                         <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">,
                         <cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date">
                         );
@@ -258,7 +273,7 @@
             </cfcatch>
             </cftry>
             <cftry>
-                <cfloop list="#arguments.structForm["role"]#" item="local.roleItem" delimiters = ",">
+                <cfloop list="#arguments["role"]#" item="local.roleItem" delimiters = ",">
                     <cfquery>
                         INSERT INTO 
                             contactRoles(
@@ -282,58 +297,73 @@
     </cffunction>
 
 <!---     Edit contact details --->
-    <cffunction name="editContact" returntype="struct">
-        <cfargument  name="structForm" type="struct">
+    <cffunction  name="editContact" access = "remote" returnFormat = "json">
+        <cfargument name = "title" type = "string">
+        <cfargument name = "firstName" type = "string">
+        <cfargument name = "lastName" type = "string">
+        <cfargument name = "gender" type = "string">
+        <cfargument name = "dateOfBirth">
+        <cfargument name = "address" type = "string">
+        <cfargument name = "streetName" type = "string">
+        <cfargument name = "pincode" type = "string">
+        <cfargument name = "district" type = "string">
+        <cfargument name = "state" type = "string">
+        <cfargument name = "country" type = "string">
+        <cfargument name = "email" type = "string">
+        <cfargument name = "phoneNumber" type = "string">
+        <cfargument name = "profileImage">
+        <cfargument name = "profileDefault" type = "string">
+        <cfargument name = "role" type = "string">
+        <cfargument name = "editContactId" type = "string">
 
-        <cfset local.uploadDirectory = "./Assets/contactPictues/">
-        <cfset local.roleArray = listToArray(arguments.structForm["role"],",")>
+        <cfset local.uploadDirectory = "../Assets/contactPictures/">
+        <cfset local.roleArray = listToArray(arguments["role"],",")>
 
-        <cfif structKeyExists(arguments.structForm, "profileImage") && len(arguments.structForm.profileImage)>
+        <cfif structKeyExists(arguments, "profileImage") && len(arguments.profileImage)>
             <cffile action="upload"
-                    filefield="profileImage"
                     destination="#expandPath(local.uploadDirectory)#"
                     nameconflict="makeunique"
                     result="fileDetails">
             <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
-        <cfelseif structKeyExists(arguments.structForm,"profileDefault")>
-            <cfset local.imageSrc = arguments.structForm.profileDefault>
+        <cfelseif structKeyExists(arguments,"profileDefault")>
+            <cfset local.imageSrc = arguments.profileDefault>
         <cfelse>
             <cfset local.imageSrc = "">
         </cfif>
 
-        <cfset local.currentRoles = getContactRoles(arguments.structForm["editContactId"])>
+        <cfset local.currentRoles = getContactRoles(arguments.editContactId)>
         <cfset local.structResult = structNew()>
         <cfset local.updateDate = dateformat(now(),"yyyy-mm-dd")>
-        <cfset local.checkEmailResult = checkEmailExist(arguments.structForm["email"],
-                                                        arguments.structForm["editContactId"]
+        <cfset local.checkEmailResult = checkEmailExist(arguments.email,
+                                                        arguments.editContactId
                                                         )>
 
         <cfif structKeyExists(local.checkEmailResult, "emailError")>
-            <cfset local.structResult["error"] = "Error email already exists">
+            <cfset local.structResult["emailError"] = local.checkEmailResult["emailError"]>
         <cfelse>
             <cftry>
                 <cfquery>
                     UPDATE 
                         contactDetails
                     SET 
-                        title = <cfqueryparam value = '#arguments.structForm["title"]#' cfsqltype = "cf_sql_varchar">,
-                        firstName = <cfqueryparam value = '#arguments.structForm["firstName"]#' cfsqltype = "cf_sql_varchar">,
-                        lastName = <cfqueryparam value = '#arguments.structForm["lastName"]#' cfsqltype = "cf_sql_varchar">,
-                        gender = <cfqueryparam value = '#arguments.structForm["gender"]#' cfsqltype = "cf_sql_varchar">,
-                        DOB = <cfqueryparam value = '#arguments.structForm["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
+                        title = <cfqueryparam value = '#arguments["title"]#' cfsqltype = "cf_sql_varchar">,
+                        firstName = <cfqueryparam value = '#arguments["firstName"]#' cfsqltype = "cf_sql_varchar">,
+                        lastName = <cfqueryparam value = '#arguments["lastName"]#' cfsqltype = "cf_sql_varchar">,
+                        gender = <cfqueryparam value = '#arguments["gender"]#' cfsqltype = "cf_sql_varchar">,
+                        DOB = <cfqueryparam value = '#arguments["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
                         profileImage = <cfqueryparam value = '#local.imageSrc#' cfsqltype = "cf_sql_varchar">,
-                        address = <cfqueryparam value = '#arguments.structForm["address"]#' cfsqltype = "cf_sql_varchar">,
-                        streetName = <cfqueryparam value = '#arguments.structForm["streetName"]#' cfsqltype = "cf_sql_varchar">,
-                        district = <cfqueryparam value = '#arguments.structForm["district"]#' cfsqltype = "cf_sql_varchar">,
-                        state = <cfqueryparam value = '#arguments.structForm["state"]#' cfsqltype = "cf_sql_varchar">,
-                        country = <cfqueryparam value = '#arguments.structForm["country"]#' cfsqltype = "cf_sql_varchar">,
-                        pincode = <cfqueryparam value = '#arguments.structForm["pincode"]#' cfsqltype = "cf_sql_varchar">,
-                        emailId = <cfqueryparam value = '#arguments.structForm["email"]#' cfsqltype = "cf_sql_varchar">,
-                        phoneNumber = <cfqueryparam value = '#arguments.structForm["phoneNumber"]#' cfsqltype = "cf_sql_varchar">,
+                        address = <cfqueryparam value = '#arguments["address"]#' cfsqltype = "cf_sql_varchar">,
+                        streetName = <cfqueryparam value = '#arguments["streetName"]#' cfsqltype = "cf_sql_varchar">,
+                        district = <cfqueryparam value = '#arguments["district"]#' cfsqltype = "cf_sql_varchar">,
+                        state = <cfqueryparam value = '#arguments["state"]#' cfsqltype = "cf_sql_varchar">,
+                        country = <cfqueryparam value = '#arguments["country"]#' cfsqltype = "cf_sql_varchar">,
+                        pincode = <cfqueryparam value = '#arguments["pincode"]#' cfsqltype = "cf_sql_varchar">,
+                        emailId = <cfqueryparam value = '#arguments["email"]#' cfsqltype = "cf_sql_varchar">,
+                        phoneNumber = <cfqueryparam value = '#arguments["phoneNumber"]#' cfsqltype = "cf_sql_varchar">,
                         _updatedBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">,
                         _updatedOn = <cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date">
                     WHERE
-                        contactId = <cfqueryparam value = '#arguments.structForm["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
+                        contactId = <cfqueryparam value = '#arguments["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
                         AND _createdby = <cfqueryparam value = '#session.userId#' cfsqltype = "CF_SQL_BIGINT">;
                 </cfquery>
                 <cfloop query="local.currentRoles">
@@ -345,7 +375,7 @@
                             FROM 
                                 contactRoles
                             WHERE 
-                                contactId = <cfqueryparam value = '#arguments.structForm["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
+                                contactId = <cfqueryparam value = '#arguments["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
                                 AND roleId = <cfqueryparam value = '#local.currentRoles.roleId#' cfsqltype = "cf_sql_INTEGER">;
                         </cfquery>
                     </cfif>
@@ -360,14 +390,14 @@
                             )
                         values(
                             <cfqueryparam value = '#local.newRole#' cfsqltype = "CF_SQL_INTEGER">,
-                            <cfqueryparam value = '#arguments.structForm["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
+                            <cfqueryparam value = '#arguments["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
                         )
                         
                     </cfquery>
                 </cfloop>
 
                 <cfcatch type="any">
-                    <cfset local.structResult["Error"] = "Error occured while updating">
+                    <cfset local.structResult["error"] = "Error occured while updating">
                 </cfcatch>
             </cftry>
         </cfif>
@@ -375,7 +405,7 @@
         <cfreturn local.structResult>
     </cffunction>
 
-<!---     Delete contact from table --->
+<!---     Delete contact --->
     <cffunction  name="deleteContact" access="remote" returnformat = "plain">
         <cfargument  name="deleteId" type="string">
 
@@ -535,14 +565,21 @@
 
     <cffunction  name="ssoLogin" returntype = "void">
         <cfargument  name="oauthResult">
-        <cfset local.local.emailCheck=emailAndUNameCheck(arguments.oauthResult.other.email)>
-        <cfif structKeyExists(local.local.emailCheck, "emailSuccess")>
+
+        <cfset local.emailCheck=emailAndUNameCheck(arguments.oauthResult.other.email)>
+        <cfif structKeyExists(local.emailCheck, "emailSuccess")>
             <!--- signup --->
-            <cfset userSignup(  arguments.oauthResult.name,
-                                arguments.oauthResult.other.email,
-                                arguments.oauthResult.id,
-                                "",
-                                arguments.oauthResult.other.picture)>
+            <cfset local.signUpResult = userSignup( fullName = arguments.oauthResult.name,
+                               emailId = arguments.oauthResult.other.email,
+                               userName = arguments.oauthResult.id,
+                               password = "",
+                               profileImage = arguments.oauthResult.other.picture,
+                               ssoLogin = true)>
+            <cfif structKeyExists(local, "signUpResult")>
+                <cflocation  url="./home.cfm?sigUpError=true"  addtoken = "no">
+            <cfelse>
+                <cflocation  url="./home.cfm"  addtoken = "no">
+            </cfif>
         <cfelse>
             <!--- login --->
             <cfquery name = "local.selectUser" >
@@ -639,6 +676,7 @@
         <cfargument  name="userName">
         <cfargument  name="password">
         <cfargument  name="profileImage">
+        <cfargument  name="ssoLogin" required = "false">
 
         <cfset local.uploadDirectory = "../Assets/uploads/">
         <cfif NOT directoryExists(expandPath(local.uploadDirectory))>
@@ -651,14 +689,18 @@
                                             arguments.userName)>
         
         <cfset local.structResult = local.emailCheck>
-        <cfif structKeyExists(local.emailCheck, "userNameSuccess") AND structKeyExists(local.emailCheck, "emailSuccess")>
+        <cfif structKeyExists(local.emailCheck, "emailSuccess")>
             <cftry>
+            <cfif structKeyExists(arguments, "ssoLogin")>
+                <cfset local.ImageSrc = arguments.profileImage>
+            <cfelse>
                 <cffile action="upload"
                     destination="#expandPath(local.uploadDirectory)#"
                     nameconflict="makeunique"
                     result="local.fileDetails">
 
-                <cfset local.profilelocal.ImageSrc = local.uploadDirectory & local.fileDetails.serverfile>
+                <cfset local.ImageSrc = local.uploadDirectory & local.fileDetails.serverfile>
+            </cfif>
 
                 <cfquery name="userInsert" result = "local.signupResult">
                     INSERT INTO 
@@ -674,7 +716,7 @@
                         <cfqueryparam value = '#arguments.emailId#' cfsqltype = "cf_sql_varchar">,
                         <cfqueryparam value = '#arguments.userName#' cfsqltype = "cf_sql_varchar">,
                         <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#local.profilelocal.ImageSrc#' cfsqltype = "cf_sql_varchar">
+                        <cfqueryparam value = '#local.ImageSrc#' cfsqltype = "cf_sql_varchar">
                         );
                 </cfquery>
 
@@ -721,6 +763,7 @@
         <cfset local.structContactDetails = structNew()>
         <cfset local.qryExistingRoles = getAllRoles()>
         <cfset local.structExistingRoles = structNew()>
+        <cfset local.structExistingEmails = structNew()>
 
         <cfloop query="local.qryExistingRoles">
             <cfset local.structExistingRoles[local.qryExistingRoles.name] = local.qryExistingRoles.roleId>
@@ -848,7 +891,7 @@
 
                     <cfset local.structContactDetails["editContactId"] = local.structExistingEmails[local.excelValues["email Id"].toString()]> 
 
-                    <cfset local.updateResult = editContactTest(
+                    <cfset local.updateResult = editContact(
                         title = structContactDetails.title,
                         firstName = structContactDetails.firstName,
                         lastName = structContactDetails.lastName,
@@ -877,7 +920,23 @@
                 <cfelse>
 
                     <!---   Create new contact --->
-                    <cfset local.createResult = addContact(structContactDetails)>
+
+                    <cfset local.createResult = addContact(
+                        title = structContactDetails.title,
+                        firstName = structContactDetails.firstName,
+                        lastName = structContactDetails.lastName,
+                        gender = structContactDetails.gender,
+                        dateOfBirth = structContactDetails.dateOfBirth,
+                        address = structContactDetails.address,
+                        streetName = structContactDetails.streetName,
+                        pincode = structContactDetails.pincode,
+                        district = structContactDetails.district,
+                        state = structContactDetails.state,
+                        country = structContactDetails.country,
+                        email = structContactDetails.email,
+                        phoneNumber = structContactDetails.phoneNumber,
+                        profileImage = structContactDetails.profileImage,
+                        role = structContactDetails.role)>
                     
                     <cfif structKeyExists(local.createResult, "Error")>
                         <cfset local.arrayResultColumn[local.excelValues.currentRow] = "Error while creating">
@@ -926,217 +985,5 @@
         </cfif>
 
         <cfreturn compare(local.resultOrder[arguments.row1.Result],local.resultOrder[arguments.row2.Result])>
-    </cffunction>
-
-    <cffunction  name="editContactTest" access = "remote" returnFormat = "json">
-        <cfargument  name="title">
-        <cfargument  name="firstName">
-        <cfargument  name="lastName">
-        <cfargument  name="gender">
-        <cfargument  name="dateOfBirth">
-        <cfargument  name="address">
-        <cfargument  name="streetName">
-        <cfargument  name="pincode">
-        <cfargument  name="district">
-        <cfargument  name="state">
-        <cfargument  name="country">
-        <cfargument  name="email">
-        <cfargument  name="phoneNumber">
-        <cfargument  name="profileImage">
-        <cfargument  name="role">
-        <cfargument  name="editContactId">
-
-        <cfset local.uploadDirectory = "./Assets/contactPictues/">
-        <cfset local.roleArray = listToArray(arguments["role"],",")>
-
-        <cfif structKeyExists(arguments, "profileImage") && len(arguments.profileImage)>
-            <cffile action="upload"
-                    filefield="profileImage"
-                    destination="#expandPath(local.uploadDirectory)#"
-                    nameconflict="makeunique"
-                    result="fileDetails">
-            <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
-        <cfelseif structKeyExists(arguments,"profileDefault")>
-            <cfset local.imageSrc = arguments.profileDefault>
-        <cfelse>
-            <cfset local.imageSrc = "">
-        </cfif>
-
-        <cfset local.currentRoles = getContactRoles(arguments.editContactId)>
-        <cfset local.structResult = structNew()>
-        <cfset local.updateDate = dateformat(now(),"yyyy-mm-dd")>
-        <cfset local.checkEmailResult = checkEmailExist(arguments.email,
-                                                        arguments.editContactId
-                                                        )>
-
-        <cfif structKeyExists(local.checkEmailResult, "emailError")>
-            <cfset local.structResult["emailError"] = local.checkEmailResult["emailError"]>
-        <cfelse>
-            <cftry>
-                <cfquery>
-                    UPDATE 
-                        contactDetails
-                    SET 
-                        title = <cfqueryparam value = '#arguments["title"]#' cfsqltype = "cf_sql_varchar">,
-                        firstName = <cfqueryparam value = '#arguments["firstName"]#' cfsqltype = "cf_sql_varchar">,
-                        lastName = <cfqueryparam value = '#arguments["lastName"]#' cfsqltype = "cf_sql_varchar">,
-                        gender = <cfqueryparam value = '#arguments["gender"]#' cfsqltype = "cf_sql_varchar">,
-                        DOB = <cfqueryparam value = '#arguments["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
-                        profileImage = <cfqueryparam value = '#local.imageSrc#' cfsqltype = "cf_sql_varchar">,
-                        address = <cfqueryparam value = '#arguments["address"]#' cfsqltype = "cf_sql_varchar">,
-                        streetName = <cfqueryparam value = '#arguments["streetName"]#' cfsqltype = "cf_sql_varchar">,
-                        district = <cfqueryparam value = '#arguments["district"]#' cfsqltype = "cf_sql_varchar">,
-                        state = <cfqueryparam value = '#arguments["state"]#' cfsqltype = "cf_sql_varchar">,
-                        country = <cfqueryparam value = '#arguments["country"]#' cfsqltype = "cf_sql_varchar">,
-                        pincode = <cfqueryparam value = '#arguments["pincode"]#' cfsqltype = "cf_sql_varchar">,
-                        emailId = <cfqueryparam value = '#arguments["email"]#' cfsqltype = "cf_sql_varchar">,
-                        phoneNumber = <cfqueryparam value = '#arguments["phoneNumber"]#' cfsqltype = "cf_sql_varchar">,
-                        _updatedBy = <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">,
-                        _updatedOn = <cfqueryparam value = '#local.updateDate#' cfsqltype = "cf_sql_date">
-                    WHERE
-                        contactId = <cfqueryparam value = '#arguments["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
-                        AND _createdby = <cfqueryparam value = '#session.userId#' cfsqltype = "CF_SQL_BIGINT">;
-                </cfquery>
-                <cfloop query="local.currentRoles">
-                    <cfif arrayContains(local.roleArray, local.currentRoles.roleId)>
-                        <cfset arrayDelete(local.roleArray, local.currentRoles.roleId)>
-                    <cfelse>
-                        <cfquery>
-                            DELETE 
-                            FROM 
-                                contactRoles
-                            WHERE 
-                                contactId = <cfqueryparam value = '#arguments["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
-                                AND roleId = <cfqueryparam value = '#local.currentRoles.roleId#' cfsqltype = "cf_sql_INTEGER">;
-                        </cfquery>
-                    </cfif>
-                </cfloop>
-
-                <cfloop array="#local.roleArray#" item="local.newRole">
-                    <cfquery>
-                        INSERT INTO 
-                            contactRoles(
-                                roleId,
-                                contactId
-                            )
-                        values(
-                            <cfqueryparam value = '#local.newRole#' cfsqltype = "CF_SQL_INTEGER">,
-                            <cfqueryparam value = '#arguments["editContactId"]#' cfsqltype = "CF_SQL_BIGINT">
-                        )
-                        
-                    </cfquery>
-                </cfloop>
-
-                <cfcatch type="any">
-                    <cfset local.structResult["error"] = "Error occured while updating">
-                </cfcatch>
-            </cftry>
-        </cfif>
-
-        <cfreturn local.structResult>
-    </cffunction>
-    <cffunction  name="addContactTest" returntype="struct">
-
-        <cfargument  name="title">
-        <cfargument  name="firstName">
-        <cfargument  name="lastName">
-        <cfargument  name="gender">
-        <cfargument  name="dateOfBirth">
-        <cfargument  name="address">
-        <cfargument  name="streetName">
-        <cfargument  name="pincode">
-        <cfargument  name="district">
-        <cfargument  name="state">
-        <cfargument  name="country">
-        <cfargument  name="email">
-        <cfargument  name="phoneNumber">
-        <cfargument  name="profileImage">
-        <cfargument  name="role">
-
-        <cfset local.structResult = structNew()>
-        <cfset local.createDate = dateformat(now(),"yyyy-mm-dd")>
-        <cfset local.checkEmailResult = checkEmailExist(arguments["email"])>
-
-        <cfset local.uploadDirectory = "./Assets/contactPictues/">
-        <cfif structKeyExists(arguments, "profileImage") && len(arguments.profileImage)>
-            <cffile action="upload"
-            filefield="profileImage"
-            destination="#expandPath(local.uploadDirectory)#"
-            nameconflict="makeunique"
-            result="fileDetails">
-            <cfset local.imageSrc = local.uploadDirectory & fileDetails.serverfile>
-        <cfelse>
-            <cfset local.imageSrc = "">
-        </cfif>
-
-        <cfif structKeyExists(local.checkEmailResult, "phoneError") OR structKeyExists(local.checkEmailResult, "emailError")>
-            <cfset local.structResult["error"] = "Error email or phone already exists">
-        <cfelse>
-            <cftry>
-                <cfquery result = "local.insertResult">
-                    INSERT INTO 
-                        contactDetails (
-                            title,
-                            firstName,
-                            lastName,
-                            gender,
-                            DOB,
-                            profileImage,
-                            address,
-                            streetName,
-                            district,
-                            State,
-                            country,
-                            pincode,
-                            emailId,
-                            phoneNumber,
-                            _createdBy,
-                            _createdOn
-                        )
-                    VALUES (
-                        <cfqueryparam value = '#arguments["title"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["firstName"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["lastName"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["gender"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["dateOfBirth"]#' cfsqltype = "cf_sql_date">,
-                        <cfqueryparam value = '#local.imageSrc#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["address"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["streetName"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["district"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["state"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["country"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["pincode"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["email"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#arguments["phoneNumber"]#' cfsqltype = "cf_sql_varchar">,
-                        <cfqueryparam value = '#session.userId#' cfsqltype = " CF_SQL_BIGINT">,
-                        <cfqueryparam value = '#local.createDate#' cfsqltype = "cf_sql_date">
-                        );
-                </cfquery>
-            <cfcatch type="any">
-                <cfset local.structResult["error"] = "Error while creating the contact">
-            </cfcatch>
-            </cftry>
-            <cftry>
-                <cfloop list="#arguments["role"]#" item="local.roleItem" delimiters = ",">
-                    <cfquery>
-                        INSERT INTO 
-                            contactRoles(
-                                roleId,
-                                contactId
-                        )
-                        values(
-                            <cfqueryparam value = '#local.roleItem#' cfsqltype = "CF_SQL_INTEGER">,
-                            <cfqueryparam value = '#local.insertResult.generatedkey#' cfsqltype = "CF_SQL_INTEGER">
-                        )
-                        
-                    </cfquery>
-                </cfloop>
-            <cfcatch type="any">
-                <cfset local.structResult["error"] = "Error while inserting roles">
-            </cfcatch>
-            </cftry>
-        </cfif>
-
-        <cfreturn local.structResult>
     </cffunction>
 </cfcomponent>

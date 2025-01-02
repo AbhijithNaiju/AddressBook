@@ -1,39 +1,39 @@
 body
 {
-    /* overflow: scroll; */
     height: 100vh;
     position: relative;
 }
-.home_body
+.homeBody
 {
-    min-height: 92vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
 }
-.position_absolute
+.positionAbsolute
 {
     position: absolute;
 }
-.home_header
+.homeHeader
 {
-    height: 9vh;
+    height: 10%;
     background-color: #fff;
     width: 83%;
     margin-top: 1.5%;
     border-radius: 5px;
     display: flex;
 }
-.home_elements
+.homeElements
 {
     width: 83%;
+    height: 80%;
     margin-top: 1.5%;
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
 }
-.print_options
+.printOptions
 {
     margin: 0 5% 0 auto;
     display: flex;
@@ -41,17 +41,17 @@ body
     width: 12%;
     justify-content: space-between;
 }
-.print_options button
+.printOptions button
 {
     background: none;
     border: none;
     height: 50%;
 }
-.print_options button img
+.printOptions button img
 {
     height: 100%;
 }
-.profile_box
+.profileBox
 {
     background-color: #fff;
     display: flex;
@@ -59,24 +59,25 @@ body
     align-items: center;
     justify-content: space-around;
     width: 15.5%;
-    height: 40vh;
+    height: fit-content;
+    min-height: 40vh;
     border-radius: 3px;
     padding: 5px;
     box-sizing: border-box;
 }
-.profile_box img
+.profileBox img
 {
     width: 13vh;
     height: 13vh;
     border-radius: 50%;
 }
-.profile_name
+.profileName
 {
     color: #337AB7;
     font-weight: bold;
     font-size: 18px;
 }
-.profile_box .create_button
+.profileBox .createButton
 
 {
     border: none;
@@ -85,17 +86,17 @@ body
     border-radius: 20px;
     padding: 7px 10px;
 }
-.contact_list
+.contactList
 {
     background-color: #fff;
-    width: 83%;
+    width: 100%;
     height: fit-content;
     box-sizing: border-box;
     border-radius: 3px;
     padding: 5px 5px 30px 5px;
     box-shadow: 0px 0px 6px 0px rgb(0 0 0 / 0.1);
 }
-.contact_list_heading
+.contactListHeading
 {
     display: flex;
     color: #337AB7;
@@ -103,8 +104,11 @@ body
     font-size: 15px;
     padding: 20px 10px;
     border-bottom: 1px solid #ececec;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
 }
-.contact_list_item
+.contactListItem
 {
     display: flex;
     padding: 20px 10px;
@@ -113,37 +117,44 @@ body
     font-size: 14px;
     align-items: center;
 }
-.contact_list_item>td , .contact_list_heading>th
+.contactListItem>td , .contactListHeading>th
 {
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 0 5px;
 }
-.list_profile,.list_name
+.listProfile,.listName
 {
     width: 8.5%;
 }
-.list_profile img
+.listProfile img
 {
     height: 55px;
     width: 55px;
     border-radius: 50%;
 }
-.list_email
+.listEmail
 {
     width: 17.5%;
 }
-.list_phone
+.listPhone
 {
     width: 17%;
 }
-.list_button
+.listButton
 {
     width: 44%;
     display: flex;
     justify-content: space-between;
+    transition: 0.3s;
 }
-.list_button button
+.listButton button:hover
+{
+    background-color: #337AB7;
+    color: #fff;
+    transition: 0.3s;
+}
+.listButton button
 {
     border: 1px solid #337AB7;
     background: none;
@@ -153,7 +164,7 @@ body
     border-radius: 20px;
     min-width: 22%;
 }
-.edit_modal,.view_modal
+.editModal,.viewModal
 {
     position: absolute;
     height: 92vh;
@@ -164,7 +175,7 @@ body
     top: 8vh;
     overflow: scroll;
 }
-.edit_form
+.editForm
 {
     background-color: #D8EDF7;
     width: 50%;
@@ -174,18 +185,18 @@ body
     padding: 0 15px;
     box-sizing: border-box;
 }
-.display_none
+.displayNone
 {
     display: none !important;
 }
-.edit_form_body
+.editFormBody
 {
     background-color: #fff;
     width: 72%;
     padding: 50px;
     box-sizing: border-box;
 }
-.edit_form_image,.view_form_image
+.editFormImage,.viewFormImage
 {
     padding: 30px;
     box-sizing: border-box;
@@ -193,13 +204,13 @@ body
     justify-content: center;
     width: 30%;
 }
-.modal_buttons
+.modalButtons
 {
     width: 100%;
     display: flex;
     justify-content: space-around;
 }
-.modal_buttons button
+.modalButtons button
 {
     width: 30%;
     background: #337AB7;
@@ -208,7 +219,7 @@ body
     padding: 10px;
     border-radius: 20px;
 }
-.modal_heading
+.modalHeading
 {
     background-color: #D8EDF7;
     text-align: center;
@@ -217,7 +228,7 @@ body
     font-weight: bold;
     font-size: 20px;
 }
-.modal_sub_headng
+.modalSubHeadng
 {
     color: #337AB7;
     font-weight: bold;
@@ -225,19 +236,19 @@ body
     border-bottom: 2px solid #000;
     margin-top: 30px;
 }
-.edit_modal_element
+.editModalElement
 {
     display: flex;
     margin: 15px 0;
     justify-content: space-between;
     color: #666;
 }
-.edit_modal_element>div
+.editModalElement>div
 {
     display: flex;
     flex-direction: column;
 }
-.form_element
+.formElement
 {
     border-top: 1px solid #eee;
     border-bottom: 1px solid #ddd;
@@ -245,16 +256,16 @@ body
     border-right: none;
     padding: 10px 0;
 }
-.form_element:focus
+.formElement:focus
 {
     outline: none;
 }
-.form_element::placeholder
+.formElement::placeholder
 {
     color: #aaa;
     font-size: 13px;
 }
-.edit_modal_element>div label
+.editModalElement>div label
 {
     color: #337AB7;
     font-weight: bold;
@@ -273,26 +284,26 @@ body
 {
     width: 45%;
 }
-.edit_form_image img
+.editFormImage img
 {
     border-radius: 50%;
     width: 5.5vw;
     height: 5.5vw;
     margin-top: 50%;
 }
-.view_form_image img
+.viewFormImage img
 {
     width: 7vw;
     height: 7vw;
     margin-top: 50%;
 }
-.contact_details
+.contactDetails
 {
     margin: 20px 0;
     display: flex;
     font-size: 13px;
 }
-.contact_item_name
+.contactItemName
 {
     color: #337AB7;
     width: 40%;
@@ -302,7 +313,7 @@ body
     box-sizing: border-box;
     padding-right: 10px;
 }
-.contact_item_value
+.contactItemValue
 {
     width: 60%;
     color: #505050;
@@ -310,6 +321,11 @@ body
 .bootstrap-select
 {
     width: 100% !important;
+}
+.contactListContainer
+{
+    width: 83%;
+    overflow-y: scroll;
 }
 .openExcel
 {
@@ -319,7 +335,7 @@ body
 #excelModal
 {
     position: absolute;
-    height: 100%;
+    height: 92%;
     width: 100%;
     background-color: #969696a2;
     justify-content: center;
@@ -328,7 +344,8 @@ body
 .excelModalBody
 {
     width: 50%;
-    height: 60%;
+    height: fit-content;
+    min-height: 50%;
     top: 8vh;
     border-radius: 5px;
     background-color: #fff;

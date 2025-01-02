@@ -1,23 +1,17 @@
-function printOutput(printLocation,printValue)
-{
-	document.getElementById(printLocation).innerHTML = printValue;
-}
 function openEditModal(editId)
 {
-    document.getElementById("editModal").classList.remove("display_none");
+    document.getElementById("editModal").classList.remove("displayNone");
     $(document).ready(function() {
         $('.selectpicker').selectpicker();
     });
     if(editId.value == "")
     {
-        document.getElementById("modalFormSubmitButton").name="addContact";
-        document.getElementById("modalHeading").innerHTML="CREATE CONTACT";
-        document.getElementById("profileImageEdit").src = "./Assets/contactPictues/l60Hf.png";
+        $("#modalHeading").text("CREATE CONTACT")
+        document.getElementById("profileImageEdit").src = "./Assets/contactPictures/l60Hf.png";
     }
     else
     {
-        document.getElementById("modalFormSubmitButton").name="editContactId";
-        document.getElementById("modalHeading").innerHTML="EDIT CONTACT";
+        $("#modalHeading").text("EDIT CONTACT")
         
         $.ajax({
         type:"POST",
@@ -49,7 +43,7 @@ function openEditModal(editId)
                     $("#email").val(resultJson.email);
                     if(resultJson.profileImage == "")
                     {
-                        document.getElementById("profileImageEdit").src = "./Assets/contactPictues/l60Hf.png";
+                        document.getElementById("profileImageEdit").src = "./Assets/contactPictures/l60Hf.png";
                     }
                     else
                     {
@@ -68,7 +62,7 @@ function openEditModal(editId)
 }
 function closeEditModal()
 {
-        document.getElementById("editModal").classList.add("display_none");
+        document.getElementById("editModal").classList.add("displayNone");
         document.getElementById("createForm").reset();
         $('.error_message').text('');
         $('.selectpicker').selectpicker('refresh');
@@ -78,7 +72,7 @@ function openViewModal(viewId)
 {
     viewModalBody=document.getElementById("viewModalBody")
     viewModalBody.innerHTML="";
-    document.getElementById("viewModal").classList.remove("display_none");
+    document.getElementById("viewModal").classList.remove("displayNone");
     $.ajax({
         type:"POST",
         url:"./Components/addressBook.cfc?method=getViewData",
@@ -95,7 +89,7 @@ function openViewModal(viewId)
                     if(a == "profileImage")
                     {
                         if(resultJson[a] == ""){
-                            document.getElementById("viewProfileImage").src = "./Assets/contactPictues/l60Hf.png";
+                            document.getElementById("viewProfileImage").src = "./Assets/contactPictures/l60Hf.png";
                         }
                         else{
                             document.getElementById("viewProfileImage").src = resultJson[a];
@@ -104,12 +98,12 @@ function openViewModal(viewId)
                     else
                     {
                         var parentDiv = document.createElement("DIV");
-                        parentDiv.classList.add("contact_details");
+                        parentDiv.classList.add("contactDetails");
                         var contactItemName = document.createElement("DIV");
-                        contactItemName.classList.add("contact_item_name");
+                        contactItemName.classList.add("contactItemName");
                         contactItemName.innerHTML=a;
                         var contactItemValue = document.createElement("DIV");
-                        contactItemValue.classList.add("contact_item_value");
+                        contactItemValue.classList.add("contactItemValue");
                         contactItemValue.innerHTML=resultJson[a];
                         parentDiv.appendChild(contactItemName);
                         parentDiv.appendChild(contactItemValue);
@@ -127,7 +121,7 @@ function openViewModal(viewId)
 }
 function closeViewModal()
 {
-    document.getElementById("viewModal").classList.add("display_none");
+    document.getElementById("viewModal").classList.add("displayNone");
     $('.error_message').text('');
 }
 
@@ -171,50 +165,50 @@ function submitEditModal(contactId)
     {
         titleError = "Please enter title";
     }
-    printOutput("titleError",titleError);
+    $("#titleError").text(titleError)
 
     if(firstName.trim().length==0)
     {
         firstNameError = "Please enter first name";
     }
-    printOutput("firstNameError",firstNameError);
+    $("#firstNameError").text(firstNameError);
 
     if(lastName.trim().length==0)
     {
         lastNameError = "Please enter last name";
     }
-    printOutput("lastNameError",lastNameError);
+    $("#lastNameError").text(lastNameError);
 
 
     if(gender.trim().length==0)
     {
         genderError = "Please enter the gender";
     }
-    printOutput("genderError",genderError);
+    $("#genderError").text(genderError);
 
     if(role.trim().length==0 )
     {
         roleError = "Please enter the role";
     }
-    printOutput("roleError",roleError);
+    $("#roleError").text(roleError);
 
     if(dateOfBirth.trim().length==0)
     {
         dateOfBirthError = "Please enter the DOB";
     }
-    printOutput("dateOfBirthError",dateOfBirthError);
+    $("#dateOfBirthError").text(dateOfBirthError);
 
     if(address.trim().length==0)
     {
         addressError = "Please enter the address";
     }
-    printOutput("addressError",addressError);
+    $("#addressError").text(addressError);
 
     if(streetName.trim().length==0)
     {
         streetNameError = "Please enter the street name";
     }
-    printOutput("streetNameError",streetNameError);
+    $("#streetNameError").text(streetNameError);
 
     if(pincode.trim().length==0)
     {
@@ -226,25 +220,25 @@ function submitEditModal(contactId)
     else if(pincode.trim().length != 6) {
         pincodeError = "Pincode must be 6 digits";
     }
-    printOutput("pincodeError",pincodeError);
+    $("#pincodeError").text(pincodeError);
 
     if(district.trim().length==0)
     {
         districtError = "Please enter the district";
     }
-    printOutput("districtError",districtError);
+    $("#districtError").text(districtError);
 
     if(state.trim().length==0)
     {
         stateError = "Please enter the state";
     }
-    printOutput("stateError",stateError);
+    $("#stateError").text(stateError);
 
     if(country.trim().length==0)
     {
         countryError = "Please enter the country";
     }
-    printOutput("countryError",countryError);
+    $("#countryError").text(countryError);
 
     if(phoneNumber.trim().length==0)
     {
@@ -258,7 +252,7 @@ function submitEditModal(contactId)
     {
         phoneNumberError = "Phone number must be 10 digits";
     }
-    printOutput("phoneNumberError",phoneNumberError);
+    $("#phoneNumberError").text(phoneNumberError);
 
 
     if(!profileImage || allowedExtentions.includes(fileExtension))
@@ -269,7 +263,7 @@ function submitEditModal(contactId)
     {
         profileImageError = "Only JPG,JPEG and PNG files are allowed";
     }
-    printOutput("profileImageError",profileImageError);
+    $("#profileImageError").text(profileImageError);
 
     if(email.trim().length==0)
     {
@@ -278,7 +272,7 @@ function submitEditModal(contactId)
     else if(email_match.test(email)!=true) {
         emailError = "Please enter a valid email";
     }
-    printOutput("emailError",emailError);
+    $("#emailError").text(emailError);
     
     if( titleError  == "" &&
         firstNameError  == "" &&
@@ -298,11 +292,11 @@ function submitEditModal(contactId)
     {
         if(contactId.value == "")
         {
-            contactFunction = "addContactTest"
+            contactFunction = "addContact"
         }
         else
         {
-            contactFunction = "editContactTest"
+            contactFunction = "editContact"
         }
         var formElement = document.getElementById("createForm");
         var formData = new FormData(formElement);
@@ -316,10 +310,10 @@ function submitEditModal(contactId)
             success: function(result) {
             resultJson=JSON.parse(result);
                 if(resultJson.error){
-                    printOutput("editModalError",resultJson.error);
+                    $("#editModalError").text(editModalError);
                 }
                 else if(resultJson.emailError){
-                    printOutput("emailError",resultJson.emailError);
+                    $("#emailError").text(emailError);
                 }
                 else
                 {
@@ -393,9 +387,10 @@ function createSpreadsheet(){
 }
 
 function uploadSpreadSheet(){
-    printOutput("downloadLink","");
-    printOutput("excelUploadError","");
-    printOutput("excelUploadResult","");
+    $("#downloadLink").text("");
+    $("#excelUploadError").text("");
+    $("#excelUploadResult").text("");
+
     var excelUploadError = ""
     const allowedExtentions = ["xlsx","xls"];
     var inputFile = document.getElementById("excelInput").files[0];
@@ -416,8 +411,8 @@ function uploadSpreadSheet(){
                 success: function(result) {
                     resultJson = JSON.parse(result);
                     if(resultJson.error)
-                    {
-                        printOutput("excelUploadError", resultJson.error);
+                    {  
+                        $("#excelUploadError").text(resultJson.error);
                     }
                     else{
                         if(resultJson.resultFileUrl && resultJson.resultFileName)
@@ -427,11 +422,13 @@ function uploadSpreadSheet(){
                                 downloadLink.setAttribute('download', resultJson.resultFileName);
                                 downloadLink.href = resultJson.resultFileUrl;
                             }
-                            printOutput("excelUploadResult","Contacts created :"+resultJson.createCount +"<br>Updated contacts :"+resultJson.updateCount+ "<br>Errors :" + resultJson.errorCount);
+                        $("#createCount").text("Contacts created :"+resultJson.createCount);
+                        $("#updateCount").text("Contacts updated:"+resultJson.updateCount);
+                        $("#errorCount").text("Errors :" + resultJson.errorCount);
                     }
                 },
                 error: function() {
-                    printOutput("excelUploadError", "Excel Upload Error");
+                    $("#excelUploadError").text("Excel Upload Error");
                 }
             });
         }
@@ -444,7 +441,7 @@ function uploadSpreadSheet(){
     {
         excelUploadError = "Please enter a file"
     }
-    printOutput("excelUploadError",excelUploadError);
+    $("#excelUploadError").text(excelUploadError);
 
 }
 
@@ -520,14 +517,15 @@ function downloadFile(fileUrl, fileName)
 
 function openExcelModal()
 {
-    document.getElementById("excelModal").classList.remove("display_none");
+    document.getElementById("excelModal").classList.remove("displayNone");
 }
 
 function closeExcelModal()
 {
-    document.getElementById("excelModal").classList.add("display_none");
-    printOutput("downloadLink","");
-    printOutput("excelUploadError","");
-    $("#excelInput").val("");
-    printOutput("excelUploadResult","");
+    // document.getElementById("excelModal").classList.add("displayNone");
+    // $("#downloadLink").text("");
+    // $("#excelUploadError").text("");
+    // $("#excelUploadResult").text("");
+    // $("#excelInput").val("");
+    location.reload();
 }

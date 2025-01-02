@@ -22,7 +22,7 @@
             <cfloop query="local.pdfPrintData">
                 <cfset local.qryContactRole = local.addressBookObj.getContactRoles(local.pdfPrintData.contactId)>
                 <cfif local.pdfPrintData.profileImage EQ "">
-                    <cfset local.contactProfileImage = "./Assets/contactPictues/l60Hf.png">
+                    <cfset local.contactProfileImage = "./Assets/contactPictures/l60Hf.png">
                 <cfelse>
                     <cfset local.contactProfileImage = local.pdfPrintData.profileImage>
                 </cfif>
