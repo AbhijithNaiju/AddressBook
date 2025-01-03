@@ -421,3 +421,9 @@ body
     background-color: #337AB7;
     color: #fff;
 }
+.errorMessage
+{
+    color: #fd0202;
+    font-size: 12px;
+    text-align: center;
+}

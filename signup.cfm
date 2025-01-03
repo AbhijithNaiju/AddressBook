@@ -50,10 +50,19 @@
                         <input type="text" placeholder="Username" class="input_fields" name="userName" id="userName">
                         <div id="userNameError" class="error_message"></div>
 
-                        <input type="password" placeholder="Password" class="input_fields" name="password" id="password">
+                        <input  type="password'" 
+                                placeholder="Password" 
+                                class="input_fields" 
+                                name="password" 
+                                id="password"
+                                onkeyup="checkPassword()">
                         <div id="passwordError" class="error_message"></div>
 
-                        <input type="password" placeholder="Confirm Password" class="input_fields" id="confirmPassword">
+                        <input  type="password" 
+                                placeholder="Confirm Password" 
+                                class="input_fields" 
+                                id="confirmPassword"
+                                onkeyup="checkPassword()">
                         <div id="confirmPasswordError" class="error_message"></div>
                         
                         <div class="form-group imageInput">

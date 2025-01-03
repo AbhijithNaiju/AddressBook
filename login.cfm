@@ -75,6 +75,7 @@
                 </div>
             </div>
         </main>
+        <script src="./JS/Jquery/jquery-3.7.1.js"></script>
         <script src="./JS/index.js"></script>
     </body>
 </html>

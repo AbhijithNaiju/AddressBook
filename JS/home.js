@@ -127,24 +127,26 @@ function closeViewModal()
 
 function submitEditModal(contactId)
 {
-    let title = document.getElementById("title").value;
-    let firstName = document.getElementById("firstName").value;
-    let lastName = document.getElementById("lastName").value;
-    let gender = document.getElementById("gender").value;
-    let role = document.getElementById("role").value;
-    let dateOfBirth = document.getElementById("dateOfBirth").value;
-    let address = document.getElementById("address").value;
-    let streetName = document.getElementById("streetName").value;
-    let pincode = document.getElementById("pincode").value;
-    let district = document.getElementById("district").value;
-    let state = document.getElementById("state").value;
-    let country = document.getElementById("country").value;
-    let phoneNumber = document.getElementById("phoneNumber").value;
-    let email = document.getElementById("email").value;
-    let profileImage = document.getElementById("profileImage").value;
+    let title =$("#title").val();
+    let firstName =$("#firstName").val();
+    let lastName =$("#lastName").val();
+    let gender =$("#gender").val();
+    let role =$("#role").val();
+    let dateOfBirth =$("#dateOfBirth").val();
+    let address =$("#address").val();
+    let streetName =$("#streetName").val();
+    let pincode =$("#pincode").val();
+    let district =$("#district").val();
+    let state =$("#state").val();
+    let country =$("#country").val();
+    let phoneNumber =$("#phoneNumber").val();
+    let email =$("#email").val();
+    let profileImage =$("#profileImage").val();
+
     let allowedExtentions=["jpg","jpeg","png"];
     let fileExtension = String(/[^.]+$/.exec(profileImage)).toLowerCase();
 	let email_match=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
     var titleError = "";
     var firstNameError = "";
     var lastNameError = "";
@@ -186,7 +188,7 @@ function submitEditModal(contactId)
     }
     $("#genderError").text(genderError);
 
-    if(role.trim().length==0 )
+    if(role.toString().trim().length==0 )
     {
         roleError = "Please enter the role";
     }

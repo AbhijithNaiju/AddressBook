@@ -136,7 +136,7 @@
         <div class="editModal displayNone" id="editModal">
             <div class="editForm">
                 <form method="post" class="editFormBody" id="createForm" enctype="multipart/form-data" autocomplete>
-                    <div class="modal_heading" id="modalHeading"></div>
+                    <div class="modalHeading" id="modalHeading"></div>
 
                     <div class="modalSubHeadng">
                         Personal contact
@@ -150,17 +150,17 @@
                                 <option value="Mr">Mr</option>
                                 <option value="Mrs">Mrs</option>
                             </select>
-                            <div class="error_message" id="titleError"></div>
+                            <div class="errorMessage" id="titleError"></div>
                         </div>
                         <div class="width_30">
                             <label for="">First name *</label>
                             <input type="text" placeholder=" First name" class="formElement" id="firstName" name="firstName">
-                            <div class="error_message" id="firstNameError"></div>
+                            <div class="errorMessage" id="firstNameError"></div>
                         </div>
                         <div class="width_30">
                             <label for="">Last name *</label>
                             <input type="text" placeholder=" Last name" class="formElement" id="lastName" name="lastName">
-                            <div class="error_message" id="lastNameError"></div>
+                            <div class="errorMessage" id="lastNameError"></div>
                         </div>
                     </div>
 
@@ -172,7 +172,7 @@
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                             </select>
-                            <div class="error_message" id="genderError"></div>
+                            <div class="errorMessage" id="genderError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">Role *</label>
@@ -183,7 +183,7 @@
                                     </cfloop>
                                 </cfoutput>
                             </select>
-                            <div class="error_message" id="roleError"></div>
+                            <div class="errorMessage" id="roleError"></div>
                         </div>
                     </div>
 
@@ -192,14 +192,14 @@
                             <label for="">Upload Photo *</label>
                             <input type="file" class="formElement" id="profileImage" name="profileImage">
                             <input type="hidden" name="profileDefault" id="profileDefault">
-                            <div class="error_message" id="profileImageError"></div>
+                            <div class="errorMessage" id="profileImageError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">Date of Birth *</label>
                             <cfoutput>
                                 <input type="date" class="formElement" id="dateOfBirth" name="dateOfBirth" max="#dateformat(now(),"yyyy-mm-dd")#">
                             </cfoutput>
-                            <div class="error_message" id="dateOfBirthError"></div>
+                            <div class="errorMessage" id="dateOfBirthError"></div>
                         </div>
                     </div>
                     <div class="modalSubHeadng">
@@ -210,12 +210,12 @@
                         <div class="width_45">
                             <label for="">Address *</label>
                             <input type="text" placeholder=" Address" class="formElement" name="address" id="address">
-                            <div class="error_message" id="addressError"></div>
+                            <div class="errorMessage" id="addressError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">Street *</label>
                             <input type="text" placeholder=" Street Name" class="formElement" id="streetName" name="streetName">
-                            <div class="error_message" id="streetNameError"></div>
+                            <div class="errorMessage" id="streetNameError"></div>
                         </div>
                     </div>
 
@@ -223,12 +223,12 @@
                     <div class="width_45">
                         <label for="">Pincode *</label>
                             <input type="text" placeholder=" Pincode" class="formElement" id="pincode" name="pincode">
-                            <div class="error_message" id="pincodeError"></div>
+                            <div class="errorMessage" id="pincodeError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">District *</label>
                             <input type="text" placeholder=" District" class="formElement" id="district" name="district">
-                            <div class="error_message" id="districtError"></div>
+                            <div class="errorMessage" id="districtError"></div>
                         </div>
                     </div>
 
@@ -236,12 +236,12 @@
                         <div class="width_45">
                             <label for="">State *</label>
                             <input type="text" placeholder=" State" class="formElement" name="state" id="state">
-                            <div class="error_message" id="stateError"></div>
+                            <div class="errorMessage" id="stateError"></div>
                         </div>
                         <div class="width_45">
                             <label for="">Country *</label>
                             <input type="text" placeholder=" Country" class="formElement" name="country" id="country">
-                            <div class="error_message" id="countryError"></div>
+                            <div class="errorMessage" id="countryError"></div>
                         </div>
                     </div>
 
@@ -249,13 +249,13 @@
                         <div class="width_45">
                             <label for="">Phone *</label>
                             <input type="text" placeholder=" Phone" class="formElement" name="phoneNumber" id="phoneNumber">
-                            <div class="error_message" id="phoneNumberError"></div>
+                            <div class="errorMessage" id="phoneNumberError"></div>
 
                         </div>
                         <div class="width_45">
                             <label for="">Email *</label>
                             <input type="text" placeholder="Email" class="formElement" name="email" id="email">
-                            <div class="error_message" id="emailError"></div>
+                            <div class="errorMessage" id="emailError"></div>
                         </div>
                     </div>
 
@@ -263,7 +263,7 @@
                         <button onclick="closeEditModal()" type="button">Cancel</button>
                         <button type="button" onclick="submitEditModal(this)" id="modalFormSubmitButton">Submit</button>
                     </div>
-                    <div class="error_message" id="editModalError"></div>
+                    <div class="errorMessage" id="editModalError"></div>
 
                 </form>
                 <div class="editFormImage">
@@ -302,7 +302,7 @@
                     <div class="excelModalInput" id = "excelModalInput">
                         <label for="excelInput">Upload Excel *</label>
                         <input type="file"  class="" name="excelInput" id="excelInput">
-                        <div class="error_message" id="excelUploadError"></div>
+                        <div class="errorMessage" id="excelUploadError"></div>
                     </div>
                         <div class="" id="createCount"></div>
                         <div class="" id="updateCount"></div>

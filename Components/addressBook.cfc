@@ -576,7 +576,7 @@
                                profileImage = arguments.oauthResult.other.picture,
                                ssoLogin = true)>
             <cfif structKeyExists(local, "signUpResult")>
-                <cflocation  url="./home.cfm?sigUpError=true"  addtoken = "no">
+                <cflocation  url="./login.cfm?error=An-error-occured" addtoken = "no">
             <cfelse>
                 <cflocation  url="./home.cfm"  addtoken = "no">
             </cfif>
